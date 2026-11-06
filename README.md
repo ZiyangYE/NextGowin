@@ -1,5 +1,7 @@
 # NextGowin
 
+> **WIP — 2026-11-06 算法源码快照。** 优化工作已暂停。本提交是最小源码审阅包，不是完整离线工具链或可独立复现器件结果的发行版。范围、依赖和验证说明见 [WIP 说明](docs/WIP.md)。
+
 面向高云（Gowin）FPGA 的综合（Synthesis）与布局布线（Place & Route，P&R）工具项目。
 
 **首版仅面向 138K 器件。** 先围绕这一目标打通流程、验证结果，再考虑扩展支持范围。
@@ -29,9 +31,19 @@ NextGowin 就是为此开始的：为高云 FPGA 开发一套更好用、以时�
 
 ## 当前状态
 
-项目处于起步阶段。当前仓库尚未提供可运行的综合或布局布线流程，也没有可公布的性能与时序对比结果。
+已提交综合映射、自研打包/布局/布线、时序反馈、等价检查和原厂最终 STA/编码适配的实验源码。自研 P&R 入口为 `scripts/run_ownpr_region_coopt.py`；历史 `scripts/nextgowin.py` 完整命令会调用原厂 P&R，不能作为自研 P&R 的结果。
 
-构建方式、使用说明、示例设计和验证结果将在对应功能可用后补充。
+本地完整数据下，VexRiscv 最近达到 **74.0 MHz、完整 I/O 时序零违例**；这是已有 mapped checkpoint 的增量结果，尚未实现 90/150/200 MHz、通用优于原厂或冷 RTL 一键闭环。本包未携带该实验的大型证据和器件校准数据；摘要及证据哈希见 [本地结果摘要](docs/local_result_summary.json)。
+
+只验证不依赖厂商工具/器件数据的轻量算法测试（Python 3.11）：
+
+```sh
+python -m pip install -r requirements-dev.txt
+python tools/verify_source_package.py
+python -m pytest -q
+```
+
+未包含 Gowin/ABC/Yosys/Python 二进制、开源器件数据库、第三方源码、位流或旧交接 ZIP。真实器件流程仍需要本地工具链及经过版本/哈希核验的校准产物，详见 [WIP 说明](docs/WIP.md)。
 
 ## 开发方向
 

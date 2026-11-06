@@ -1,0 +1,45 @@
+{
+  "qualified_mhz": 74.0,
+  "metrics": {
+    "setup_wns_ns": 0.028,
+    "hold_wns_ns": 0.133,
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "total_negative_setup_slack_ns": 0,
+    "reported_fmax_mhz": 74.156,
+    "other_checks_passed": true,
+    "native_constraints_satisfied": true,
+    "handoff_sha256": "ab3bb133da8d8f7be9aa5089d4b71c705e1f2f322ff329991b6950f8382c98f0"
+  },
+  "target_metrics": {
+    "setup_wns_ns": -2.374,
+    "hold_wns_ns": 0.133,
+    "setup_violations": 135,
+    "hold_violations": 0,
+    "total_negative_setup_slack_ns": -78.709,
+    "reported_fmax_mhz": 74.156,
+    "other_checks_passed": true,
+    "native_constraints_satisfied": false,
+    "handoff_sha256": "3dc1101e8b5ff6cb58007f84a979a3aaa5cfb306b3b4d53537676dcff8bbd8ac"
+  },
+  "resource_delta": {
+    "LUT4": 3
+  },
+  "shared_pairs": 256,
+  "interface_cycles_changed": false,
+  "total_elapsed_upper_bound_seconds": 3218.063805,
+  "original_budget_seconds": 3500,
+  "baseline_frequency_mhz": 71.4,
+  "qualified_frequency_gain_percent": 3.6414565826330403,
+  "checkpoint_sha256": "5b58cc1849f362589ad3aa112af39f6d82fc6b914ae632c540673e426c5068fa",
+  "status": "WIP local-result summary, not independently reproducible from this source-only package",
+  "recorded_date": "2026-11-06",
+  "device": "GW5AST-LV138FPG676AC1/I0",
+  "checkpoint_local_reference": "results/vexriscv_shared_global_001/reconciled_001/qualified_replay_checkpoint.json",
+  "source_audit_sha256": "6716f02eedfe6a245ff5519e2724aef95ab5216f0882d0b0d52e55c6ed64f1f9",
+  "raw_evidence_included": false,
+  "cold_rtl_run": false,
+  "hardware_verified": false,
+  "vendor_pnr_executed": false,
+  "goal_complete": false
+}
