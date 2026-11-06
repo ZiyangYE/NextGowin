@@ -28,3 +28,6 @@ publish/
 .env
 .env.*
 abc.history
+repro_runs/
+repro/.downloads/
+repro/installed-dependencies.json

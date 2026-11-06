@@ -1,7 +1,7 @@
 {
   "schema": "nextgowin-wip-source-v1",
   "snapshot_date": "2026-11-06",
-  "purpose": "Source review and fixture-free algorithm tests, not a complete device reproduction bundle",
+  "purpose": "WIP algorithm sources and small RTL reproduction; binary dependencies are separate checked release assets",
   "files": [
     {
       "path": ".gitattributes",
@@ -10,8 +10,18 @@
     },
     {
       "path": ".gitignore",
-      "bytes": 286,
-      "sha256": "04b689b6357489c064e05a6433ad47d47324b99b3c2edb602f9ffa1538f7f88c"
+      "bytes": 350,
+      "sha256": "f5672da8d3655573c3aa0546477327e5777024783e3e3550a2bb76f29b8baab9"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3683,
+      "sha256": "7a1319305b3022083201d6c4080f3d31504b7a783dfd43d80fcb7cc6c48c6abc"
     },
     {
       "path": "binary_audit/dll_steps.py",
@@ -24,24 +34,39 @@
       "sha256": "68095e1736237b51540cca2cb2a5fa7d33b539723700649414a4b8cddb199b1e"
     },
     {
+      "path": "docs/WIP.md",
+      "bytes": 5442,
+      "sha256": "5826b18b481be58d677f0334b197ceb8d29cab7505e3390ec6fa85ddaba03e26"
+    },
+    {
       "path": "docs/local_result_summary.json",
       "bytes": 1720,
       "sha256": "abe4fe648d4edf9b2d153981378d2550773ffad562d0f807e47b8311793c75e2"
     },
     {
       "path": "docs/source_provenance.json",
-      "bytes": 58478,
-      "sha256": "570128c6eeb1fa1d57c6189eb76f95df2701b070fb9df9c849a1d192916e6c0d"
-    },
-    {
-      "path": "docs/WIP.md",
-      "bytes": 5234,
-      "sha256": "c02cf0cc573c72e7aac5a53124245cbad922a9b8911fe123a15028a67239a1c2"
+      "bytes": 60282,
+      "sha256": "90d59523161f51ed0caffaa0183dcce7282f2149d936a8abf43edba2d2c0d11c"
     },
     {
       "path": "examples/late_input.blif",
       "bytes": 234,
       "sha256": "947f4cb5482369e0ce320e7524d3874922406ec5a1110a6e1b309e7adc690c31"
+    },
+    {
+      "path": "examples/repro_small/fixed.cst",
+      "bytes": 468,
+      "sha256": "4e867ff5daabf4d2b7d4d19eb4a010eb8e426b64a2a08539dfa5715ff5e3e9be"
+    },
+    {
+      "path": "examples/repro_small/timing.sdc",
+      "bytes": 348,
+      "sha256": "7002dce2be5f16a72541c4b8676abf9a6972bac24317767864051f35ea4c41cc"
+    },
+    {
+      "path": "examples/repro_small/top.v",
+      "bytes": 210,
+      "sha256": "0366e8c0416fdf9a3d67858ad3e37b15fbce500c2187ef21caa2f2fc957afea7"
     },
     {
       "path": "experiments/analyze_ownpr_critical_wires.py",
@@ -114,19 +139,44 @@
       "sha256": "3027f8f1b40660b1ee523da62951afce94885cedc4ec7621ae86e5f203ee0c58"
     },
     {
-      "path": "LICENSE",
-      "bytes": 11357,
-      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
-    },
-    {
       "path": "pytest.ini",
       "bytes": 54,
       "sha256": "63d2d16d09ffac6af35c37894465ff5fda0f528400c04ea11195910526b03f28"
     },
     {
-      "path": "README.md",
-      "bytes": 3345,
-      "sha256": "46bdda8502e3bb73fed085006cf15891fb58b9b13928864bbcbceb0a2c83d52b"
+      "path": "repro/Get-Dependencies.ps1",
+      "bytes": 5259,
+      "sha256": "979296bba3a8404f2cd7bb55e9c9330895beaaf0b9c2d8091ce7958142f8dd9a"
+    },
+    {
+      "path": "repro/README.md",
+      "bytes": 2356,
+      "sha256": "d14e22e90c073d2a3ab35514c6c61f75ad3f9c5309afe6e093df0a04dad53dcd"
+    },
+    {
+      "path": "repro/Run-Small.ps1",
+      "bytes": 1733,
+      "sha256": "664d99e9466a7588ef4110f9f97b1dd807025cc53651f81bf03691960574f323"
+    },
+    {
+      "path": "repro/bootstrap/sitecustomize.py",
+      "bytes": 1350,
+      "sha256": "f5b5dfc44d771dc3a453336a177edc85c169b3e16eadf5bb6d98576c5176da59"
+    },
+    {
+      "path": "repro/check_dependencies.py",
+      "bytes": 735,
+      "sha256": "745bdd2f5fda69899084faa16d1c32a41369ff8be74e9ed8f766772ae2f77d00"
+    },
+    {
+      "path": "repro/dependencies.json",
+      "bytes": 4759,
+      "sha256": "12527679ab82506eead95887d3a4f73e3c23c9048e195de1bf79a9bbcd4db72b"
+    },
+    {
+      "path": "repro/validation.json",
+      "bytes": 1742,
+      "sha256": "ab9e6eac37ff795225af41e05c0e9afd24dcf1b56e3e28711a18df742384bda5"
     },
     {
       "path": "requirements-dev.txt",
@@ -585,8 +635,8 @@
     },
     {
       "path": "scripts/ownpr_effective_io_constraints.py",
-      "bytes": 1830,
-      "sha256": "8c4970b5a6dbaafeb7ede2e5798448baad41e3d95a960e3fb2af45b9ead6bade"
+      "bytes": 1853,
+      "sha256": "1851b68ce4c803e3ba1f42a15a570609b235113090a2460c9b179e901d6567b6"
     },
     {
       "path": "scripts/ownpr_expand_routes.py",
@@ -939,6 +989,11 @@
       "sha256": "ceca24ac9eb05bd57387a80482eb32ee3a4d0edadf126d6f2823ab1f8321cd6a"
     },
     {
+      "path": "scripts/reproduce_small.py",
+      "bytes": 4287,
+      "sha256": "dd580b981a19d4740ad35168fa0c7ad186b5a478a36c6e9fde365b2726c78333"
+    },
+    {
       "path": "scripts/resource_preflight.py",
       "bytes": 1064,
       "sha256": "04453d8729cfc828b82d3634299b7ff902c251b8c9773bb8e44e1377df45f6a9"
@@ -1017,6 +1072,11 @@
       "path": "tests/test_ownpr_branch_reuse.py",
       "bytes": 3883,
       "sha256": "f3041bb99248de70ba2aae8aaf212ac0f8d78b1524b65bafd664d6f98c80e8f9"
+    },
+    {
+      "path": "tests/test_ownpr_effective_io_constraints.py",
+      "bytes": 1545,
+      "sha256": "6ec32faafd3c588faefbb34f40a17f94e3e71b31576e149992923b8a83f9771d"
     },
     {
       "path": "tests/test_ownpr_guided_router.py",

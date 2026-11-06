@@ -16,7 +16,7 @@ def audit(text,sdc):
             raise ValueError('Effective I/O audit currently requires zero min/max delays')
     counts={'tIn':0,'tOut':0};sections={};kind=None
     for line in text.splitlines():
-        heading=re.match(r'^3\.(?:3|7)\.\d+ (Setup|Hold|Recovery|Removal) Analysis Report',line)
+        heading=re.match(r'^3\.(?:3|7)\.\d+(?:\.\d+)? (Setup|Hold|Recovery|Removal) Analysis Report(?:\[\d+\])?$',line)
         if heading:kind=heading[1]
         elif re.match(r'^3\.\d+\.',line):kind=None
         match=re.match(r'^\s*([-+\d.]+)\s+([-+\d.]+)\s+(tIn|tOut)\b',line)

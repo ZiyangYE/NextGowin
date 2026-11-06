@@ -1,6 +1,6 @@
 # NextGowin
 
-> **WIP — 2026-11-06 算法源码快照。** 优化工作已暂停。本提交是最小源码审阅包，不是完整离线工具链或可独立复现器件结果的发行版。范围、依赖和验证说明见 [WIP 说明](docs/WIP.md)。
+> **WIP — 2026-11-06。** 优化工作已暂停。本分支提供算法源码和一个小设计的完整复现入口；运行依赖从 Release 分块下载，每块不超过 8 MB。见 [小设计复现步骤](repro/README.md) 和 [WIP 说明](docs/WIP.md)。
 
 面向高云（Gowin）FPGA 的综合（Synthesis）与布局布线（Place & Route，P&R）工具项目。
 
@@ -43,7 +43,14 @@ python tools/verify_source_package.py
 python -m pytest -q
 ```
 
-未包含 Gowin/ABC/Yosys/Python 二进制、开源器件数据库、第三方源码、位流或旧交接 ZIP。真实器件流程仍需要本地工具链及经过版本/哈希核验的校准产物，详见 [WIP 说明](docs/WIP.md)。
+小设计完整复现（Windows x64，无需预装 Python）：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\repro\Get-Dependencies.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\repro\Run-Small.ps1
+```
+
+Git 中只保存源码、小例子及校验清单；对应 WIP Release 提供经过裁剪的 Gowin/ABC/Yosys/Python 运行时和本地提取的校准数据。没有使用开源芯片数据库，不附带旧交接 ZIP。小例子约束为 20 MHz，不能用它替代 VexRiscv 或其他设计的性能评测。
 
 ## 开发方向
 

@@ -15,7 +15,8 @@
     "experiments/native_shared_ff_encoding.py",
     "experiments/native_ff_attribute_oracle.py",
     "experiments/native_wide_lut_sharing.py",
-    "experiments/native_wide_ff_routes.py"
+    "experiments/native_wide_ff_routes.py",
+    "scripts/reproduce_small.py"
   ],
   "files": [
     {
@@ -638,8 +639,8 @@
     },
     {
       "path": "scripts/ownpr_effective_io_constraints.py",
-      "source_sha256": "8c4970b5a6dbaafeb7ede2e5798448baad41e3d95a960e3fb2af45b9ead6bade",
-      "packaged_sha256": "8c4970b5a6dbaafeb7ede2e5798448baad41e3d95a960e3fb2af45b9ead6bade",
+      "source_sha256": "1851b68ce4c803e3ba1f42a15a570609b235113090a2460c9b179e901d6567b6",
+      "packaged_sha256": "1851b68ce4c803e3ba1f42a15a570609b235113090a2460c9b179e901d6567b6",
       "transformation": "none"
     },
     {
@@ -1229,6 +1230,39 @@
       "source_sha256": "79a2515351aea0a3b43ea7affb505290a5e3bd72ff897d7b90db7b0e14a75e0d",
       "packaged_sha256": "79a2515351aea0a3b43ea7affb505290a5e3bd72ff897d7b90db7b0e14a75e0d",
       "transformation": "none"
+    },
+    {
+      "path": "scripts/reproduce_small.py",
+      "source_sha256": "dd580b981a19d4740ad35168fa0c7ad186b5a478a36c6e9fde365b2726c78333",
+      "packaged_sha256": "dd580b981a19d4740ad35168fa0c7ad186b5a478a36c6e9fde365b2726c78333",
+      "transformation": "none"
+    },
+    {
+      "path": "examples/repro_small/top.v",
+      "source_sha256": "0366e8c0416fdf9a3d67858ad3e37b15fbce500c2187ef21caa2f2fc957afea7",
+      "packaged_sha256": "0366e8c0416fdf9a3d67858ad3e37b15fbce500c2187ef21caa2f2fc957afea7",
+      "transformation": "none"
+    },
+    {
+      "path": "examples/repro_small/fixed.cst",
+      "source_sha256": "4e867ff5daabf4d2b7d4d19eb4a010eb8e426b64a2a08539dfa5715ff5e3e9be",
+      "packaged_sha256": "4e867ff5daabf4d2b7d4d19eb4a010eb8e426b64a2a08539dfa5715ff5e3e9be",
+      "transformation": "none"
+    },
+    {
+      "path": "examples/repro_small/timing.sdc",
+      "source_sha256": "7002dce2be5f16a72541c4b8676abf9a6972bac24317767864051f35ea4c41cc",
+      "packaged_sha256": "7002dce2be5f16a72541c4b8676abf9a6972bac24317767864051f35ea4c41cc",
+      "transformation": "none"
+    },
+    {
+      "path": "tests/test_ownpr_effective_io_constraints.py",
+      "source_sha256": "eceea5c2f5635280c519752bd40e288003a8576c3ee6625a5ad1e8a25332a9a2",
+      "packaged_sha256": "6ec32faafd3c588faefbb34f40a17f94e3e71b31576e149992923b8a83f9771d",
+      "transformation": "fixture-dependent test omitted",
+      "omitted_tests": [
+        "test_current_report_accepts_and_memory_compensation_is_rejected"
+      ]
     }
   ],
   "excluded": [
@@ -1240,5 +1274,7 @@
     "frozen handoff archive",
     "local agent instructions"
   ],
-  "additional_dependency_note": "Legacy Tcl worker referenced by the frontend subprocess; source only."
+  "additional_dependency_note": "Legacy Tcl worker referenced by the frontend subprocess; source only.",
+  "dependency_release": "wip-small-repro-20261106",
+  "excluded_note": "Exclusions describe Git source files. Runtime/device subsets for the small example are distributed separately as checked release assets."
 }
