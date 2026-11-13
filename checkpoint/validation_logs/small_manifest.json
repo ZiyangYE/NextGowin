@@ -1,0 +1,28 @@
+{
+  "status": "small_rtl_ownpr_reproduced",
+  "wall_seconds": 339.5469999999623,
+  "budget_seconds": 900,
+  "source_sha256": "0366e8c0416fdf9a3d67858ad3e37b15fbce500c2187ef21caa2f2fc957afea7",
+  "metrics": {
+    "setup_wns_ns": 44.407,
+    "hold_wns_ns": 0.022,
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "total_negative_setup_slack_ns": 0,
+    "reported_fmax_mhz": 178.809,
+    "other_checks_passed": true,
+    "native_constraints_satisfied": true,
+    "handoff_sha256": "d3abde97ae07de93ec0da792b952b64672777be74d4ac5e7d290139d05b9c4af"
+  },
+  "selected": {
+    "placement": "C:\\Users\\JackC\\Documents\\ChatGPT\\NextGowin\\publish\\wip-20261106\\repro_runs\\small_20261113_013001\\hold\\round_001\\placement",
+    "routes": "C:\\Users\\JackC\\Documents\\ChatGPT\\NextGowin\\publish\\wip-20261106\\repro_runs\\small_20261113_013001\\hold\\round_001\\route",
+    "sta": "C:\\Users\\JackC\\Documents\\ChatGPT\\NextGowin\\publish\\wip-20261106\\repro_runs\\small_20261113_013001\\hold\\round_001\\export\\native",
+    "wire": "C:\\Users\\JackC\\Documents\\ChatGPT\\NextGowin\\publish\\wip-20261106\\repro_runs\\small_20261113_013001\\hold\\round_001\\export\\wire",
+    "clock_capture": "C:\\Users\\JackC\\Documents\\ChatGPT\\NextGowin\\publish\\wip-20261106\\repro_runs\\small_20261113_013001\\implementation\\clock_encoding"
+  },
+  "vendor_pnr_executed": false,
+  "io_reference_is_vendor_calibration": true,
+  "device_programmed": false,
+  "board_wiring_validated": false
+}

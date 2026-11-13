@@ -3,7 +3,7 @@ import ctypes as C
 import json,math
 
 
-def capture_one(native,obj,resource,out,full=False):
+def capture_one(native,obj,resource,out,full=False,all_dsp_edges=False,registered_dsp_edges=False):
     vp=C.c_void_p;fn=native.fn;ptr=native.ptr;base=native.dll._handle
     monitor=fn('?getTmMonitor@globalMem@@QEAAPEAVTmMonitor@STA@@XZ',vp,[vp])(native.mem)
     context=ptr(monitor+8);old_library=ptr(context+0x30);library=ptr(context+0x38)
@@ -56,15 +56,25 @@ def capture_one(native,obj,resource,out,full=False):
             edge=ptr(address)
             if not edge or edge in seen:continue
             source,destination=labels.get(ptr(edge+0x10)),labels.get(ptr(edge+0x18))
-            if (source,destination) not in wanted:continue
+            kind=C.c_ubyte.from_address(edge+0x38).value
+            if all_dsp_edges and resource=='dsp':
+                if source is None or destination is None:continue
+            elif registered_dsp_edges and resource=='dsp' and kind in (10,20,22,25,27) and source and source.startswith('CLK[') and destination:
+                pass
+            elif (source,destination) not in wanted:continue
             seen.add(edge);values=[]
             for offset in (0,8):
                 matrix=ptr(edge+offset)
                 if not matrix:raise ValueError('Native edge lacks delay matrix')
                 values.append(list((C.c_float*8).from_address(matrix)))
             if not all(math.isfinite(v) for a in values for v in a):raise ValueError('Native hard edge has nonfinite delay')
-            edge_records.append(dict(source=source,destination=destination,kind=C.c_ubyte.from_address(edge+0x38).value,matrices=values))
+            edge_records.append(dict(source=source,destination=destination,kind=kind,matrices=values))
     result=dict(resource=resource,full_data_pins=full,query_count=len(records),queries=records,actual_edges=edge_records,scope='Native cell-table queries and existing STA edges; mode legality, pulse-width coverage and routing require separate checks. Full DSP data coverage means A/B to DOUT in the current bypass fixture.')
+    if all_dsp_edges:
+        result.update(all_dsp_pin_edges_requested=True,
+            scope='All existing DSP timing edges whose two endpoints have exposed logical pin labels. Query table remains the separate A/B-to-DOUT dispatcher probe; do not use it as registered-DSP timing. Unlabelled internal nodes, physical route and pulse checks remain separate.')
+    if registered_dsp_edges and any(e['source'].startswith('CLK[') for e in edge_records):
+        result['registered_dsp_clock_edges']=True
     (out/'hard_timing_queries.json').write_text(json.dumps(result,indent=2));return result
 
 
@@ -83,7 +93,7 @@ def capture_all(native,out,vendor_pnr_executed=True):
         if n>4096:raise ValueError('Invalid hard instance name')
         name=C.string_at(ptr(p) if ptr(p+24)>=16 else p,n).decode()
         folder=out/'hard_timing_instances'/f'instance_{len(rows):03d}';folder.mkdir(parents=True)
-        record=capture_one(native,obj,'dsp' if typ==4 else 'bsram',folder,full=True)
+        record=capture_one(native,obj,'dsp' if typ==4 else 'bsram',folder,full=True,registered_dsp_edges=typ==4)
         rows.append(dict(instance=name,file=str((folder/'hard_timing_queries.json').relative_to(out)),sha256=sha(folder/'hard_timing_queries.json'),queries=record['query_count'],actual_edges=len(record['actual_edges'])))
     if not rows:raise ValueError('No native hard timing instances')
     result=dict(instances=rows,vendor_pnr_executed=vendor_pnr_executed,

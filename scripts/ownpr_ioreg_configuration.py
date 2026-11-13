@@ -45,13 +45,22 @@ class IoregChoices:
         self.features=list(device.fse.read_rows(device.fse.get_table('header',0xa)));self.templates={}
 
     def requirements(self,site,attributes):
+        node=output_binding(site)['D'];typ=self.device.grid[node[0]-1][node[1]-1]
+        if typ not in (49,246,247,248):
+            from ownpr_ioreg_site_extension import admit
+            admit(typ,site,attributes)
+        return self.observed_requirements(site,attributes)
+
+    def observed_requirements(self,site,attributes):
+        """Readback of captured attributes; does not admit a new placement mode."""
         if len(attributes)!=171:raise ValueError('Invalid I/O-logic attribute vector')
         if attributes[0]!=0 or attributes[1]!=49:raise ValueError('Uncalibrated output I/O mode')
         node=output_binding(site)['D'];r,c=node[0]-1,node[1]-1;typ=self.device.grid[r][c];kind=0x15+site[2]
-        if typ not in (49,246,247,248):raise ValueError('Uncalibrated output I/O tile')
         key=typ,kind
         if key not in self.templates:
-            self.templates[key]=[(row[:2],tuple(self.fuses.bit(typ,i) for i in row[2:] if i>=0)) for row in self.device.fse.read_rows(self.device.fse.get_table(str(typ),kind))]
+            table=self.device.fse.get_table(str(typ),kind)
+            if table is None:raise ValueError('Native output I/O feature table missing')
+            self.templates[key]=[(row[:2],tuple(self.fuses.bit(typ,i) for i in row[2:] if i>=0)) for row in self.device.fse.read_rows(table)]
         mask=set();ones=set()
         for predicates,bits in self.templates[key]:
             mask.update(bits);selected=bool(attributes[0] or attributes[1])

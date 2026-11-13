@@ -87,6 +87,11 @@ must show an actual improvement before any state can be retained.
 
 def critical_labels(candidate,traces):
     """Optimize the worst timing path, not a longer wire on a relaxed path."""
+    if 'receiver_slacks' in candidate:
+        slacks=candidate['receiver_slacks']
+        if not slacks or set(slacks)!=set(candidate['endpoints']):raise ValueError('Incomplete receiver slack ranking')
+        worst=min(slacks.values())
+        return worst,sorted(label for label,value in slacks.items() if round(value,3)==round(worst,3))
     slacks={}
     for path in traces:
         for arc in path['ordinary_wires']:
@@ -129,7 +134,7 @@ def verify_feedback(placement,source,sta):
     return meta,sm,audit
 
 
-def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budgets=False,include_single_sink=False,search_mode='whole',pin_feedback=None,explore_hold_ns=0.,source_history=None,explore_current_wns=False):
+def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budgets=False,include_single_sink=False,search_mode='whole',pin_feedback=None,explore_hold_ns=0.,source_history=None,explore_current_wns=False,net_filter=(),batch_limit=1):
     from native_device_session import NativeDeviceSession
     native=NativeDeviceSession(out)
     from ownpr_device import Device
@@ -177,6 +182,9 @@ def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budge
     if pin_feedback:
         from ownpr_pin_feedback import load as load_pins,physical_budgets
         logical,pin_info=load_pins(pin_feedback,sta);precise=physical_budgets(graph,capture_rows,logical)
+        from ownpr_receiver_ranking import augment
+        ranking=augment(ranking,design,list(byname.values()),logical)
+        (out/'receiver_ranking.json').write_text(json.dumps(ranking,indent=2))
         budgets.update(precise);pin_info['physical_receivers']=len(precise)
         (out/'pin_budget_audit.json').write_text(json.dumps(pin_info,indent=2))
     def measure(net,record):
@@ -188,8 +196,17 @@ def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budge
                 chain=list(map(tuple,sink['path_sink_to_source']))
                 values[sink['resource']]=[sum(delays[p][selector][i] for p in chain) for selector,i in ((0,2),(0,3),(1,0),(1,1))]
         return values
+    from ownpr_batch_budget import consumption,check as batch_check
+    batch_records=[]
+    def screen_batch(before,after,bounds,name,ok,delta):
+        if batch_limit>1:
+            check=batch_check(batch_records+[consumption(name,before,after,bounds)])
+            delta['batch_check']=check;ok=ok and check['compatible']
+        return ok,delta
     trials=[];accepted=[];(out/'searches.json').write_text('[]\n')
+    if net_filter and not set(net_filter)<={r['net'] for r in ranking['ranked_nets']}:raise ValueError('Requested net absent from audited critical ranking')
     for candidate in ranking['ranked_nets']:
+        if net_filter and candidate['net'] not in net_filter:continue
         if len(trials)>=count or time.monotonic()+15>deadline:break
         net=byname[candidate['net']]
         if net.get('clock') or net.get('constant_value') is not None or len(net['sinks'])<(1 if include_single_sink else 2):continue
@@ -214,7 +231,7 @@ def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budge
         row=dict(net=net['name'],driver=candidate['driver'],fanout=len(net['sinks']),critical_sinks=targets,critical_labels=labels,critical_path_slack_ns=worst_slack,baseline=before,sink_budgets=bounds,search=search,evaluations=[]);best=None;provisional=None
         for record in candidates:
             if time.monotonic()>deadline:break
-            after=measure(net,record);ok,delta=eligible(before,after,targets,bounds)
+            after=measure(net,record);ok,delta=eligible(before,after,targets,bounds);ok,delta=screen_batch(before,after,bounds,net['name'],ok,delta)
             row['evaluations'].append(dict(eligible=ok,after=after,**delta))
             score=(delta['predicted_min_sink_setup_slack_ns'],delta['best_critical_gain_ns'],-len(record['pips']))
             if ok and (best is None or score>best[0]):best=(score,record,after,delta)
@@ -241,7 +258,7 @@ def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budge
             repaired,search=rebuild(graph,net,critical,owners,min(deadline,time.monotonic()+55),seconds_per_variant=25,root_weights=(4.,8.),initial_tree=seeds[net['name']])
             row['repair_rounds'].append(dict(protected_sinks=sorted(frozen),retention=retention,search=search))
             for record in repaired:
-                after=measure(net,record);ok,delta=eligible(before,after,targets,bounds)
+                after=measure(net,record);ok,delta=eligible(before,after,targets,bounds);ok,delta=screen_batch(before,after,bounds,net['name'],ok,delta)
                 row['evaluations'].append(dict(eligible=ok,after=after,protected_sinks=sorted(frozen),**delta))
                 score=(delta['predicted_min_sink_setup_slack_ns'],delta['best_critical_gain_ns'],-len(record['pips']))
                 if ok and (best is None or score>best[0]):best=(score,record,after,delta)
@@ -250,12 +267,13 @@ def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budge
         if best is None and provisional is not None:best=provisional
         if best:
             _,record,after,delta=best
+            batch_records.append(consumption(net['name'],before,after,bounds))
             for node in current['nodes']:owners.pop(node,None)
             for node in record['nodes']:owners[node]=net['name']
             routes['nets'][net['name']]=record;accepted.append(dict(net=net['name'],provisional_only=row['provisional_only'],**delta));row['locally_selected']=True
         else:row['locally_selected']=False
         trials.append(row);(out/'searches.json').write_text(json.dumps(trials,indent=2));print(net['name'],row['locally_selected'],len(candidates),flush=True)
-        if best:break
+        if best and len(accepted)>=batch_limit:break
     check=validate(graph,nets,routes)
     for file in ('nets.json','all_nets.json','clock_tree.json','static_connections.json'):shutil.copyfile(source/file,out/file)
     if (source/'hard_endpoint_audit.json').exists():shutil.copyfile(source/'hard_endpoint_audit.json',out/'hard_endpoint_audit.json')
@@ -263,12 +281,14 @@ def worker(out,placement,source,sta,count,seconds,explore_setup_ns=0.,cone_budge
     static_keys=('netlist_sha256','placement_sha256','vendor_pnr_executed','open_chip_database_used','net_count','native_source_sha256','dll_sha256','dedicated_clock','carry_capacity_audit','wide_mux_capacity_audit','ioreg_capacity_audit','static_configuration_pending','hard_endpoint_audit_sha256','hard_cells')
     result=dict({k:meta[k] for k in static_keys if k in meta},status='routed',critical_tree_rebuild=accepted,searches_sha256=sha(out/'searches.json'),connectivity_audit=check,
         source_routes_sha256=sha(source/'routes.json'),source_sta_sha256=sha(sta/'probe.tr'),wall_seconds=time.monotonic()-start,
-        source_parent_manifest_sha256=sha(source/'manifest.json'),producer_source_sha256={p:sha(out/p) for p in ('worker_source.py.txt','whole_net_source.py.txt','cone_budget_source.py.txt','branch_source.py.txt')},
+        source_parent_manifest_sha256=sha(source/'manifest.json'),producer_source_sha256={p:sha(out/p) for p in ('worker_source.py.txt','whole_net_source.py.txt','cone_budget_source.py.txt','branch_source.py.txt','batch_budget_source.py.txt')},
         heuristic_scale=.03,search_bias=30.,root_arrival_weight=1.,guided_corridor=True,guide_edge_delay_ns_surrogate=.05,
         root_arrival_weight_sweep=[0.,4.,8.],explore_setup_limit_ns=explore_setup_ns,explore_hold_limit_ns=explore_hold_ns,timing_signoff=False,full_design_sta_required=True,
         local_budgets_satisfied=all(not r['provisional_only'] for r in accepted),cone_budgets=cone_budgets,include_single_sink=include_single_sink,search_mode=search_mode,pin_feedback=pin_info,
-        explore_current_wns=explore_current_wns,source_setup_wns_ns=wns)
-    if pin_feedback:result['producer_source_sha256']['pin_budget_source.py.txt']=sha(out/'pin_budget_source.py.txt')
+        explore_current_wns=explore_current_wns,source_setup_wns_ns=wns,requested_nets=list(net_filter),batch_limit=batch_limit,batch_budget_check=batch_check(batch_records))
+    if pin_feedback:
+        result['producer_source_sha256']['pin_budget_source.py.txt']=sha(out/'pin_budget_source.py.txt')
+        result['producer_source_sha256']['receiver_ranking_source.py.txt']=sha(out/'receiver_ranking_source.py.txt')
     if source_history:result.update(source_history_sha256=sha(source_history),source_reattachment=True,source_reconnect_sha256=sha(out/'source_reconnect.py.txt'))
     (out/'manifest.json').write_text(json.dumps(result,indent=2));print('selected_routes',len(accepted),flush=True)
 
@@ -284,22 +304,29 @@ def main():
     p.add_argument('--search-mode',choices=('whole','branch','both'),default='whole',help='Retain other branches or rebuild the whole net; all candidates require loaded-tree measurement')
     p.add_argument('--source-history',type=Path,help='Reconnect moved drivers to historical downstream fragments')
     p.add_argument('--explore-current-wns',action='store_true',help='Propose bounded setup trades within current negative WNS; full STA remains mandatory')
+    p.add_argument('--net',action='append',default=[],help='Restrict search to explicitly selected nets in audited critical ranking')
+    p.add_argument('--batch-limit',type=int,default=1,help='Maximum mutually budget-compatible measured trees per full-STA transaction')
     a=p.parse_args();out=a.out.resolve()
-    if not 1<=a.count<=3 or not 1<=a.seconds<=300:p.error('Bounded search requires count 1..3, seconds 1..300')
+    if not 1<=a.count<=12 or not 1<=a.seconds<=300:p.error('Bounded search requires count 1..12, seconds 1..300')
+    if not 1<=a.batch_limit<=min(a.count,8):p.error('Invalid batch limit')
+    if a.batch_limit>1 and (not a.pin_feedback or a.explore_setup_ns or a.explore_hold_ns or a.explore_current_wns or a.source_history):p.error('Batch needs checked pin feedback without exploratory trades or history')
     if not 0<=a.explore_setup_ns<=.5:p.error('Exploration is bounded to at most 0.5 ns predicted setup failure; never a qualification override')
     if not 0<=a.explore_hold_ns<=1:p.error('Hold exploration must be bounded to at most 1 ns')
     if a.explore_current_wns and not a.pin_feedback:p.error('WNS exploration requires checked pin feedback')
-    if a.worker:return worker(out,a.placement.resolve(),a.routes.resolve(),a.sta.resolve(),a.count,a.seconds,a.explore_setup_ns,a.cone_budgets,a.include_single_sink,a.search_mode,a.pin_feedback,a.explore_hold_ns,a.source_history,a.explore_current_wns)
+    if a.worker:return worker(out,a.placement.resolve(),a.routes.resolve(),a.sta.resolve(),a.count,a.seconds,a.explore_setup_ns,a.cone_budgets,a.include_single_sink,a.search_mode,a.pin_feedback,a.explore_hold_ns,a.source_history,a.explore_current_wns,a.net,a.batch_limit)
     from gowin_probe import prepare
     reserve(ROOT,200_000_000);prepare(out);shutil.copyfile(__file__,out/'worker_source.py.txt');shutil.copyfile(ROOT/'scripts/ownpr_whole_net_eco.py',out/'whole_net_source.py.txt')
     shutil.copyfile(ROOT/'scripts/ownpr_cone_budgets.py',out/'cone_budget_source.py.txt')
+    shutil.copyfile(ROOT/'scripts/ownpr_batch_budget.py',out/'batch_budget_source.py.txt')
     shutil.copyfile(ROOT/'scripts/ownpr_branch_reconnect.py',out/'branch_source.py.txt')
-    if a.pin_feedback:shutil.copyfile(ROOT/'scripts/ownpr_pin_feedback.py',out/'pin_budget_source.py.txt')
+    if a.pin_feedback:
+        shutil.copyfile(ROOT/'scripts/ownpr_pin_feedback.py',out/'pin_budget_source.py.txt')
+        shutil.copyfile(ROOT/'scripts/ownpr_receiver_ranking.py',out/'receiver_ranking_source.py.txt')
     if a.source_history:shutil.copyfile(ROOT/'scripts/ownpr_source_reconnect.py',out/'source_reconnect.py.txt')
     python=ROOT/'binary_audit/flow/runtime/bin/python.exe';start=time.monotonic()
     rc=None;expired=False
     with (out/'worker.log').open('w') as log:
-        try:rc=subprocess.run([str(python),str(Path(__file__).resolve()),'--worker','--placement',str(a.placement.resolve()),'--routes',str(a.routes.resolve()),'--sta',str(a.sta.resolve()),'--out',str(out),'--count',str(a.count),'--seconds',str(a.seconds),'--explore-setup-ns',str(a.explore_setup_ns),'--explore-hold-ns',str(a.explore_hold_ns),'--search-mode',a.search_mode]+(['--cone-budgets'] if a.cone_budgets else [])+(['--include-single-sink'] if a.include_single_sink else [])+(['--pin-feedback',str(a.pin_feedback.resolve())] if a.pin_feedback else [])+(['--source-history',str(a.source_history.resolve())] if a.source_history else [])+(['--explore-current-wns'] if a.explore_current_wns else []),cwd=ROOT,env=dict(os.environ,PYTHONHOME=sys.base_prefix),stdout=log,stderr=subprocess.STDOUT,timeout=a.seconds+60).returncode
+        try:rc=subprocess.run([str(python),str(Path(__file__).resolve()),'--worker','--placement',str(a.placement.resolve()),'--routes',str(a.routes.resolve()),'--sta',str(a.sta.resolve()),'--out',str(out),'--count',str(a.count),'--batch-limit',str(a.batch_limit),'--seconds',str(a.seconds),'--explore-setup-ns',str(a.explore_setup_ns),'--explore-hold-ns',str(a.explore_hold_ns),'--search-mode',a.search_mode]+(['--cone-budgets'] if a.cone_budgets else [])+(['--include-single-sink'] if a.include_single_sink else [])+(['--pin-feedback',str(a.pin_feedback.resolve())] if a.pin_feedback else [])+(['--source-history',str(a.source_history.resolve())] if a.source_history else [])+(['--explore-current-wns'] if a.explore_current_wns else [])+[v for n in a.net for v in ('--net',n)],cwd=ROOT,env=dict(os.environ,PYTHONHOME=sys.base_prefix),stdout=log,stderr=subprocess.STDOUT,timeout=a.seconds+60).returncode
         except subprocess.TimeoutExpired:expired=True
     if rc!=0:
         (out/'manifest.json').write_text(json.dumps(dict(status='timeout' if expired else 'failed',returncode=rc,wall_seconds=time.monotonic()-start,vendor_pnr_executed=False),indent=2))

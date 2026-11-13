@@ -2,6 +2,7 @@
 import gzip,hashlib,shutil,stat,json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+SUPPORTED_SUFFIXES=('.fs','.json','.tr','.html','.il')
 
 
 def resolve(path):return _resolve(Path(path),set())
@@ -16,9 +17,9 @@ def _resolve(path,seen):
     path=Path(path)
     if path.is_file():return path
     compressed=path.with_name(path.name+'.gz')
-    if path.suffix in ('.fs','.json','.tr') and compressed.is_file():return compressed
+    if path.suffix in SUPPORTED_SUFFIXES and compressed.is_file():return compressed
     reference=path.with_name(path.name+'.ref.json')
-    if path.suffix in ('.fs','.json','.tr') and reference.is_file():
+    if path.suffix in SUPPORTED_SUFFIXES and reference.is_file():
         absolute=path.resolve();root=ROOT.resolve()
         if not absolute.is_relative_to(root) or absolute in seen or len(seen)>=16:raise ValueError('Invalid or cyclic artifact reference')
         row=json.loads(reference.read_text(encoding='utf-8'))
@@ -62,7 +63,7 @@ def copy_original(source,target):
 def make_reference(path,target):
     """Remove only a verified duplicate, preserving transparent decoded reads."""
     path,target=Path(path).resolve(),Path(target).resolve();root=ROOT.resolve()
-    if not path.is_relative_to(root) or not target.is_relative_to(root) or path==target or path.suffix!=target.suffix or path.suffix not in ('.fs','.json','.tr'):
+    if not path.is_relative_to(root) or not target.is_relative_to(root) or path==target or path.suffix!=target.suffix or path.suffix not in SUPPORTED_SUFFIXES:
         raise ValueError('Reference requires distinct workspace artifacts of one type')
     reference=path.with_name(path.name+'.ref.json')
     if reference.exists():raise FileExistsError(reference)
@@ -87,6 +88,12 @@ def compact_json(path):return _compact(path,'.json')
 
 
 def compact_text(path):return _compact(path,'.tr')
+
+
+def compact_html(path):return _compact(path,'.html')
+
+
+def compact_rtlil(path):return _compact(path,'.il')
 
 
 def _compact(path,suffix):

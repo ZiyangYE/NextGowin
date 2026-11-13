@@ -35,12 +35,19 @@ def pairs(design,placed,device):
         if not any((q['tile_type'],q['level'],q['slot'],q['ff_profile'])==(typ,spec['level'],s,profile) for q in evidence['records']):
             raise ValueError('Wide FF profile/site lacks combined calibration')
         occupants=[v for v in placed['clusters'].values() if (v['row'],v['column'])==(r,c)]
-        if {v['lut'] for v in occupants}!=set(spec['leaves']) or any(v['ff'] and v is not row for v in occupants):
-            raise ValueError('Uncalibrated extra logic/FF at wide FF site')
+        extras={v['lut']:v for v in occupants if v['lut'] not in spec['leaves']}
+        if not set(spec['leaves'])<={v['lut'] for v in occupants} or any(v['ff'] and v is not row for v in occupants):
+            raise ValueError('Uncalibrated extra FF at wide FF site')
+        sharing=None
+        if extras:
+            from ownpr_wide_ff_lut_sharing import check as mixed_check
+            sharing=mixed_check(design,placed,device,m,spec,extras)
         if any((v['row'],v['column'])==(r,c) for v in placed.get('arithmetic_clusters',{}).values()):raise ValueError('Arithmetic overlaps wide FF site')
         if any(v['ff']==ff and v is not row for v in placed['clusters'].values()):raise ValueError('FF has multiple physical bindings')
-        result.append(dict(root=root,ff=ff,leaf=row['lut'],row=r,column=c,slot=s,level=spec['level'],groups=groups(spec['level'],s,profile),profile=profile,
-            pip=[r,c,'OF'+str(s),'DI'+str(s)],calibration_sha256=evidence['capture_sha256']))
+        attributes=groups(spec['level'],s,profile)
+        for extra in extras.values():attributes[extra['slot']//2][0]=9
+        result.append(dict(root=root,ff=ff,leaf=row['lut'],row=r,column=c,slot=s,level=spec['level'],groups=attributes,profile=profile,
+            pip=[r,c,'OF'+str(s),'DI'+str(s)],calibration_sha256=evidence['capture_sha256'],ordinary_luts=sorted(extras),sharing_calibration_sha256=sharing))
     return result
 
 

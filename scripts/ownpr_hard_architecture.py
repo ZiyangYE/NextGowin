@@ -109,6 +109,8 @@ class HardArchitecture:
                     if not pin['nodes'] and pin['direction']=='In':
                         _,_,bit=logical[label];value=ties.get(bit)
                         if value is not None:template['inactive_values'].setdefault(label,set()).add(value)
+        from ownpr_registered_dsp import install_architecture
+        install_architecture(self,source,ties,profile)
         folder=ROOT/'results/native_hard_site_inventory_001';meta=read(folder/'manifest.json');file=folder/'hard_sites.json'
         if meta['status']!='captured' or meta['dll_sha256']!=DLL_SHA or meta['vendor_pnr_executed'] or sha(file)!=meta['sites_sha256']:raise ValueError('Unverified hard site inventory')
         for site in read(file)['sites']:
@@ -133,6 +135,12 @@ class HardArchitecture:
             if cell['type'] not in HARD_TYPES:continue
             key=profile(cell);template=self.templates.get(key)
             if template is None or key not in self.timing.profiles:raise ValueError('Uncalibrated hard mode: '+cell['type'])
+            if template.get('registered_oreg'):
+                for port in ('CASO','SOA'):
+                    if any(loads[b] for b in cell['connections'][port]):raise ValueError('Registered DSP cascade use is not calibrated')
+                for i,b in enumerate(cell['connections']['DOUT']):
+                    if loads[b] and ('CLK[0]',f'DOUT[{i}]',10) not in self.timing.profiles[key]['edges']:
+                        raise ValueError('Registered DSP output bit has no independent C2Q calibration')
             if template['shape']!={p:len(v) for p,v in cell['connections'].items()}:raise ValueError('Hard port widths differ')
             endpoints={};inactive=[];clock_pins=[]
             for label,port,index,bit in bits(cell):
@@ -144,8 +152,10 @@ class HardArchitecture:
                 else:
                     if pin['direction']=='In':
                         bypass_clock=cell['type']=='MULTALU27X18' and port=='CLK' and all(v=='BYPASS' for k,v in cell['parameters'].items() if k.endswith('_CLK'))
-                        if not bypass_clock and ties.get(bit) not in template['inactive_values'].get(label,set()):raise ValueError('Uncalibrated inactive hard input use: '+name+'/'+label)
-                        reason='bypass_clock' if bypass_clock else 'calibrated_constant_input'
+                        from ownpr_registered_dsp import unused_control
+                        unused=template.get('registered_oreg') and unused_control(cell,port,index)
+                        if not bypass_clock and not unused and ties.get(bit) not in template['inactive_values'].get(label,set()):raise ValueError('Uncalibrated inactive hard input use: '+name+'/'+label)
+                        reason='bypass_clock' if bypass_clock else 'unselected_dsp_control' if unused else 'calibrated_constant_input'
                     else:
                         if bit not in ties and loads[bit]:raise ValueError('Used hard output has no calibrated node: '+name+'/'+label)
                         reason='unobserved_unused_output'

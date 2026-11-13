@@ -5,6 +5,15 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'scripts'))
 from ownpr_effective_io_constraints import audit
 
 
+def test_current_report_accepts_and_memory_compensation_is_rejected():
+    good=ROOT/'results/coopt_review_stage3_reexport_001/native'
+    bad=ROOT/'reviews/coopt_200mhz_20261104/results/coopt_uart_stage4_001/export/native'
+    a=audit((good/'probe.tr').read_text(),(good/'probe.sdc').read_text())
+    assert a['rows']=={'tIn':191,'tOut':22}
+    with pytest.raises(ValueError,match='Effective I/O delay differs'):
+        audit((bad/'probe.tr').read_text(),(good/'probe.sdc').read_text())
+
+
 @pytest.mark.parametrize('kind',['Setup','Hold','Recovery','Removal'])
 def test_checks_every_timing_section(kind):
     sdc='set_input_delay -max 0 -clock clk [get_ports {a}]'

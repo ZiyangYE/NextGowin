@@ -96,7 +96,7 @@ def connectivity_check(design,mapping,actual,bindings):
 def timing_check(captures,text,design,placement):
     if any(c['type'] in ('DFFCE','DFFPE') for c in design['modules']['top']['cells'].values()):
         raise ValueError('Asynchronous FF timing signoff requires calibrated recovery/removal coverage')
-    paired={r['ff'] for r in placement['clusters'].values() if r['ff']};lookup={};direct=0
+    paired={r['ff'] for r in placement['clusters'].values() if r['ff'] and not r.get('independent_ff_input')};lookup={};direct=0
     for r in captures:
         if r['direction']!='In':continue
         endpoint=r['native_name']+'/'+r['pin']
@@ -220,6 +220,10 @@ def audit(folder,placement=ROOT/'results/ownpr_int2float_place_004',partial=None
         timing=supported_timing(folder,placement)
     else:
         timing=timing_check(load_json(folder/'sta_endpoint_audit.json'),read_artifact_text(folder/'probe.tr'),design,placed)
+    independent_ff=None
+    if any(r.get('independent_ff_input') for r in placed['clusters'].values()):
+        from audit_ownpr_independent_ff import audit as audit_independent
+        independent_ff=audit_independent(folder,placement)
     if binding.get('sta_report_returncode')!=0:raise ValueError('STA report failed')
     payload=load_json(partial);device=Device();projection=NativeFrameProjection(device);data=projection.read(folder/'probe.fs');bad=[]
     for bit in payload['bits']:
@@ -238,6 +242,7 @@ def audit(folder,placement=ROOT/'results/ownpr_int2float_place_004',partial=None
         from ownpr_constant_routes import audit as audit_constants
         constant_routes=audit_constants(folder,design,device)
     return dict(status='initial_handoff_checks_passed',connectivity=graph,io=io,timing=timing,effective_io_constraints=effective_io,
+        independent_ff_inputs=independent_ff,
         hard_mode_and_pin_readback=hard_readback,
         native_configuration_readback=native_state,
         native_sta_constraints_satisfied=timing['setup_hold_passed'] and timing.get('async_constraints_passed',True) and timing['minimum_pulse_width_passed'],

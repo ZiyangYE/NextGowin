@@ -1,0 +1,28 @@
+{
+  "schema": "general-method-protocol-v1",
+  "method_sha256": {
+    "scripts/gw5a_arch_mapper.py": "9bd01694eb3ea58401544555b9e8e5348ce3e06536eef98dc2bfa49c7982f94d",
+    "scripts/gw5a_functional_map.py": "2e77d2e95bd11a19b1193f538c2b7d2cf687fcdda52f01d8e32fcd9ae3dd043f",
+    "scripts/register_nextstate_map.py": "6957932c5185183f38940a0b2d15bd73efeb7ab7e09fc1023b05fad7545c63f0",
+    "scripts/register_control_map.py": "ad325ea8948a5cdbc1fdc56d3683d97e1bba7f03684a9fa4ee735037fd146c04",
+    "scripts/map_resource_json.py": "cd09b9b51e3b148f6261bc53e8b8d2289e2be3138a22ee2422414397d80335da",
+    "scripts/optimize_native_json.py": "b8fdacaa8305f5c918b262c1c5a1c1b7fde72499d1d31bd41678e5a2fcb16515",
+    "scripts/nextgowin.py": "bac5cd314a017b9710c9ce50956e9150c2d233cfb586f2dae283e2c68a4c3a3f",
+    "scripts/registered_benchmark.py": "7b360499eeea5bc1163a9d29eaac3ee1d139b68b26cd7db6dcaf0acac708a496"
+  },
+  "development": [
+    "ctrl",
+    "priority",
+    "int2float"
+  ],
+  "validation": [
+    "cavlc",
+    "dec",
+    "router",
+    "sin",
+    "log2"
+  ],
+  "selection": "No validation outcome is used to tune this frozen method. Single-run screening then three identical-netlist paired P&R repeats.",
+  "timing": "Identical source RTL and 10 ns/50 ps hold SDC, SDK, part and P&R options. Report all regressions and failed cases.",
+  "full_project": "FPGAFly must beat a fresh same-input vendor run; 80 MHz remains the target, P&R <=3600 seconds."
+}

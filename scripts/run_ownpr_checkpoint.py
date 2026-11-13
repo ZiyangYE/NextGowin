@@ -5,6 +5,7 @@ vendor placement or routing runs in this implementation attempt. This entry
 supports the currently calibrated LUT/FF/mode-2 carry slice, not arbitrary RTL.
 """
 import argparse,json,subprocess,sys,time
+from datetime import datetime,timezone
 from pathlib import Path
 from ownpr_device import ROOT,Device,RoutingGraph
 from ownpr_place import sha
@@ -25,24 +26,36 @@ def routing_policy(inherited,search_bias=None,root_arrival_weight=None,guide_edg
     return result
 
 
+def require_reuse_policy(inherited,search_bias,root_arrival_weight,guide_edge_delay):
+    for key,value in (('search_bias',search_bias),('root_arrival_weight',root_arrival_weight),('guide_edge_delay_ns_surrogate',guide_edge_delay)):
+        if inherited.get(key) is None and value is None:
+            raise ValueError('Reused route manifest lacks '+key+'; supply an explicit source-audited routing policy')
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for n in ('placement','cst','sdc','io-reference','out'):p.add_argument('--'+n,type=Path,required=True)
     p.add_argument('--clock-tree',type=Path);p.add_argument('--clock-capture',type=Path)
     p.add_argument('--reuse-routes',type=Path,help='Reuse matching ordinary branches; new clocks and whole-tree timing are still checked')
+    p.add_argument('--no-reuse-branches',action='store_true',help='Keep unchanged nets but rebuild whole changed-net trees, including previously unchanged sinks')
     p.add_argument('--anchor-clock-tree',type=Path,help='Preserve unchanged sink paths and attach changed sinks; generates a new encoding capture')
+    p.add_argument('--reuse-placement',type=Path,help='Exact old placement for validating reused routing configuration')
     p.add_argument('--search-bias',type=float);p.add_argument('--root-arrival-weight',type=float);p.add_argument('--guide-edge-delay',type=float)
     p.add_argument('--pin-feedback',type=Path);p.add_argument('--feedback-sta',type=Path);p.add_argument('--feedback-placement',type=Path)
+    p.add_argument('--bidir-model',type=Path)
+    p.add_argument('--device-config',type=Path,help='Native encoding/default policy for the final export')
     p.add_argument('--seconds',type=int,default=600);p.add_argument('--route-seconds',type=int,default=300);p.add_argument('--guided-corridor',action='store_true');a=p.parse_args()
     if not 1<=a.seconds<=3600:p.error('Complete attempt must fit 1..3600 seconds')
     if not 1<=a.route_seconds<=3000:p.error('Route stage must fit 1..3000 seconds inside the complete attempt')
     if bool(a.clock_tree)!=bool(a.clock_capture):p.error('Reused clock tree and capture must be supplied together')
     if sum(v is not None for v in (a.pin_feedback,a.feedback_sta,a.feedback_placement)) not in (0,3):p.error('Historical feedback needs capture, STA and source placement together')
     if a.anchor_clock_tree and a.clock_tree:p.error('Choose either complete clock reuse or endpoint retargeting')
-    start=time.monotonic();deadline=start+a.seconds;storage=reserve(ROOT,800_000_000);out=a.out.resolve();out.mkdir(exist_ok=False)
+    # Include the export child's 1 GB preflight plus clock/route intermediates.
+    # The child still checks its own reservation against actual usage.
+    start=time.monotonic();deadline=start+a.seconds;storage=reserve(ROOT,1_300_000_000);out=a.out.resolve();out.mkdir(exist_ok=False)
     import shutil
     shutil.copyfile(__file__,out/'runner_source.py.txt')
-    placement=a.placement.resolve();result=dict(status='running',budget_seconds=a.seconds,stages=[],storage_reservation=storage,
+    placement=a.placement.resolve();result=dict(status='running',started_utc=datetime.now(timezone.utc).isoformat(),budget_seconds=a.seconds,stages=[],storage_reservation=storage,
         vendor_placement_executed=False,vendor_routing_executed=False,open_chip_database_used=False,timing_signoff=False,full_bitstream_verified=False)
     result['source_sha256']={str(f):sha(f) for f in (placement/'packed.json',placement/'placement.json',a.cst.resolve(),a.sdc.resolve())}
     def save():result['wall_seconds']=time.monotonic()-start;(out/'manifest.json').write_text(json.dumps(result,indent=2))
@@ -58,6 +71,8 @@ def main():
         if code:raise RuntimeError('Checkpoint stage failed: '+label)
     save()
     try:
+        policy=json.loads((a.reuse_routes/'manifest.json').read_text()) if a.reuse_routes else {}
+        if a.reuse_routes:require_reuse_policy(policy,a.search_bias,a.root_arrival_weight,a.guide_edge_delay)
         design=json.loads((placement/'packed.json').read_text());placed=json.loads((placement/'placement.json').read_text())
         from ownpr_place import constraints
         contract=constraints(design['modules']['top'],a.cst.read_text(),a.sdc.read_text())
@@ -92,14 +107,14 @@ def main():
             run('clock_encoding','experiments/native_clock_encoding_probe.py',['--tree',out/'clock_tree.json','--compact','--out',clock_capture])
         remaining=int(deadline-time.monotonic())
         if remaining<120:raise TimeoutError('Insufficient time for routing and complete export')
-        policy=json.loads((a.reuse_routes/'manifest.json').read_text()) if a.reuse_routes else {}
         result['inherited_route_policy']={k:policy.get(k) for k in ('search_bias','root_arrival_weight','guide_edge_delay_ns_surrogate','guided_corridor')}
+        result['changed_net_branch_reuse']=bool(a.reuse_routes and not a.no_reuse_branches)
         effective=routing_policy(policy,a.search_bias,a.root_arrival_weight,a.guide_edge_delay,a.guided_corridor);result['effective_route_policy']=effective
         route_args=['--search-bias',effective['search_bias'],'--root-arrival-weight',effective['root_arrival_weight'],'--guide-edge-delay',effective['guide_edge_delay_ns_surrogate']]
         if a.pin_feedback:route_args+=['--pin-feedback',a.pin_feedback.resolve(),'--feedback-sta',a.feedback_sta.resolve(),'--feedback-placement',a.feedback_placement.resolve()]
-        run('route','scripts/run_ownpr_timing_route.py',['--placement',placement,'--clock-tree',out/'clock_tree.json','--timeout',min(a.route_seconds,remaining-90),'--out',out/'route']+route_args+hard_args+(['--guided-corridor'] if effective['guided_corridor'] else [])+(['--reuse-routes',a.reuse_routes.resolve(),'--reuse-branches'] if a.reuse_routes else []))
+        run('route','scripts/run_ownpr_timing_route.py',['--placement',placement,'--clock-tree',out/'clock_tree.json','--timeout',min(a.route_seconds,remaining-90),'--out',out/'route']+route_args+hard_args+(['--guided-corridor'] if effective['guided_corridor'] else [])+(['--reuse-routes',a.reuse_routes.resolve()]+([] if a.no_reuse_branches else ['--reuse-branches']) if a.reuse_routes else [])+(['--reuse-placement',a.reuse_placement.resolve()] if a.reuse_placement else []))
         run('export','scripts/export_ownpr.py',['--placement',placement,'--routes',out/'route','--clock-capture',clock_capture,'--cst',a.cst.resolve(),
-            '--sdc',a.sdc.resolve(),'--io-reference',a.io_reference.resolve(),'--seconds',max(1,int(deadline-time.monotonic())-1),'--out',out/'export'])
+            '--sdc',a.sdc.resolve(),'--io-reference',a.io_reference.resolve(),'--seconds',max(1,int(deadline-time.monotonic())-1),'--out',out/'export']+(['--bidir-model',a.bidir_model.resolve()] if a.bidir_model else [])+(['--device-config',a.device_config.resolve()] if a.device_config else []))
         report=json.loads((out/'export/manifest.json').read_text());result.update(status='checkpoint_handoff_complete',metrics=report['metrics'],selected=dict(
             placement=str(placement),routes=str(out/'route'),wire=str(out/'export/wire'),sta=str(out/'export/native'),clock_capture=str(clock_capture)))
     except Exception as e:

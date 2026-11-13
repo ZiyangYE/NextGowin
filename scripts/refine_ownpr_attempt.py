@@ -15,7 +15,8 @@ def main():
     def remain():return budget-(datetime.now(timezone.utc)-started).total_seconds()
     if remain()<1000:raise TimeoutError('Insufficient original deadline for refinement and final qualification')
     reserve(ROOT,2_500_000_000);out=a.out.resolve();out.mkdir(exist_ok=False);shutil.copyfile(__file__,out/'runner_source.py.txt')
-    base=load_json(a.base_report)['designs'][0];row=load_json(a.attempt/'replay_checkpoint.json')['designs'][0]
+    row=load_json(a.attempt/'replay_checkpoint.json')['designs'][0]
+    base=next(r for r in load_json(a.base_report)['designs'] if r.get('design')==row['design'])
     for review in (base,row):
         for name,h in review['selected_source_sha256'].items():
             if sha(ROOT/name)!=h:raise ValueError('Reviewed source changed')
@@ -40,8 +41,11 @@ def main():
     save()
     try:
         run('capture','experiments/native_pin_feedback_probe.py',['--source',state['sta'],'--placement',state['placement'],'--out',out/'pin_feedback'])
+        history_compatible=sha(ROOT/base['selected']['placement']/'packed.json')==sha(state['placement']/'packed.json')
+        history_args=['--source-history',a.base_report] if history_compatible else []
+        result['historical_reattachment']=dict(enabled=history_compatible,reason='identical netlist' if history_compatible else 'logical transform changed netlist; ordinary tree reconstruction only')
         run('trees','scripts/ownpr_critical_tree_rebuild.py',['--placement',state['placement'],'--routes',state['routes'],'--sta',state['sta'],'--pin-feedback',out/'pin_feedback',
-            '--source-history',a.base_report,'--count',3,'--seconds',min(240,int(remain())-750),'--search-mode','both','--include-single-sink','--out',out/'route'])
+            '--count',3,'--seconds',min(240,int(remain())-750),'--search-mode','both','--include-single-sink','--out',out/'route']+history_args)
         rm=load_json(out/'route/manifest.json')
         if rm['critical_tree_rebuild']:
             run('tree_export','scripts/export_ownpr.py',['--placement',state['placement'],'--routes',out/'route','--clock-capture',state['clock_capture'],'--cst',contract['cst'],'--sdc',contract['sdc'],

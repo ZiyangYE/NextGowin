@@ -31,15 +31,31 @@ def mutable_fallback(graph,nets,frozen,partial,reserved=()):
     return checkpoint,audit
 
 
-def partition(graph,old_nets,old_routes,new_nets,reserved=()):
+def source_validation_graph(graph,old_routes,rrg,*,design,placement):
+    """Derive old terminal modes from hash-bound source placement, never PIPs.
+
+    Always build the source graph, even if the target accepts every old edge:
+    a newly enabled target terminal is not evidence of a legal source mode.
+    """
+    from ownpr_device import RoutingGraph
+    from ownpr_wide_ff_packing import configure_graph
+    source=RoutingGraph(graph.device,rrg)
+    configure_graph(source,design,placement)
+    return source
+
+
+def partition(graph,old_nets,old_routes,new_nets,reserved=(),source_graph=None):
     old={n['name']:n for n in old_nets};new={n['name']:n for n in new_nets}
     if len(old)!=len(old_nets) or len(new)!=len(new_nets):raise ValueError('Duplicate net name in incremental routing')
     if old_routes['status']!='routed' or set(old_routes['nets'])!=set(old):raise ValueError('Incomplete source routing for incremental reuse')
-    validate(graph,old_nets,old_routes)
+    source_graph=source_graph or graph
+    validate(source_graph,old_nets,old_routes)
     actual={}
     for name,n in old.items():
         nodes=set(n.get('sources',[n['source']]))
-        for r,c,a,b in old_routes['nets'][name]['pips']:nodes.update((graph.node(r,c,a),graph.node(r,c,b)))
+        for r,c,a,b in old_routes['nets'][name]['pips']:
+            if (source_graph.node(r,c,a),source_graph.node(r,c,b))!=(graph.node(r,c,a),graph.node(r,c,b)):raise ValueError('Source and target RRG identities differ')
+            nodes.update((graph.node(r,c,a),graph.node(r,c,b)))
         if nodes!=set(old_routes['nets'][name]['nodes']):raise ValueError('Stored route occupancy differs from actual PIPs')
         actual[name]=nodes
     frozen={name for name in new if name in old and signature(new[name])==signature(old[name])}
@@ -48,14 +64,16 @@ def partition(graph,old_nets,old_routes,new_nets,reserved=()):
         for node in set(n.get('sources',[n['source']]))|set(n['sinks']):
             if node in endpoints and endpoints[node]!=name:raise ValueError('New nets share a physical endpoint')
             endpoints[node]=name
-    released=[];reserved=set(reserved)
+    released=[];configuration_released=[];reserved=set(reserved)
     for name in sorted(frozen):
+        if any(not graph.check_pip(p) for p in old_routes['nets'][name]['pips']):configuration_released.append(name);continue
         if actual[name]&reserved or any(n in endpoints and endpoints[n]!=name for n in actual[name]):released.append(name)
-    frozen.difference_update(released)
+    frozen.difference_update(released+configuration_released)
     blocked=reserved|{node for name in frozen for node in actual[name]}
     return [n for n in new_nets if n['name'] not in frozen],{n:old_routes['nets'][n] for n in sorted(frozen)},blocked,dict(
         reused_nets=len(frozen),rerouted_nets=len(new)-len(frozen),removed_nets=sorted(set(old)-set(new)),
         released_for_endpoint_or_reserved_overlap=released,source_trees_validated=True,
+        released_for_configuration_change=configuration_released,separate_source_configuration_graph=source_graph is not graph,
         scope='Exact source/sink reuse with frozen physical PIPs; full merged connectivity, configuration and STA remain required.')
 
 
@@ -86,7 +104,7 @@ def retained_branches(graph,old_nets,old_routes,changed,new_nets,blocked=()):
                 parent,pip=incoming[node];path.append(pip)
                 if parent in seen:raise ValueError('Cyclic source branch')
                 seen.add(parent);node=parent
-            if seen&blocked or any(p in endpoints and endpoints[p]!=name for p in seen):
+            if any(not graph.check_pip(p) for p in path) or seen&blocked or any(p in endpoints and endpoints[p]!=name for p in seen):
                 released.append(sink);continue
             retained.append(sink);keep.update(path);nodes.update(seen)
         if retained:

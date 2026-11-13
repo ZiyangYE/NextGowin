@@ -42,6 +42,9 @@ def load(folder,design,relative_window_ns=None,pin_feedback=None):
         if relative_window_ns is not None and slack>=worst+relative_window_ns:continue
         _,alias,pin=m.groups();name=reverse[alias]
         port=pin.split('[',1)[0]
+        # Native reports attach the input wire delay to OBUF/O; the logical
+        # net receiving that delay is its I pin (as in path_demands).
+        if cells[name]['type']=='OBUF' and port=='O':port='I'
         if port in ('CLK','CLKA','CLKB','CIN'):continue
         if cells[name]['port_directions'].get(port)!='input':raise ValueError('Feedback tNET does not end on a logical input')
         # The analytical placer weights port nets; aggregate bus-bit criticality

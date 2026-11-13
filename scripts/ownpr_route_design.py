@@ -28,6 +28,9 @@ def bind(design,placement,graph,top='top',hard_bindings=None,logical_sinks=None)
                 static_control_pins.add((row['instance'],'CE'))
                 static.append(dict(kind='ioreg_static_ce',cell=row['instance'],pin='CE',value=1,physical_node=row['pins']['CE'],
                     configuration_mode_verified=True,full_bitstream_verified=False))
+            if row.get('control_mode')=='zero':
+                control=row['control_pin'];static_control_pins.add((row['instance'],control))
+                static.append(dict(kind='ioreg_static_control',cell=row['instance'],pin=control,value=0,physical_node=row['pins'][control],configuration_mode_verified=True,full_bitstream_verified=False))
             for pin,point in row['pins'].items():
                 if point is None:continue
                 r,c,node=point;binding[row['instance'],pin]=(graph.node(r-1,c-1,graph.device.names[node]),(r-1,c-1))
@@ -68,7 +71,7 @@ def bind(design,placement,graph,top='top',hard_bindings=None,logical_sinks=None)
             for pin in cells[ff]['connections']:
                 # D remains the initial packer's unverified internal LUT->FF
                 # connection. Do not confuse this with native DI/mux signoff.
-                wire=(f'DI{i}' if group.get('wide_ff_root') else f'F{i}') if pin=='D' else physical[pin]
+                wire=(f'SEL{i}' if group.get('independent_ff_input') else f'DI{i}' if group.get('wide_ff_root') else f'F{i}') if pin=='D' else physical[pin]
                 binding[ff,pin]=(graph.node(r,c,wire),(r,c))
     for name,io in placement['fixed_io'].items():
         for pin,field in ([('O','out')] if cells[name]['type']=='IBUF' else [('I','in')]):

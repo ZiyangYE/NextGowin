@@ -54,6 +54,10 @@ class HardCellTiming:
                 record['edges']={(e['source'],e['destination'],e['kind']):e['matrices'] for e in first['actual_edges']}
                 if len(record['edges'])!=1656:raise ValueError('Incomplete bypass A/B-to-DOUT graph')
             self.profiles[key]=record;self.sources.append(dict(folder=str(folder.relative_to(ROOT)),manifest_sha256=sha(folder/'manifest.json')))
+        from ownpr_registered_dsp import calibrated
+        self.registered_key,registered,self.registered_data=calibrated(self.cells,profile,vg)
+        self.profiles[self.registered_key]=registered
+        self.sources.extend(self.registered_data['sources'])
 
     def matrices(self,cell,source,destination,kind):
         record=self.profiles.get(profile(cell))
@@ -100,7 +104,7 @@ def audit(reference):
     if len(instances)!=14 or not all(counts[t] for t in ('MULTALU27X18','DPX9B','SDPX9B')):raise ValueError('Incomplete CPU hard-resource comparison')
     return dict(status='independent_hard_cell_matrices_match_native_sta',dll_sha256=DLL_SHA,source_json_sha256=NETLIST_SHA,
         independent_sources=model.sources,reference=str(reference.relative_to(ROOT)),reference_manifest_sha256=sha(reference/'manifest.json'),
-        instances=instances,edges_by_primitive=dict(counts),total_edges=sum(counts.values()),profile_count=len(model.profiles),
+        instances=instances,edges_by_primitive=dict(counts),total_edges=sum(counts.values()),profile_count=len({profile(model.cells[r['instance']]) for r in index['instances']}),
         dsp_legacy_scalar_table_used=False,registered_dsp_modes_verified=False,bram_negative_clock_verified=False,
         hard_pulse_width_verified=False,hard_resource_routing_verified=False,whole_design_timing_signoff=False,
         scope='Current positive-clock BRAM profiles and bypass-DSP A/B-to-DOUT matrices. Final hard STA, pulse widths, clocks, routes and production integration are incomplete.')

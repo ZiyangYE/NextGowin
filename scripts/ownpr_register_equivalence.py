@@ -10,6 +10,8 @@ from pathlib import Path
 from native_boundary_cec import prove,initial,initial_values,functions
 
 def collapse(before,after,replicas):
+    from ownpr_state_safety import check_replicas
+    check_replicas(before,after,replicas)
     if set(before['modules'])!=set(after['modules']) or 'top' not in before['modules']:raise ValueError('Replica induction requires an unchanged flattened module contract')
     for name,module in before['modules'].items():
         if name=='top':continue

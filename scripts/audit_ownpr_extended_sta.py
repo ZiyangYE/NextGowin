@@ -39,7 +39,7 @@ def audit(folder,placement):
         if not expected<=observed or not observed<=expected|optional or len(rows)!=len(observed):raise ValueError('Incomplete '+kind+' endpoint coverage')
         coverage[kind]=dict(endpoints=len(rows),worst_slack_ns=min(float(r[0]) for r in rows) if rows else None,violating_paths=sum(negative_slack(r[0]) for r in rows))
     captures={r['native_name']+'/'+r['pin']:r for r in read(folder/'sta_endpoint_audit.json') if r['direction']=='In'}
-    paired={r['ff'] for r in read(placement/'placement.json')['clusters'].values() if r['ff']}
+    paired={r['ff'] for r in read(placement/'placement.json')['clusters'].values() if r['ff'] and not r.get('independent_ff_input')}
     carry={aliases[n]+'/CIN' for n,c in cells.items() if c['type']=='ALU' and c['connections']['CIN'][0] not in constants}
     mux_internal={aliases[n]+'/'+p for n,c in cells.items() if c['type'].startswith('MUX2_LUT') for p in ('I0','I1')}
     placed=read(placement/'placement.json');ioreg_internal={aliases[r['iobuf']]+'/I' for r in placed.get('ioreg_clusters',{}).values()}

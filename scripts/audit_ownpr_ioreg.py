@@ -14,7 +14,7 @@ def audit(folder,design,placed,mapping):
         if sha(folder/file)!=meta.get(file.replace('.json','_sha256')):raise ValueError('Missing/changed own I/O-register capture')
     state=json.loads((folder/'ioreg_state.json').read_text());regs={r['instance']:r for r in state['registers_and_iologic']};expected={aliases[r['instance']] for r in check['records']}
     if {n for n,r in regs.items() if r['physical_header'][0]==0}!=expected:raise ValueError('Unexpected I/O-register binding set')
-    pairs={};controls={};static_ce=0;edges=state['output_register_edges']
+    pairs={};controls={};static_ce=0;static_controls=set();edges=state['output_register_edges']
     if len(edges)!=len(expected) or {r['source'] for r in edges}!=expected:raise ValueError('Missing/duplicate I/O output edge')
     for record in check['records']:
         alias=aliases[record['instance']];target=aliases[record['iobuf']];site=record['site'];reg=regs[alias]
@@ -26,6 +26,10 @@ def audit(folder,design,placed,mapping):
         if record['ce_mode']=='one':
             if pins['CE']['native_flags']&1 or pins['CE']['source_site'] is not None:raise ValueError('Constant I/O CE was routed as a physical signal')
             static_ce+=1
+        if record.get('control_mode')=='zero':
+            control=record['control_pin']
+            if pins[control]['native_flags']&1 or pins[control]['source_site'] is not None:raise ValueError('Constant I/O control was physically routed')
+            static_controls.add(alias)
         blocks=[b for b in state['iob_blocks'] if b['site']==site and b['iobuf']==target]
         if len(blocks)!=1:raise ValueError('Output I/O block identity changed')
         objects=[r for r in blocks[0]['iologic'] if r['block_offset']==0x28]
@@ -45,6 +49,6 @@ def audit(folder,design,placed,mapping):
             rows+=1;seen.add(name)
         previous=(name,pin) if sep else None
     if seen!=set(pairs):raise ValueError('Missing I/O output report paths')
-    model=IoregTimingModel();queries=model.check_capture(json.loads((folder/'ioreg_timing_queries.json').read_text()),placed,mapping,controls);report=model.report(text,controls)
+    model=IoregTimingModel();queries=model.check_capture(json.loads((folder/'ioreg_timing_queries.json').read_text()),placed,mapping,controls);report=model.report(text,controls,static_controls)
     return dict(status='own_output_ioreg_handoff_matched',registers=len(expected),attributes_verified=171*len(expected),direct_edges=len(edges),
         internal_net_rows=rows,timing_queries=queries,timing_report=report,static_ce_one_registers=static_ce,fixed_pad_and_block_identity_verified=True,full_bitstream_verified=False)

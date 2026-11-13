@@ -19,7 +19,7 @@ def propose(design,layout,device,priorities,count=64,radius=24,protected=()):
     eligible={};by_signature=defaultdict(list)
     for n,row in clusters.items():
         r,c,s=row['row'],row['column'],row['slot'];ff=row.get('ff')
-        if not ff or row.get('wide_ff_root') or (r,c) in excluded or device.grid[r][c]!=17 or s not in (0,2,4):continue
+        if not ff or row.get('wide_ff_root') or row.get('independent_ff_input') or (r,c) in excluded or device.grid[r][c]!=17 or s not in (0,2,4):continue
         other=owners.get((r,c,s+1))
         if other and clusters[other].get('ff'):continue  # Preserve an existing shared pair.
         key=signature(cells[ff],const)

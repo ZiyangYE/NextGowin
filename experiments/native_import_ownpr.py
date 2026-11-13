@@ -60,6 +60,14 @@ def worker(out,placement,export=False,sta=False,config_probe=False,experimental_
         if group['ff']:
             reg=ptr(aggregate+0xa0+8*slot);obj=bind(group['ff'],reg);C.c_ubyte.from_address(aggregate+0x318+slot).value=1;bindreg(obj)
             bindings.append(dict(instance=group['ff'],native_name=mapping['instances'][group['ff']],kind='FF',site=[r,c,slot]))
+    if any(r.get('independent_ff_input') for r in placed['clusters'].values()):
+        from ownpr_independent_ff_inputs import validate as validate_independent
+        from ownpr_device import Device
+        for row in validate_independent(packed,placed,Device()):
+            aggregate=ptr(native.getgrid(native.chip,row['row']+1,row['column']+1)+0x70);block=ptr(aggregate+0x360+8*(row['slot']//2))
+            # The native converter preserves this per-half input selection.
+            # Control and INIT fields remain derived from the logical FF.
+            C.c_short.from_address(block+6+2*(11+(row['slot']&1))).value=1
     if placed.get('arithmetic_clusters'):
         from native_ownpr_alu import bind_arithmetic
         arithmetic,carry_audit=bind_arithmetic(native,packed,placed,mapping,bind);bindings.extend(arithmetic)
@@ -231,6 +239,20 @@ def worker(out,placement,export=False,sta=False,config_probe=False,experimental_
         point=struct.unpack('<3h',C.string_at(node,6));match=point in pointers and pointers[point]==node and owners[point]==net
         pin_audit.append(dict(instance=name,direction=direction,node=point,match=match))
         if match:set_pin_routed(pin,True)
+    if any(r.get('independent_ff_input') for r in placed['clusters'].values()):
+        from ownpr_independent_ff_inputs import validate as validate_independent
+        from ownpr_device import Device
+        independent=validate_independent(packed,placed,Device());lookup={(name,pin_label(pin)):(pin,net) for name,_,pin,net in logical_pins};records=[]
+        query=fn('?getNodebyPinForSta@Pin@NETLIST@@QEAA_NAEAV?$vector@PEAVnode@NETLIST@@V?$allocator@PEAVnode@NETLIST@@@std@@@std@@PEAVglobalMem@@@Z',C.c_bool,[vp,vp,vp])
+        for row in independent:
+            pin,net=lookup[row['ff'],'D'];vec=(C.c_uint64*3)();query(pin,C.addressof(vec),native.mem)
+            if vec[1]-vec[0]!=8:raise ValueError('Independent FF has ambiguous native data endpoint')
+            node=ptr(vec[0]);point=tuple(struct.unpack('<3h',C.string_at(node,6)));expected=(row['row']+1,row['column']+1,133+row['slot'])
+            if point!=expected or pointers.get(point)!=node or owners.get(point)!=net:raise ValueError('Independent FF selector is not owned by its data net')
+            aggregate=ptr(native.getgrid(native.chip,*point[:2])+0x70);group=ptr(aggregate+0x360+8*(row['slot']//2));mode=C.c_short.from_address(group+6+2*(11+(row['slot']&1))).value
+            if mode!=1:raise ValueError('Independent FF data mode is not selected')
+            set_pin_routed(pin,True);records.append(dict(ff=row['ff'],selector_node=point,mode=mode,routed_flag_set=True))
+        result['independent_ff_input_bindings']=records
     (out/'pin_route_audit.json').write_text(json.dumps(pin_audit,indent=2))
     result.update(routes_imported=True,physical_route_nodes=len(parents),routed_nets=len(set(owners.values())))
     (out/'binding_report.json').write_text(json.dumps(result,indent=2))
@@ -315,6 +337,7 @@ def main():
     ap.add_argument('--routes',type=Path,default=ROOT/'results/ownpr_int2float_route_008');ap.add_argument('--wire-timing',type=Path,default=ROOT/'results/ownpr_int2float_wire_timing_007')
     ap.add_argument('--partial',type=Path,default=ROOT/'results/ownpr_clock_partial_001/partial_configuration.json')
     ap.add_argument('--config-probe',action='store_true')
+    ap.add_argument('--device-config',type=Path,help='Explicit native device.cfg, including the native default UserCode policy; all existing handoff checks still apply')
     ap.add_argument('--experimental-hard-export',action='store_true',help='Capture native STA/encoding for audited hard placement; final hard-resource signoff is still required')
     ap.add_argument('--cst',type=Path,default=ROOT/'results/ownpr_clock_tree_001/clock_auto.cst')
     ap.add_argument('--sdc',type=Path,default=ROOT/'results/fullio_closure_003/int_lut4_local155_edge.sdc')
@@ -363,6 +386,9 @@ def main():
         report_limit=max(1000,sum(len(bs) for c in packed_design['modules']['top']['cells'].values() for pin,bs in c['connections'].items() if c['port_directions'][pin]=='input')) if a.experimental_hard_export else 1000
         sdc=out/'probe.sdc';sdc.write_text(sdc.read_text()+''.join(f'\nreport_timing -{kind} -max_paths {report_limit} -max_common_paths 1' for kind in ('setup','hold','recovery','removal'))+f'\nreport_min_pulse_width -nworst {report_limit} -detail\n')
     cmd=out/'cmd.do';cmd.write_text(cmd.read_text()+f'-cst {(out/"project.cst").as_posix()}\n-bit\n');shutil.copyfile(__file__,out/'adapter_source.py.txt')
+    if a.device_config:
+        shutil.copyfile(a.device_config,out/'device.cfg')
+        cmd.write_text(cmd.read_text()+f'-cfg {(out/"device.cfg").as_posix()}\n')
     python=ROOT/'binary_audit/flow/runtime/bin/python.exe';start=time.monotonic();rc=None;expired=False
     with (out/'worker.log').open('w') as log:
         try:rc=subprocess.run([str(python),str(Path(__file__).resolve()),'--worker','--out',str(out),'--placement',str(placement)]+(['--export'] if a.export else [])+(['--sta'] if a.sta else [])+(['--config-probe'] if a.config_probe else [])+(['--experimental-hard-export'] if a.experimental_hard_export else []),cwd=python.parent,env=dict(os.environ,PYTHONHOME=sys.base_prefix),stdout=log,stderr=subprocess.STDOUT,timeout=600 if a.config_probe else 360 if a.experimental_hard_export else 120).returncode
@@ -374,10 +400,20 @@ def main():
         bound=json.loads((out/'binding_report.json').read_text());result['bitstream_generated']=bound.get('bitstream_generated',False)
     result['sta_report_generated']=bool(bound.get('sta_report_generated',False)) if (out/'binding_report.json').exists() else False
     result['source_sdc_sha256']=sha(a.sdc)
+    if a.device_config:
+        result['source_device_config']=str(a.device_config.resolve());result['device_config_sha256']=sha(out/'device.cfg')
+        if result['device_config_sha256']!=sha(a.device_config):raise ValueError('Device configuration changed during export')
+        if result['bitstream_generated']:
+            from ownpr_usercode import check_policy
+            result['usercode_policy_audit']=check_policy(out/'probe.fs',out/'device.cfg')
+            result['usercode_policy_helper_sha256']=sha(ROOT/'scripts/ownpr_usercode.py')
     result['clock_tree_sha256']=sha(out/'clock_tree.json')
     result['sdc_sha256']=sha(out/'probe.sdc');result['cst_sha256']=sha(out/'project.cst')
     result['adapter_sha256']=sha(out/'adapter_source.py.txt')
     result['helper_sha256']={name:sha(ROOT/'scripts'/name) for name in ('ownpr_native_netlist.py','native_ownpr_alu.py','ownpr_io_reference.py','audit_ownpr_native_export.py','native_device_session.py','native_extended_timing.py','ownpr_extended_timing_model.py','audit_ownpr_supported_timing.py','audit_native_io_configuration.py','native_ownpr_mux.py','native_mux_timing.py','ownpr_mux_architecture.py','ownpr_mux_macros.py','ownpr_mux_configuration.py')}
+    if any(r.get('independent_ff_input') for r in json.loads((placement/'placement.json').read_text())['clusters'].values()):
+        for name in ('ownpr_independent_ff_inputs.py','ownpr_ff_configuration.py','audit_ownpr_independent_ff.py','ownpr_route_design.py'):
+            result['helper_sha256'][name]=sha(ROOT/'scripts'/name)
     result['helper_sha256']['ownpr_carry_lut_sharing.py']=sha(ROOT/'scripts/ownpr_carry_lut_sharing.py')
     result['helper_sha256']['ownpr_effective_io_constraints.py']=sha(ROOT/'scripts/ownpr_effective_io_constraints.py')
     result['helper_sha256']['ownpr_image_storage.py']=sha(ROOT/'scripts/ownpr_image_storage.py')
@@ -385,7 +421,7 @@ def main():
         for name in ('ownpr_shared_ff_packing.py','ownpr_ff_configuration.py','ownpr_shared_ff_calibration.py','audit_shared_ff_route.py'):
             result['helper_sha256'][name]=sha(ROOT/'scripts'/name)
     if any(r.get('wide_ff_root') for r in json.loads((placement/'placement.json').read_text())['clusters'].values()):
-        for name in ('ownpr_wide_ff_packing.py','ownpr_wide_ff_configuration.py','audit_ownpr_wide_ff.py'):
+        for name in ('ownpr_wide_ff_packing.py','ownpr_wide_ff_configuration.py','audit_ownpr_wide_ff.py','ownpr_wide_lut_sharing.py','ownpr_wide_ff_lut_sharing.py'):
             result['helper_sha256'][name]=sha(ROOT/'scripts'/name)
     result['experimental_hard_export']=a.experimental_hard_export
     if a.experimental_hard_export:
@@ -401,6 +437,8 @@ def main():
         if (out/file).exists():result[file.replace('.json','_sha256')]=sha(out/file)
     for name in ('native_ownpr_ioreg.py','native_ioreg_state.py','native_ioreg_timing.py','ownpr_ioreg_macros.py','ownpr_ioreg_configuration.py','ownpr_ioreg_timing.py','audit_ioreg_preset_timing.py','audit_ownpr_ioreg.py','ownpr_constant_routes.py','ownpr_timing_numbers.py'):
         result['helper_sha256'][name]=sha(ROOT/'scripts'/name)
+    if json.loads((placement/'placement.json').read_text()).get('ioreg_clusters'):
+        result['helper_sha256']['ownpr_ioreg_site_extension.py']=sha(ROOT/'scripts/ownpr_ioreg_site_extension.py')
     (out/'manifest.json').write_text(json.dumps(result,indent=2))
     if a.sta and result['status']=='imported':
         from audit_ownpr_native_export import audit

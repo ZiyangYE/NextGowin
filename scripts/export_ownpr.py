@@ -15,6 +15,8 @@ def main():
     for name in ('placement','routes','clock-capture','cst','sdc','io-reference','out'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--wire-timing',type=Path,help='Reuse measured data routes; native importer checks exact input hashes')
+    p.add_argument('--device-config',type=Path,help='Explicit native encoding/default policy; hashed and passed to the final encoder')
+    p.add_argument('--bidir-model',type=Path,help='Observe complete setup/hold feedback for a fixed-clock existing-alias rewrite')
     p.add_argument('--seconds',type=int,default=600)
     a=p.parse_args()
     if not 1<=a.seconds<=3600:p.error('Export budget must be 1..3600 seconds')
@@ -29,6 +31,7 @@ def main():
             or meta['placement_sha256']!=sha(placement/'placement.json')):
         raise ValueError('Export requires completed own routing matching this placement and netlist')
     inputs=[placement/'packed.json',placement/'placement.json',routes/'routes.json',routes/'nets.json',routes/'all_nets.json',routes/'clock_tree.json',a.cst,a.sdc]
+    if a.device_config:inputs.append(a.device_config)
     sources={str(f.resolve()):sha(f) for f in inputs}
     out.mkdir(exist_ok=False);shutil.copyfile(__file__,out/'runner_source.py.txt')
     result=dict(status='running',budget_seconds=a.seconds,stages=[],source_sha256=sources,
@@ -55,11 +58,13 @@ def main():
     try:
         wire=a.wire_timing.resolve() if a.wire_timing else out/'wire'
         if not a.wire_timing:run('wire','scripts/measure_ownpr_wire_delays.py',['--routes',routes,'--placement',placement,'--out',wire])
-        run('joint','scripts/audit_ownpr_joint_routes.py',['--placement',placement,'--routes',routes,'--wire',wire])
+        run('joint','scripts/audit_ownpr_joint_routes.py',['--placement',placement,'--routes',routes,'--wire',wire,'--out',out/'joint_route_audit.json'])
+        if a.bidir_model:
+            run('timing_feedback','scripts/evaluate_fixed_clock_rewire.py',['--model',a.bidir_model,'--placement',placement,'--routes',routes,'--wire',wire,'--out',out/'bidir_feedback.json'])
         partial=out/'partial_configuration.json';export=out/'native'
         run('configuration','scripts/merge_ownpr_configuration.py',['--placement',placement,'--routes',routes,'--clock-capture',a.clock_capture.resolve(),'--out',partial])
         run('final_sta_encoder','experiments/native_import_ownpr.py',['--placement',placement,'--routes',routes,'--wire-timing',wire,'--partial',partial,
-            '--clock-tree',routes/'clock_tree.json','--cst',a.cst.resolve(),'--sdc',a.sdc.resolve(),'--io-reference',a.io_reference.resolve(),'--export','--sta','--out',export]+(['--experimental-hard-export'] if hard else []))
+            '--clock-tree',routes/'clock_tree.json','--cst',a.cst.resolve(),'--sdc',a.sdc.resolve(),'--io-reference',a.io_reference.resolve(),'--export','--sta','--out',export]+(['--experimental-hard-export'] if hard else [])+(['--device-config',a.device_config.resolve()] if a.device_config else []))
         if any(sha(Path(f))!=value for f,value in sources.items()):raise ValueError('Export inputs changed during the handoff')
         native=json.loads((export/'manifest.json').read_text());observed=metric(export)
         if not native['bitstream_generated']:raise ValueError('Native encoder produced no image')

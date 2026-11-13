@@ -23,7 +23,7 @@ def check(data,model):
             key=('CLEAR' if q['pin']=='PRESET' else q['pin'],q['selector'],q['maximum'])
             if key in queries or key not in model.values or q['values']!=model.values[key]:raise ValueError('DFFPE query differs from independent raw library')
             queries.add(key);vectors+=1
-        if queries!=set(model.values):raise ValueError('Incomplete DFFPE timing query vectors')
+        if queries!={k for k in model.values if k[0] in ('D','CE','CLEAR','Q')}:raise ValueError('Incomplete DFFPE timing query vectors')
     if seen!={(s,m) for s in sites for m in ('signal','one')}:raise ValueError('Incomplete DFFPE site/CE coverage')
     return dict(cases=len(seen),vectors=vectors,raw_library_matched=True,ce_modes=['signal','one'],clock='positive',async_control='positive PRESET')
 

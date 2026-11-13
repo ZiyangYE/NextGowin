@@ -141,7 +141,7 @@ def place(design,top,groups,constants,contract,device,runtime,carry=None,clock_s
             if key in groups or key in cells:raise ValueError('Carry macro identifier collision')
             macros[key]=chain
             for name in chain['cells']:unit[name]=key
-    anchored={};anchor_tiles=set()
+    anchored={};anchor_tiles=set();extended_anchor_tiles=set()
     if ff_sites is not None:
         if hard_names:raise ValueError('Fixed FF sites with movable hard blocks are not implemented')
         lut_cal=json.loads((ROOT/'results/native_device_lut_004/lut_encoding_audit.json').read_text());cls_cal=json.loads((ROOT/'results/native_cls_modes_002/cls_mode_sweep.json').read_text())
@@ -153,7 +153,12 @@ def place(design,top,groups,constants,contract,device,runtime,carry=None,clock_s
         for name,group in groups.items():
             if not group.get('ff'):continue
             point=tuple(ff_sites[group['ff']]);r,c,slot=point
-            if len(point)!=3 or any(type(x) is not int for x in point) or not(0<=r<device.rows and 0<=c<device.cols) or device.grid[r][c] not in allowed or native[r+1][c+1]!=5 or slot not in (0,2,4):raise ValueError('Uncalibrated fixed FF site')
+            if len(point)!=3 or any(type(x) is not int for x in point) or not(0<=r<device.rows and 0<=c<device.cols) or device.grid[r][c] not in allowed or native[r+1][c+1]!=5 or slot not in range(8):raise ValueError('Uncalibrated fixed FF site')
+            if slot not in (0,2,4):
+                from ownpr_ff_configuration import single_ff_any_slot_calibration
+                if device.grid[r][c]!=17 or sum(tuple(p[:2])==(r,c) for p in ff_sites.values())!=1:raise ValueError('Extended FF anchor requires a single FF in a type17 CFU')
+                single_ff_any_slot_calibration()
+                extended_anchor_tiles.add((r,c))
             if clock_sites is not None and (r,c) not in clock_sites:raise ValueError('Fixed FF anchor violates the clock placement budget')
             if point in used or (r,c,slot//2) in controls:raise ValueError('Overlapping fixed FF sites')
             used.add(point);controls.add((r,c,slot//2));anchored[name]=point;anchor_tiles.add((r,c));fixed[name]=np.array([r,c],dtype=float)
@@ -265,6 +270,7 @@ def place(design,top,groups,constants,contract,device,runtime,carry=None,clock_s
                     # decoding before they can enter this initial flow.
                     records=device.routing_connections(device.grid[r][c])
                     if not any(e['source_name']==f'Q{slot}' and e['destination_name'] and re.match(r'(?:[NESW][128]|X0)',e['destination_name']) for e in records):continue
+                if (r,c) in extended_anchor_tiles:continue
                 if (r,c,slot) in occupancy or ff and (r,c,slot//2) in ff_groups:continue
                 occupancy[r,c,slot]=name;placed[name]=dict(row=r,column=c,slot=slot,lut=name,ff=ff)
                 if ff:ff_groups.add((r,c,slot//2))
@@ -278,6 +284,9 @@ def place(design,top,groups,constants,contract,device,runtime,carry=None,clock_s
     if wides:result.update(mux_clusters=muxes,wide_macros=wide_macros)
     if ff_sites is not None:result['fixed_ff_sites']={name:list(site) for name,site in sorted(ff_sites.items())}
     if hard:result.update(hard_clusters=hard_placed,hard_placement_method='joint_relaxation_minimum_cost_exclusive_assignment')
+    if ff_sites is not None and any(p[2] not in (0,2,4) for p in ff_sites.values()):
+        from ownpr_ff_configuration import single_ff_any_slot_calibration
+        result['single_ff_any_slot_calibration']=single_ff_any_slot_calibration()
     return result
 
 def main():

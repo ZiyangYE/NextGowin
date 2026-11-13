@@ -38,6 +38,7 @@ def worker(out,placement,timeout,clock_tree=None,reuse_routes=None,reuse_branche
     (out/'nets.json').write_text(json.dumps(nets,indent=2))
     (out/'static_connections.json').write_text(json.dumps(static,indent=2))
     meta=dict(status='routing',netlist_sha256=sha(packed),placement_sha256=sha(placed),vendor_pnr_executed=False,
+        placement_source=str(placement.resolve()),
         open_chip_database_used=False,net_count=len(nets),timing_signoff=False,bitstream_generated=False,
         static_configuration_pending=[p for p in static if not p.get('configuration_mode_verified')],
         native_source_sha256=native.source_sha256,
@@ -95,11 +96,24 @@ def worker(out,placement,timeout,clock_tree=None,reuse_routes=None,reuse_branche
             meta['checkpoint_resume']=dict(source=str(source),source_sha256=sha(file),audit=check)
             meta['prior_cumulative_route_seconds']=prior.get('cumulative_route_seconds',prior['total_wall_seconds'])
         if reuse_routes:
-            from ownpr_incremental_routes import partition as incremental_partition,retained_branches,audit_retention
+            from ownpr_incremental_routes import partition as incremental_partition,retained_branches,audit_retention,source_validation_graph
             source=Path(reuse_routes);prior=json.loads((source/'manifest.json').read_text())
             if prior['status']!='routed' or prior['vendor_pnr_executed']:raise ValueError('Incremental reuse requires own completed routing')
             old_nets=load_json(source/'nets.json');old_routes=load_json(source/'routes.json')
-            changed,frozen,blocked,inc=incremental_partition(graph,old_nets,old_routes,nets,reserved)
+            from ownpr_source_configuration import load as load_source_configuration
+            source_design,source_places,source_context=load_source_configuration(out,source)
+            source_graph=source_validation_graph(graph,old_routes,ROOT/'results/native_rrg_001',design=source_design,placement=source_places)
+            source_hard=load_json(source/'hard_endpoint_audit.json') if source_places.get('hard_clusters') else None
+            expected_source_nets,_=bind(source_design,source_places,source_graph,hard_bindings=source_hard)
+            if available(source/'clock_tree.json'):
+                from ownpr_clock_partition import partition as source_clock_partition
+                from ownpr_clock_graph import ClockGraph
+                source_tree=load_json(source/'clock_tree.json')
+                expected_source_nets,_=source_clock_partition(source_graph,expected_source_nets,source_tree,ClockGraph.for_tree(source_tree))
+            from ownpr_incremental_routes import signature
+            if {n['name']:signature(n) for n in old_nets}!={n['name']:signature(n) for n in expected_source_nets}:raise ValueError('Source route endpoints do not derive from source configuration')
+            changed,frozen,blocked,inc=incremental_partition(graph,old_nets,old_routes,nets,reserved,source_graph=source_graph)
+            inc['source_configuration']=source_context
             inc['source_sha256']={n:sha(source/n) for n in ('manifest.json','nets.json','routes.json')};meta['incremental']=inc
             branch_checkpoint=None
             if reuse_branches:
@@ -159,6 +173,7 @@ def worker(out,placement,timeout,clock_tree=None,reuse_routes=None,reuse_branche
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--placement',type=Path,required=True);ap.add_argument('--out',type=Path,required=True)
     ap.add_argument('--timeout',type=int,default=600);ap.add_argument('--worker',action='store_true');ap.add_argument('--clock-tree',type=Path);ap.add_argument('--reuse-routes',type=Path)
+    ap.add_argument('--reuse-placement',type=Path,help='Exact old placement for source-mode validation when routes lack a discoverable source context')
     ap.add_argument('--hard-bindings',type=Path);ap.add_argument('--clock-inventory',type=Path)
     ap.add_argument('--pin-feedback',type=Path);ap.add_argument('--feedback-sta',type=Path);ap.add_argument('--feedback-placement',type=Path)
     ap.add_argument('--resume-checkpoint',type=Path);ap.add_argument('--resume-negotiation',action='store_true',help='Reuse checked trees as mutable congestion state, rather than frozen branches');ap.add_argument('--search-bias',type=float,default=1.)
@@ -166,6 +181,7 @@ def main():
     ap.add_argument('--reuse-branches',action='store_true');args=ap.parse_args()
     if sum(v is not None for v in (args.pin_feedback,args.feedback_sta,args.feedback_placement)) not in (0,3):ap.error('Historical feedback needs capture, STA and source placement together')
     if args.reuse_branches and not args.reuse_routes:ap.error('--reuse-branches requires --reuse-routes')
+    if args.reuse_placement and not args.reuse_routes:ap.error('--reuse-placement requires --reuse-routes')
     if args.resume_negotiation and not args.resume_checkpoint:ap.error('--resume-negotiation requires --resume-checkpoint')
     if args.resume_checkpoint and args.reuse_routes:ap.error('Checkpoint resume and completed-route reuse are separate modes')
     if not 1<=args.search_bias<=30:ap.error('Search bias must be finite and in [1,30]')
@@ -181,10 +197,14 @@ def main():
     from workspace_budget import reserve
     reserve(ROOT,500_000_000)
     prepare(out);shutil.copyfile(__file__,out/'runner_source.py.txt');python=ROOT/'binary_audit/flow/runtime/bin/python.exe'
+    if args.reuse_routes:
+        from ownpr_source_configuration import stage
+        stage(args.reuse_routes,placement,out,args.reuse_placement)
     sources=out/'sources';sources.mkdir()
     for name in ('ownpr_router.py','ownpr_incremental_routes.py','ownpr_timing_graph.py','native_device_session.py','ownpr_device.py','ownpr_route_design.py','ownpr_carry_macros.py','ownpr_clock_partition.py','ownpr_alu_architecture.py','ownpr_alu_configuration.py','ownpr_mux_architecture.py','ownpr_mux_macros.py','ownpr_ioreg_macros.py','ownpr_ioreg_configuration.py'):
         shutil.copyfile(ROOT/'scripts'/name,sources/name)
     shutil.copyfile(ROOT/'scripts/ownpr_route_checkpoint.py',sources/'ownpr_route_checkpoint.py')
+    shutil.copyfile(ROOT/'scripts/ownpr_source_configuration.py',sources/'ownpr_source_configuration.py')
     shutil.copyfile(ROOT/'scripts/ownpr_carry_lut_sharing.py',sources/'ownpr_carry_lut_sharing.py')
     shutil.copyfile(ROOT/'scripts/ownpr_wide_lut_sharing.py',sources/'ownpr_wide_lut_sharing.py')
     if args.pin_feedback:

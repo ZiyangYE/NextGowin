@@ -79,13 +79,16 @@ def select(options,target,count=8,max_growth=24,required_gain=None):
         touched_paths=sorted(touched),required_gain_ns=demand,accumulated_priority_proxy_ns=accumulated,remaining_gain_proxy_ns=remaining,
         coverage_definition='Proxy gain demand satisfied, not routed closure' if demand is not None else 'At least one structural cut, not routed closure')
 
-def physical_cost(design,layout,cut,late):
+def physical_cost(design,layout,cut,late,io_distance_growth=None):
+    if io_distance_growth is not None and not 0<=io_distance_growth<=100:raise ValueError('Invalid IO distance growth')
     points=locations(layout);cells=design['modules']['top']['cells'];drivers={b:n for n,c in cells.items() for p,bs in c['connections'].items() if c['port_directions'][p]=='output' for b in bs}
     root=cut['root'];out=cells[root]['connections']['F'][0];inputs=[(points[drivers[b]],6. if b==late else 1.) for b in cut['cut_bits'] if drivers.get(b) in points]
     sinks=[points[n] for n,c in cells.items() if n in points for pin,bs in c['connections'].items() if c['port_directions'][pin]=='input' and out in bs]
     origin=points[root]
+    pads=[points[n] for n,c in cells.items() if c['type']=='OBUF' and n in points and c['connections'].get('I')==[out]]
     def cost(r,c):
         dist=lambda p:abs(r-p[0])+abs(c-p[1])
+        if io_distance_growth is not None and any(dist(p)>abs(origin[0]-p[0])+abs(origin[1]-p[1])+io_distance_growth for p in pads):return float('inf')
         return sum(w*dist(p) for p,w in inputs)+4*sum(dist(p) for p in sinks)/max(1,len(sinks))+.1*dist(origin)
     return cost
 
@@ -95,14 +98,21 @@ def main():
     p.add_argument('--count',type=int,default=8);p.add_argument('--window',type=float,default=2.);p.add_argument('--lut-growth',type=int,default=24);p.add_argument('--plan-only',action='store_true');p.add_argument('--legalize-macros',action='store_true');p.add_argument('--gain-target-ns',type=float,default=0.)
     p.add_argument('--pin-feedback',type=Path);p.add_argument('--protect-slack',type=float,default=.5);p.add_argument('--protect-target-mhz',type=float)
     p.add_argument('--cut-width',type=int,choices=(6,7),default=6);p.add_argument('--min-cut-cells',type=int,default=3);p.add_argument('--share-wide-luts',action='store_true')
+    p.add_argument('--share-wide-ff-luts',action='store_true',help='Use independently admitted mixed wide/FF/ordinary LUT modes')
+    p.add_argument('--io-distance-growth',type=float,help='Bound Manhattan growth from a moved root to each directly driven fixed output pad; geometric guard, not a timing bound')
+    p.add_argument('--prune-dead-logic',action='store_true',help='Remove unobserved combinational remnants after remapping; preserve state and kept signals')
     p.add_argument('--input-register-copies',type=int,default=0);p.add_argument('--input-copy-min-span',type=int,default=8)
+    p.add_argument('--arrival-feedback',type=Path)
     p.add_argument('--pin-frontier',action='store_true');p.add_argument('--wire',type=Path);p.add_argument('--pin-root-limit',type=int,default=256);a=p.parse_args()
+    if a.arrival_feedback and not a.pin_frontier:p.error('Competing arrivals require pin-frontier selection')
     if not 1<=a.count<=16 or not 0<a.window<=5 or not 0<=a.lut_growth<=48:p.error('Bounded proposal limits exceeded')
     if not 0<=a.gain_target_ns<=5:p.error('Gain target must be 0..5 ns')
-    if a.gain_target_ns>a.window:p.error('Path window must cover the requested gain target')
+    if not a.pin_frontier and a.gain_target_ns>a.window:p.error('Path window must cover the requested gain target')
     if not 2<=a.min_cut_cells<=8:p.error('Minimum cut interior must be 2..8 cells')
     if a.protect_target_mhz is not None and not a.pin_feedback:p.error('Target protection requires checked pin feedback')
     if a.share_wide_luts and not a.legalize_macros:p.error('Shared wide LUTs require pattern legalization')
+    if a.share_wide_ff_luts and not a.share_wide_luts:p.error('Mixed FF sharing requires shared wide LUT legalization')
+    if a.io_distance_growth is not None and not 0<=a.io_distance_growth<=100:p.error('IO distance growth must be 0..100 tiles')
     if not 0<=a.input_register_copies<=8 or not 1<=a.input_copy_min_span<=100:p.error('Input-copy limits exceeded')
     if a.input_register_copies and (not a.pin_feedback or a.protect_target_mhz is None):p.error('Joint input copies require checked feedback and target-period protection')
     if a.pin_frontier and (not a.pin_feedback or not a.wire or not 1<=a.pin_root_limit<=1024):p.error('Pin-frontier mapping requires checked pin/wire feedback and bounded roots')
@@ -118,7 +128,13 @@ def main():
         from ownpr_pin_cut_selection import measured_inputs,discover,select_roots
         budgets,info=load(a.pin_feedback,a.sta);pin_context=(budgets,info);measured,wire_info=measured_inputs(a.routes,a.wire,a.base)
         reported={arc['endpoint'].rsplit('/',1)[0] for path in ranking['traces'] for arc in path['ordinary_wires']}
-        options,discovery=discover(design,layout,budgets,measured,device,a.window,a.cut_width,a.min_cut_cells,a.pin_root_limit,reported)
+        arrival_values=None;arrival_info=None
+        if a.arrival_feedback:
+            from ownpr_cut_competition import context
+            arrival_values,arrival_info=context(a.arrival_feedback,a.base,a.sta)
+        options,discovery=discover(design,layout,budgets,measured,device,a.window,a.cut_width,a.min_cut_cells,a.pin_root_limit,reported,arrival_values)
+        discovery['arrival_feedback']=arrival_info
+        discovery['reported_path_gain_target_unused_ns']=a.gain_target_ns
         discovery['wire_source']=wire_info;chosen,coverage=select_roots(options,a.count,a.lut_growth)
     else:
         options,target=candidates(design,layout,ranking,a.window,a.min_cut_cells,a.cut_width)
@@ -146,19 +162,22 @@ def main():
         protection['capture']=info;(a.out/'placement_protection.json').write_text(json.dumps(protection,indent=2))
     after=design;placed=layout;changes=[]
     for row in chosen:
-        cost=physical_cost(after,placed,row['cut'],row['late_bit']);legalization=None
-        share=a.share_wide_luts and row['cut']['cut_width'] in (5,6) and not placed['clusters'][row['cut']['root']].get('ff')
+        cost=physical_cost(after,placed,row['cut'],row['late_bit'],a.io_distance_growth);legalization=None
+        ff=placed['clusters'][row['cut']['root']].get('ff')
+        from ownpr_wide_ff_lut_sharing import supports_profile
+        share_ff=bool(a.share_wide_ff_luts and ff and row['cut']['cut_width'] in (5,6) and supports_profile(after,ff))
+        share=a.share_wide_luts and row['cut']['cut_width'] in (5,6) and (not ff or share_ff)
         if a.legalize_macros and row['cut']['cut_width']>4:
             from ownpr_macro_legalize import clear_site
             model=Cuts(after);root=row['cut']['root'];output=model.functions[root][1]
             protected={model.drivers.get(b) for b in row['cut']['cut_bits']}|protected_names
             protected.update(n for n,c in model.cells.items() for pin,bs in c['connections'].items() if c['port_directions'][pin]=='input' and output in bs)
             future_roots={r['cut']['root'] for r in chosen[len(changes)+1:]} if a.pin_frontier else set()
-            placed,target,legalization=clear_site(after,placed,root,device,cost,protected,wide_leaf_slots=tuple(range(1<<(row['cut']['cut_width']-4))) if share else None,reserved_roots=future_roots)
+            placed,target,legalization=clear_site(after,placed,root,device,cost,protected,wide_leaf_slots=tuple(range(1<<(row['cut']['cut_width']-4))) if share else None,reserved_roots=future_roots,allow_paired_sharing=share_ff)
             cost=lambda r,c:0. if (r,c)==target else float('inf')
         after,logical=replace(after,row['cut'],row['late_bit'])
         if row['cut']['cut_width']>4:
-            placed,physical=place(after,placed,row['cut']['root'],device,allow_paired=True,site_cost=cost,share_ordinary=share)
+            placed,physical=place(after,placed,row['cut']['root'],device,allow_paired=True,site_cost=cost,share_ordinary=share,share_paired=share_ff)
             if legalization:
                 physical.update(legalization=legalization,fixed_other_cells=not bool(legalization['moves']),clock_replan_required=physical['clock_replan_required'] or legalization['clock_replan_required'])
         else:physical=dict(placement_unchanged=True,clock_replan_required=False)
@@ -169,6 +188,11 @@ def main():
         after,placed,frontier=copy_inputs(design,after,placed,changes,budgets,device,conversion['period_reduction_ns'],a.input_register_copies,a.input_copy_min_span,protected=protected_names)
         (a.out/'input_frontier_plan.json').write_text(json.dumps(frontier,indent=2));aliases=frontier['register_replicas']
         if not aliases:raise ValueError('No supported input register copy has target-period headroom')
+    cleanup=None
+    if a.prune_dead_logic:
+        from ownpr_dead_logic import prune
+        after,placed,cleanup=prune(after,placed)
+        (a.out/'dead_logic_cleanup.json').write_text(json.dumps(cleanup,indent=2))
     validate(after,placed,device,dict(sites={}))
     if aliases:
         from ownpr_register_equivalence import prove_replicas
@@ -179,11 +203,14 @@ def main():
         if not proof or not all(r['cec']['equivalent'] for r in proof):raise ValueError('Joint cut proof incomplete')
     for name,value in [('packed.json',after),('placement.json',placed),('changes.json',changes)]:(a.out/name).write_text(json.dumps(value,indent=2))
     sources=[Path(__file__),ROOT/'scripts/ownpr_multilevel_cut.py',ROOT/'scripts/ownpr_timing_wide_remap.py',ROOT/'scripts/ownpr_macro_legalize.py',ROOT/'scripts/ownpr_feedback_transport.py',ROOT/'scripts/ownpr_pin_feedback.py',ROOT/'scripts/ownpr_target_protection.py',ROOT/'scripts/ownpr_wide_lut_sharing.py',ROOT/'scripts/ownpr_mux_macros.py',ROOT/'scripts/ownpr_mux_configuration.py',ROOT/'scripts/ownpr_cut_state_frontier.py',ROOT/'scripts/ownpr_regional_replication.py',ROOT/'scripts/ownpr_register_equivalence.py']
+    sources.append(ROOT/'scripts/ownpr_wide_ff_lut_sharing.py')
+    if a.prune_dead_logic:sources.append(ROOT/'scripts/ownpr_dead_logic.py')
     if a.pin_frontier:sources.extend([ROOT/'scripts/ownpr_pin_cut_selection.py',ROOT/'scripts/ownpr_cell_timing.py',ROOT/'scripts/ownpr_mux_architecture.py'])
+    if a.arrival_feedback:sources.append(ROOT/'scripts/ownpr_cut_competition.py')
     for src in sources:shutil.copyfile(src,a.out/(src.name+'.txt'))
     result=dict(status='placed',netlist_sha256=sha(a.out/'packed.json'),placement_sha256=sha(a.out/'placement.json'),source_netlist_sha256=sha(a.base/'packed.json'),source_placement_sha256=sha(a.base/'placement.json'),source_sta_sha256=sha(a.sta/'probe.tr'),
         proof=proof,coverage=coverage,changes=changes,placement_protection=protection,cut_width_limit=a.cut_width,minimum_cut_cells=a.min_cut_cells,seven_input_ff_sharing_supported=False,source_sha256={src.name:sha(a.out/(src.name+'.txt')) for src in sources},
-        synthesis_pnr_cooptimization=True,mapping_selection='pin_frontier' if a.pin_frontier else 'reported_paths',pin_discovery=discovery,input_frontier=frontier,clock_replan_required=bool(aliases) or any(c['physical']['clock_replan_required'] for c in changes),interface_cycles_changed=False,state_cells_unchanged=not bool(aliases),vendor_pnr_executed=False,timing_signoff=False,wall_seconds=time.monotonic()-started)
+        synthesis_pnr_cooptimization=True,dead_logic_cleanup=cleanup,io_distance_growth_tiles=a.io_distance_growth,mapping_selection='pin_frontier' if a.pin_frontier else 'reported_paths',pin_discovery=discovery,input_frontier=frontier,clock_replan_required=bool(aliases) or any(c['physical']['clock_replan_required'] for c in changes),interface_cycles_changed=False,state_cells_unchanged=not bool(aliases),vendor_pnr_executed=False,timing_signoff=False,wall_seconds=time.monotonic()-started)
     (a.out/'manifest.json').write_text(json.dumps(result,indent=2));print(json.dumps(dict(changes=changes,coverage=coverage),indent=2))
 
 if __name__=='__main__':main()

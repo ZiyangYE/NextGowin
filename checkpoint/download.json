@@ -1,0 +1,30 @@
+{
+  "format": "nextgowin-split-zip-v1",
+  "release": "https://github.com/ZiyangYE/NextGowin/releases/download/wip-checkpoint-20261113",
+  "archive_bytes": 31029909,
+  "archive_sha256": "4fee197f8b36c4ec5c9c9381ddada9fa95b95bf3cf86097ab96e9938095cc4af",
+  "unpacked_bytes": 246396682,
+  "max_part_bytes": 8000000,
+  "parts": [
+    {
+      "name": "NextGowin-checkpoint-20261113.zip.part0001",
+      "bytes": 8000000,
+      "sha256": "50689f45a01e069fdd75ba4cdf447daf873e8b687978c0a014ced89afb132229"
+    },
+    {
+      "name": "NextGowin-checkpoint-20261113.zip.part0002",
+      "bytes": 8000000,
+      "sha256": "ff982d31520566fabfa93c110c88c5ab7de346382424272e09e9272604194561"
+    },
+    {
+      "name": "NextGowin-checkpoint-20261113.zip.part0003",
+      "bytes": 8000000,
+      "sha256": "be9b14e4886d3ebd1714638dfb53c1f027a4cdac67fce15e95ed6e7013fe63cb"
+    },
+    {
+      "name": "NextGowin-checkpoint-20261113.zip.part0004",
+      "bytes": 7029909,
+      "sha256": "695324521cf1d403c6f8b2ca8c677c0834e419557d106595e9a8a3f4e315b3f6"
+    }
+  ]
+}

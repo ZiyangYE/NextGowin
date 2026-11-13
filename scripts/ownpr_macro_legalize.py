@@ -53,11 +53,16 @@ def clear_register_slot(design,layout,device,site_cost,protected=(),candidates=6
     return result,(r,c,slot),dict(target_cfu=[r,c],target_slot=slot,moves=[move] if move else [],displaced_units=int(move is not None),displaced_registers=0,
         clock_replan_required=False,score=key[0],scope='One LUT/FF pair; no existing FF moves. Added FF clock still needs retargeting and full STA.')
 
-def clear_site(design,layout,root,device,site_cost,protected=(),candidates=32,radius=5,wide_leaf_slots=None,reserved_roots=()):
+def clear_site(design,layout,root,device,site_cost,protected=(),candidates=32,radius=5,wide_leaf_slots=None,reserved_roots=(),allow_paired_sharing=False):
     if root not in layout['clusters'] or not 1<=candidates<=64 or not 1<=radius<=8:raise ValueError('Invalid macro legalization request')
     cells=design['modules']['top']['cells'];points=locations(layout);excluded=exclusive_tiles(layout);clusters=layout['clusters']
     shared=wide_leaf_slots is not None
-    if shared and (tuple(wide_leaf_slots) not in ((0,1),(0,1,2,3)) or clusters[root].get('ff')):raise ValueError('Uncalibrated partial wide-macro reservation')
+    ff=clusters[root].get('ff')
+    if shared and (tuple(wide_leaf_slots) not in ((0,1),(0,1,2,3)) or ff and not allow_paired_sharing):raise ValueError('Uncalibrated partial wide-macro reservation')
+    if allow_paired_sharing:
+        from ownpr_wide_ff_lut_sharing import supports_profile,calibration
+        if not shared or not ff or not supports_profile(design,ff):raise ValueError('Uncalibrated mixed FF reservation')
+        calibration()
     anchors=set(protected)-{root,clusters[root].get('ff')};forbidden=excluded if shared else {points[n] for n in anchors if n in points}|excluded
     tiles=defaultdict(list)
     for n,row in clusters.items():tiles[row['row'],row['column']].append(n)
@@ -66,11 +71,13 @@ def clear_site(design,layout,root,device,site_cost,protected=(),candidates=32,ra
     for r,row in enumerate(device.grid):
         for c,typ in enumerate(row):
             if typ!=17 or (r,c) in forbidden:continue
+            cost=site_cost(r,c)
+            if cost==float('inf'):continue
             if shared and any(n!=root and n in reserved_roots for n in tiles[r,c]):continue
             displaced=[n for n in tiles[r,c] if n!=root and (not shared or clusters[n]['slot'] in wide_leaf_slots or clusters[n].get('ff'))]
             if shared and any(n in anchors or clusters[n].get('ff') in anchors for n in displaced):continue
             if any(not movable(n) for n in displaced):continue
-            options.append((site_cost(r,c)+2*len(displaced),r,c,displaced))
+            options.append((cost+2*len(displaced),r,c,displaced))
     if not options:raise ValueError('No legal macro region')
     drivers={b:n for n,c in cells.items() for pin,bs in c['connections'].items() if c['port_directions'][pin]=='output' for b in bs}
     edges=[]

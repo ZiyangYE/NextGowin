@@ -83,6 +83,9 @@ class ClockChoices:
     def edge(self,source,destination):
         source=tuple(source);destination=tuple(destination);a=self.graph.by_coordinate[source];b=self.graph.by_coordinate[destination]
         if b not in self.graph.adj[a]:raise ValueError('Clock configuration edge is not in the native graph')
+        from ownpr_primary_p33_profile import edge as primary_profile
+        primary=primary_profile(self,source,destination)
+        if primary is not None:return primary
         sr,sc,si=source;dr,dc,di=destination;group={(-1,-2):90,(-2,-1):91}
         if (source,destination)==((-2,183,192),(-2,183,214)):
             # L22/F6 -> SPCLK33 source mux. Independently isolated prefix

@@ -31,8 +31,22 @@ def check(design,placed,device,captures,bindings):
                 else:controls[pin]=expected
         if qs[0]==qs[1]:raise ValueError('Shared FF outputs are not independent')
         records.append(dict(tile=group['tile'],ffs=group['ffs'],slots=group['slots'],controls=controls,q_nodes=qs,paired_direct_data=True))
-    return dict(status='shared_ff_native_bindings_verified',pairs=len(records),registers=2*len(records),records=records,calibration_sha256=info['calibration_sha256'],
-        scope='Native physical controls, independent Q pins and paired D links checked for every admitted pair. Full loaded timing/configuration/IO acceptance remains a separate audit.')
+    orphans=[]
+    for group in info.get('orphan_groups',[]):
+        r,c=group['tile'];ff,lut,slot=group['ff'],group['lut'],group['slot']
+        if located[ff]['kind']!='FF' or located[lut]['kind']!='LUT' or located[ff]['site']!=[r+1,c+1,slot] or located[lut]['site']!=[r+1,c+1,slot]:raise ValueError('Orphan FF actual placement differs')
+        d=pins[ff,'D']
+        if d['nodes'] or not d['direct_connection']:raise ValueError('Orphan FF lost paired direct data')
+        physical=device.register_bindings_for('DFFRE')[slot];observed={}
+        for pin in ('CLK','CE','RESET','Q'):
+            nodes=[row['node'] for row in pins[ff,pin]['nodes']];expected=[r+1,c+1,device.ids[physical[pin]]]
+            if nodes!=[expected]:raise ValueError('Orphan FF actual pin differs: '+ff+'/'+pin)
+            observed[pin]=expected
+        orphans.append(dict(tile=group['tile'],ff=ff,lut=lut,slot=slot,pins=observed,paired_direct_data=True))
+    result=dict(status='shared_ff_native_bindings_verified',pairs=len(records),registers=2*len(records),records=records,calibration_sha256=info['calibration_sha256'],
+        scope='Native physical controls, independent Q pins and paired D links checked for every admitted pair and reported odd-only group. Full loaded timing/configuration/IO acceptance remains a separate audit.')
+    if orphans:result.update(orphan_registers=len(orphans),orphan_records=orphans,orphan_calibration_sha256=info['orphan_calibration_sha256'],all_verified_registers=2*len(records)+len(orphans))
+    return result
 
 
 def audit(folder,placement):

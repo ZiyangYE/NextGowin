@@ -62,7 +62,7 @@ def compile_sites(design,placement,device):
     from ownpr_ff_configuration import independent_ff_groups,single_ff_attributes,FF_CONTROLS
     evidence=calibration()
     if placement.get('shared_ff_calibration')!=evidence['admission_sha256'] or device.fse.sha256!=evidence['fse_sha256']:raise ValueError('Shared FF packing lacks exact calibration admission')
-    cells=design['modules']['top']['cells'];const=constants(design);sites=defaultdict(list);seen=set();ffs=set();result={};records=[]
+    cells=design['modules']['top']['cells'];const=constants(design);sites=defaultdict(list);seen=set();ffs=set();result={};records=[];orphans=[]
     exclusive={(r['row'],r['column']) for key in ('arithmetic_clusters','mux_clusters') for r in placement.get(key,{}).values()}
     for row in placement['clusters'].values():
         point=row['row'],row['column'],row['slot']
@@ -75,7 +75,11 @@ def compile_sites(design,placement,device):
         by_group=defaultdict(list)
         for row in members:by_group[row['slot']//2].append(row)
         sharing=any(len(rows)>1 for rows in by_group.values())
-        if not sharing:
+        orphan_groups=[group for group,rows in by_group.items() if len(rows)==1 and rows[0]['slot']%2 and not rows[0].get('wide_ff_root')]
+        if orphan_groups:
+            from ownpr_orphan_ff_calibration import require_site
+            require_site(cells,members,placement,device,site,exclusive,const)
+        if not sharing and not orphan_groups:
             if any(row['slot'] not in (0,2,4) and not row.get('wide_ff_root') for row in members):raise ValueError('Orphan odd-slot register is not admitted')
             continue
         r,c=site
@@ -83,7 +87,7 @@ def compile_sites(design,placement,device):
         groups=independent_ff_groups([])
         for group,rows in sorted(by_group.items()):
             rows=sorted(rows,key=lambda row:row['slot']);base=group*2
-            if base not in (0,2,4) or len(rows)>2 or rows[0]['slot']!=base:raise ValueError('Uncalibrated shared control slots')
+            if base not in (0,2,4) or len(rows)>2 or (rows[0]['slot']!=base and group not in orphan_groups):raise ValueError('Uncalibrated shared control slots')
             profiles=[]
             for row in rows:
                 cell=cells[row['ff']];lut=cells[row['lut']]
@@ -99,8 +103,12 @@ def compile_sites(design,placement,device):
                 from ownpr_shared_ff_calibration import predict
                 attrs=predict(profiles)[group]
                 records.append(dict(tile=list(site),slots=[base,base+1],ffs=[row['ff'] for row in rows],luts=[row['lut'] for row in rows],control_bits=list(signatures[0]),profile=profiles[0]))
-            else:attrs=single_ff_attributes(**profiles[0])[group]
+            else:
+                attrs=single_ff_attributes(**profiles[0])[group]
+                if group in orphan_groups:orphans.append(dict(tile=list(site),slot=rows[0]['slot'],ff=rows[0]['ff'],lut=rows[0]['lut'],profile=profiles[0]))
             groups[group]=attrs
         result[site]=groups
-    if not records:raise ValueError('Shared FF admission has no actual pairs')
-    return result,dict(records=records,calibration_sha256=evidence['admission_sha256'],full_routing_sta_required=True)
+    if not records and not orphans:raise ValueError('Shared FF admission has no actual pairs')
+    info=dict(records=records,calibration_sha256=evidence['admission_sha256'],full_routing_sta_required=True)
+    if orphans:info.update(orphan_groups=orphans,orphan_calibration_sha256=placement['orphan_ff_calibration'])
+    return result,info

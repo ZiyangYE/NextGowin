@@ -22,6 +22,7 @@ def main():
     ap.add_argument('--cst',type=Path);ap.add_argument('--out',type=Path,required=True)
     ap.add_argument('--timeout',type=int,default=1800)
     ap.add_argument('--bitstream',action='store_true',help='Also request configuration output; not needed for P&R timing comparison')
+    ap.add_argument('--co-place-io-registers',action='store_true',help='Labelled vendor calibration: enable documented native input/output register co-placement')
     ap.add_argument('--rao',type=Path,help='Paired RTL GAO configuration; preserve its CRC and request RTL GAO output')
     ap.add_argument('--device-config',type=Path)
     iob=ap.add_mutually_exclusive_group()
@@ -39,6 +40,7 @@ def main():
         '-correct_hold 1',f'-sdc {sdc.as_posix()}',
         f'-o {out.as_posix()}/mapped.vo']
     if cst:commands.insert(-1,f'-cst {cst.as_posix()}')
+    if args.co_place_io_registers:commands.insert(-1,'-co-place_io_registers 1')
     if args.no_iob_registers:
         commands[-1:-1]=['-ireg_not_in_iob','-oreg_not_in_iob','-ioreg_not_in_iob']
     elif args.output_iob_registers:
@@ -58,7 +60,7 @@ def main():
         status='pnr_running',part=PART,dll_sha256=EXPECTED,input_sha256=sha(args.input),
         netlist_sha256_before=sha(netlist),sdc_sha256=sha(sdc),cst_sha256=sha(cst) if cst else None,timeout=args.timeout,
         gao_id=gao_id,rao_sha256=sha(rao) if args.rao else None,
-        bitstream_requested=args.bitstream,runner_sha256=sha(Path(__file__)))
+        bitstream_requested=args.bitstream,co_place_io_registers=args.co_place_io_registers,runner_sha256=sha(Path(__file__)))
     def save():(out/'manifest.json').write_text(json.dumps(result,indent=2)+'\n')
     save();start=time.perf_counter();python=ROOT/'binary_audit/flow/runtime/bin/python.exe'
     with (out/'pnr.log').open('w') as log:

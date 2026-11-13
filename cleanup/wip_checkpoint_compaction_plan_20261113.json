@@ -1,0 +1,5380 @@
+{
+  "reason": "Losslessly compact historical non-selected JSON intermediates; all decoded bytes and hashes retained. Current selected directories, native/hard calibration families, official/fair baselines and current proof rounds excluded.",
+  "protected_directories": [
+    "results\\clock_data_cooptimization_trial_007\\clock_encoding_003",
+    "results\\coopt_int2float_clock_002\\clock_encoding",
+    "results\\coopt_int2float_io_reference_002",
+    "results\\coopt_int2float_rebuild_001",
+    "results\\coopt_replay_uart_001",
+    "results\\coopt_replay_uart_001\\export\\native",
+    "results\\coopt_review_clock_merge_001\\clock_encoding",
+    "results\\coopt_review_clock_merge_001\\export\\wire",
+    "results\\coopt_review_clock_merge_001\\route",
+    "results\\coopt_tmds_native_reference_001",
+    "results\\encoder_physical_feedback_trial_028",
+    "results\\encoder_physical_feedback_trial_028\\tmds_export_003\\native",
+    "results\\encoder_physical_feedback_trial_028\\tmds_export_003\\wire",
+    "results\\encoder_physical_feedback_trial_028\\tmds_mixed_group_search_003",
+    "results\\encoder_physical_feedback_trial_028\\tmds_mixed_group_search_003\\placement",
+    "results\\encoder_physical_feedback_trial_028\\tmds_model_003",
+    "results\\generic_int2float_competing_001\\retry_001\\qualification",
+    "results\\hard_clock_and_budget_convergence_trial_009\\vex_bidir_model_004",
+    "results\\native_uart_carry_003",
+    "results\\native_vexriscv_packed_io_reference_001",
+    "results\\shared_encoder_joint_trial_027\\int_candidate_002",
+    "results\\shared_encoder_joint_trial_027\\int_implementation_001\\export\\native",
+    "results\\shared_encoder_joint_trial_027\\int_implementation_001\\export\\wire",
+    "results\\shared_encoder_joint_trial_027\\int_implementation_001\\route",
+    "results\\shared_encoder_joint_trial_027\\int_model_001",
+    "results\\tangprimer138_suite_001\\tmds",
+    "results\\tangprimer138_suite_001\\uart",
+    "results\\tmds_route_coupled_trial_004",
+    "results\\vexriscv_110_reference_001",
+    "results\\vexriscv_84_6_joint_cut_place_003",
+    "results\\vexriscv_evaluation_pins_001",
+    "results\\vexriscv_existing_state_alias_trial_001",
+    "results\\vexriscv_frontier_partition_ablation_001",
+    "results\\vexriscv_frontier_partition_ablation_001\\clock_encoding",
+    "results\\vexriscv_internal_state_trial_001",
+    "results\\vexriscv_joint_lut_graph_search_010\\placement",
+    "results\\vexriscv_output_state_cache_proof_002",
+    "results\\vexriscv_output_state_cache_replica_place_001",
+    "results\\vexriscv_output_state_cache_sdk_003",
+    "results\\vexriscv_routed_branch_search_002\\placement",
+    "results\\vexriscv_wide_joint_trial_001",
+    "results\\vexriscv_wide_joint_trial_001\\export\\native",
+    "results\\vexriscv_wide_joint_trial_001\\export\\wire",
+    "results\\vexriscv_wide_mapping_search_002",
+    "results\\vexriscv_wide_mapping_search_002\\placement",
+    "reviews\\coopt_200mhz_20261104\\results\\coopt_uart_stage3_001\\place"
+  ],
+  "excluded_groups": [
+    "native_",
+    "hard_",
+    "official_",
+    "fair_",
+    "compositional_memory_proof_trial_029",
+    "memory_match_causality_trial_030",
+    "clock_relation_proof_trial_031",
+    "padding_projection_proof_trial_032",
+    "dsp_register_joint_trial_024",
+    "dsp_orphan_routing_trial_025",
+    "encoder_physical_feedback_trial_028",
+    "shared_encoder_joint_trial_027"
+  ],
+  "target_saved_bytes": 8000000000,
+  "candidates": [
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/implementation/export/wire/wire_delays.json",
+      "bytes": 54806383
+    },
+    {
+      "path": "results/vexriscv_110_short_detour_002/export/wire/wire_delays.json",
+      "bytes": 54777578
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/export/wire/wire_delays.json",
+      "bytes": 54774134
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_export_001/wire/wire_delays.json",
+      "bytes": 54533824
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/export/wire/wire_delays.json",
+      "bytes": 54517921
+    },
+    {
+      "path": "results/vexriscv_global_tree_export_001/wire/wire_delays.json",
+      "bytes": 54517921
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/export/wire/wire_delays.json",
+      "bytes": 54513460
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/implementation/export/wire/wire_delays.json",
+      "bytes": 54504405
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree_export/wire/wire_delays.json",
+      "bytes": 54503754
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/implementation/export/wire/wire_delays.json",
+      "bytes": 54468929
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/export/wire/wire_delays.json",
+      "bytes": 54347047
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/export/wire/wire_delays.json",
+      "bytes": 54345010
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/export/wire/wire_delays.json",
+      "bytes": 54339421
+    },
+    {
+      "path": "results/vexriscv_pin_global_loop_001/round_001/pin_feedback/expanded_routes.json",
+      "bytes": 40253674
+    },
+    {
+      "path": "results/vexriscv_pin_global_loop_001/round_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 38520872
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/export/native/sta_endpoint_audit.json",
+      "bytes": 38154645
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 38154645
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/export/native/sta_endpoint_audit.json",
+      "bytes": 38152535
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 38152535
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/export/native/sta_endpoint_audit.json",
+      "bytes": 38142015
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 38142015
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 38047195
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 38000046
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/export/native/sta_endpoint_audit.json",
+      "bytes": 37923087
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 37923087
+    },
+    {
+      "path": "results/vexriscv_87_3_pin_feedback_001/sta_endpoint_audit.json",
+      "bytes": 37907507
+    },
+    {
+      "path": "results/vexriscv_87_3_time_states_002/sta_endpoint_audit.json",
+      "bytes": 37907507
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 37905632
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 37905309
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 37843666
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/pin_feedback/expanded_routes.json",
+      "bytes": 37682467
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/pin_feedback/expanded_routes.json",
+      "bytes": 37682467
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 37473495
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 37473495
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/export/native/expanded_routes.json",
+      "bytes": 37289160
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/qualification/export/native/expanded_routes.json",
+      "bytes": 37289160
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/export/native/expanded_routes.json",
+      "bytes": 37285981
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/qualification/export/native/expanded_routes.json",
+      "bytes": 37285981
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/export/native/expanded_routes.json",
+      "bytes": 37285458
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/pin_feedback/expanded_routes.json",
+      "bytes": 37285458
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/qualification/export/native/expanded_routes.json",
+      "bytes": 37212671
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/qualification/export/native/expanded_routes.json",
+      "bytes": 37176288
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/qualification/export/native/expanded_routes.json",
+      "bytes": 37147847
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/export/native/expanded_routes.json",
+      "bytes": 37065502
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/qualification/export/native/expanded_routes.json",
+      "bytes": 37065502
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/qualification/export/native/expanded_routes.json",
+      "bytes": 37040552
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/qualification/export/native/expanded_routes.json",
+      "bytes": 36972205
+    },
+    {
+      "path": "results/vexriscv69_pin_inventory_001/sta_endpoint_audit.json",
+      "bytes": 36791485
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/export/wire/expanded_routes.json",
+      "bytes": 36597843
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/export/wire/expanded_routes.json",
+      "bytes": 36594664
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/export/wire/expanded_routes.json",
+      "bytes": 36594141
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/implementation/export/wire/expanded_routes.json",
+      "bytes": 36519816
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/export/native/expanded_routes.json",
+      "bytes": 36482794
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/export/wire/expanded_routes.json",
+      "bytes": 36482668
+    },
+    {
+      "path": "results/vexriscv_110_short_detour_002/export/wire/expanded_routes.json",
+      "bytes": 36476637
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/export/native/expanded_routes.json",
+      "bytes": 36435427
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/qualified65_2/export/native/expanded_routes.json",
+      "bytes": 36435427
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/export/wire/expanded_routes.json",
+      "bytes": 36373418
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/implementation/export/wire/expanded_routes.json",
+      "bytes": 36349235
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/implementation/export/wire/expanded_routes.json",
+      "bytes": 36280121
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/export/native/sta_endpoint_audit.json",
+      "bytes": 36167338
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/qualified65_2/export/native/sta_endpoint_audit.json",
+      "bytes": 36167338
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/qualification/export/native/expanded_routes.json",
+      "bytes": 36149318
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/export/native/sta_endpoint_audit.json",
+      "bytes": 36143079
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/qualification/export/native/expanded_routes.json",
+      "bytes": 36138914
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/qualification/export/native/expanded_routes.json",
+      "bytes": 36138914
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/qualification/export/native/expanded_routes.json",
+      "bytes": 36135417
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/implementation/export/native/expanded_routes.json",
+      "bytes": 36126274
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 36097385
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_002/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 36097385
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 36097385
+    },
+    {
+      "path": "results/vexriscv_target_protection_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 36097385
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 36097385
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/qualification/export/native/expanded_routes.json",
+      "bytes": 36090271
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/export/native/expanded_routes.json",
+      "bytes": 36039371
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_002/export/native/expanded_routes.json",
+      "bytes": 35986924
+    },
+    {
+      "path": "results/vexriscv_65_2mhz_001/export/native/expanded_routes.json",
+      "bytes": 35973393
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_implementation/export/native/expanded_routes.json",
+      "bytes": 35973393
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/export/native/expanded_routes.json",
+      "bytes": 35963152
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/export/native/expanded_routes.json",
+      "bytes": 35963152
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/qualified65_9/export/native/expanded_routes.json",
+      "bytes": 35963152
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/qualified65_4/export/native/expanded_routes.json",
+      "bytes": 35962801
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_implementation/export/native/expanded_routes.json",
+      "bytes": 35962801
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/feedback/expanded_routes.json",
+      "bytes": 35962801
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/export/native/expanded_routes.json",
+      "bytes": 35961825
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 35932391
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 35926186
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 35926186
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35924295
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_002/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35924295
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35924295
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35924295
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35924295
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35924295
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35924295
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 35923772
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/implementation/export/native/sta_endpoint_audit.json",
+      "bytes": 35920290
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/qualification/export/native/sta_endpoint_audit.json",
+      "bytes": 35883399
+    },
+    {
+      "path": "results/vexriscv_seven_cut_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35883399
+    },
+    {
+      "path": "results/vexriscv_seven_cut_002/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35883399
+    },
+    {
+      "path": "results/vexriscv_state_frontier_001/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35883399
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/pin_feedback/sta_endpoint_audit.json",
+      "bytes": 35883399
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/export/native/expanded_routes.json",
+      "bytes": 35826350
+    },
+    {
+      "path": "results/vexriscv_global_tree_export_001/native/expanded_routes.json",
+      "bytes": 35826350
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/export/native/sta_endpoint_audit.json",
+      "bytes": 35824694
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_002/export/native/sta_endpoint_audit.json",
+      "bytes": 35808604
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/qualified65_4/export/native/sta_endpoint_audit.json",
+      "bytes": 35796344
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_implementation/export/native/sta_endpoint_audit.json",
+      "bytes": 35796344
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/feedback/sta_endpoint_audit.json",
+      "bytes": 35796344
+    },
+    {
+      "path": "results/vexriscv_65_2mhz_001/export/native/sta_endpoint_audit.json",
+      "bytes": 35795799
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_implementation/export/native/sta_endpoint_audit.json",
+      "bytes": 35795799
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/export/native/sta_endpoint_audit.json",
+      "bytes": 35795782
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/export/native/sta_endpoint_audit.json",
+      "bytes": 35795782
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/qualified65_9/export/native/sta_endpoint_audit.json",
+      "bytes": 35795782
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/export/native/sta_endpoint_audit.json",
+      "bytes": 35795472
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/export/wire/expanded_routes.json",
+      "bytes": 35687620
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/export/wire/expanded_routes.json",
+      "bytes": 35643064
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/export/native/sta_endpoint_audit.json",
+      "bytes": 35628636
+    },
+    {
+      "path": "results/vexriscv_global_tree_export_001/native/sta_endpoint_audit.json",
+      "bytes": 35628636
+    },
+    {
+      "path": "results/vexriscv_62_2mhz_001/export/native/expanded_routes.json",
+      "bytes": 35618320
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_export_001/native/expanded_routes.json",
+      "bytes": 35613197
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree_export/native/expanded_routes.json",
+      "bytes": 35598667
+    },
+    {
+      "path": "results/vexriscv_62_2mhz_001/export/native/sta_endpoint_audit.json",
+      "bytes": 35484990
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_export_001/native/sta_endpoint_audit.json",
+      "bytes": 35482784
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree_export/native/sta_endpoint_audit.json",
+      "bytes": 35432325
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/implementation/export/wire/expanded_routes.json",
+      "bytes": 35332118
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/export/wire/expanded_routes.json",
+      "bytes": 35247008
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_002/export/wire/expanded_routes.json",
+      "bytes": 35195071
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_implementation/export/wire/expanded_routes.json",
+      "bytes": 35181540
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/export/wire/expanded_routes.json",
+      "bytes": 35171299
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/export/wire/expanded_routes.json",
+      "bytes": 35171299
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_implementation/export/wire/expanded_routes.json",
+      "bytes": 35170948
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/export/wire/expanded_routes.json",
+      "bytes": 35169972
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/export/wire/expanded_routes.json",
+      "bytes": 35038092
+    },
+    {
+      "path": "results/vexriscv_global_tree_export_001/wire/expanded_routes.json",
+      "bytes": 35038092
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_export_001/wire/expanded_routes.json",
+      "bytes": 34824939
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree_export/wire/expanded_routes.json",
+      "bytes": 34810409
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_006/competitors.json",
+      "bytes": 20515494
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_005/competitors.json",
+      "bytes": 20404718
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_004/competitors.json",
+      "bytes": 20011088
+    },
+    {
+      "path": "results/vexriscv_87_3_arrivals_001/competitors.json",
+      "bytes": 19722295
+    },
+    {
+      "path": "results/vexriscv_86_arrivals_001/competitors.json",
+      "bytes": 19704310
+    },
+    {
+      "path": "results/vexriscv_86_arrivals_002/competitors.json",
+      "bytes": 19704310
+    },
+    {
+      "path": "results/vexriscv_selector_arrivals_001/competitors.json",
+      "bytes": 19648249
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_006/graph.json",
+      "bytes": 18135355
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_005/graph.json",
+      "bytes": 18029456
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_004/graph.json",
+      "bytes": 17933070
+    },
+    {
+      "path": "results/vexriscv_87_3_arrivals_001/graph.json",
+      "bytes": 17112710
+    },
+    {
+      "path": "results/vexriscv_86_arrivals_001/graph.json",
+      "bytes": 17094685
+    },
+    {
+      "path": "results/vexriscv_86_arrivals_002/graph.json",
+      "bytes": 17094685
+    },
+    {
+      "path": "results/vexriscv_selector_arrivals_001/graph.json",
+      "bytes": 17043125
+    },
+    {
+      "path": "results/vexriscv_87_3_pin_feedback_001/pin_feedback.json",
+      "bytes": 16254142
+    },
+    {
+      "path": "results/coopt_vexriscv_rebuild_001/synthesis/03_resources/resources.json",
+      "bytes": 16233141
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/pin_feedback/pin_feedback.json",
+      "bytes": 16079512
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/pin_feedback/pin_feedback.json",
+      "bytes": 16074238
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/pin_feedback/pin_feedback.json",
+      "bytes": 16068919
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/pin_feedback/pin_feedback.json",
+      "bytes": 16057657
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/pin_feedback/pin_feedback.json",
+      "bytes": 16057657
+    },
+    {
+      "path": "results/vexriscv_87_3_bidir_model_001/model.json",
+      "bytes": 15856613
+    },
+    {
+      "path": "results/vexriscv69_pin_inventory_001/pin_feedback.json",
+      "bytes": 15843968
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_001/pin_feedback/pin_feedback.json",
+      "bytes": 15578654
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_002/pin_feedback/pin_feedback.json",
+      "bytes": 15578654
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/pin_feedback/pin_feedback.json",
+      "bytes": 15578654
+    },
+    {
+      "path": "results/vexriscv_target_protection_001/pin_feedback/pin_feedback.json",
+      "bytes": 15578654
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/pin_feedback/pin_feedback.json",
+      "bytes": 15578654
+    },
+    {
+      "path": "results/vexriscv_seven_cut_001/pin_feedback/pin_feedback.json",
+      "bytes": 15559944
+    },
+    {
+      "path": "results/vexriscv_seven_cut_002/pin_feedback/pin_feedback.json",
+      "bytes": 15559944
+    },
+    {
+      "path": "results/vexriscv_state_frontier_001/pin_feedback/pin_feedback.json",
+      "bytes": 15559944
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/pin_feedback/pin_feedback.json",
+      "bytes": 15559944
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_001/pin_feedback/pin_feedback.json",
+      "bytes": 15558234
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_002/pin_feedback/pin_feedback.json",
+      "bytes": 15558234
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/pin_feedback/pin_feedback.json",
+      "bytes": 15558234
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/pin_feedback/pin_feedback.json",
+      "bytes": 15558234
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/pin_feedback/pin_feedback.json",
+      "bytes": 15558234
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/pin_feedback/pin_feedback.json",
+      "bytes": 15558234
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/pin_feedback/pin_feedback.json",
+      "bytes": 15558234
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/feedback/pin_feedback.json",
+      "bytes": 15509473
+    },
+    {
+      "path": "results/vexriscv_pin_global_loop_001/round_001/pin_feedback/pin_feedback.json",
+      "bytes": 15390079
+    },
+    {
+      "path": "results/coopt_vexriscv_mapping_003/04_mapping/mapped.json",
+      "bytes": 14961657
+    },
+    {
+      "path": "results/coopt_vexriscv_mapping_003/05_netlist_retry/with_pads.json",
+      "bytes": 14683007
+    },
+    {
+      "path": "results/vexriscv_87_3_time_states_002/pin_feedback.json",
+      "bytes": 13232667
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/candidate/routes.json",
+      "bytes": 11252674
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/candidate/routes.json",
+      "bytes": 11251474
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/candidate/routes.json",
+      "bytes": 11248935
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/candidate/routes.json",
+      "bytes": 11248935
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/candidate/routes.json",
+      "bytes": 11243468
+    },
+    {
+      "path": "results/vexriscv_wide_mapping_search_001/routes.json",
+      "bytes": 10941228
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_003/routes.json",
+      "bytes": 10920464
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_004/routes.json",
+      "bytes": 10908622
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_001/routes.json",
+      "bytes": 10905483
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_002/routes.json",
+      "bytes": 10887602
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_002/routes.json",
+      "bytes": 10882330
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_004/routes.json",
+      "bytes": 10869138
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_003/routes.json",
+      "bytes": 10867208
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_001/routes.json",
+      "bytes": 10853353
+    },
+    {
+      "path": "results/vexriscv_carry_macro_search_003/routes.json",
+      "bytes": 10837753
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_search_010/routes.json",
+      "bytes": 10832932
+    },
+    {
+      "path": "results/vexriscv_carry_macro_search_002/routes.json",
+      "bytes": 10832577
+    },
+    {
+      "path": "results/vexriscv_routed_branch_search_001/routes.json",
+      "bytes": 10818812
+    },
+    {
+      "path": "results/vexriscv_routed_branch_search_002/routes.json",
+      "bytes": 10818646
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/vexriscv_run_001/export/native/ioreg_state.json",
+      "bytes": 10235108
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_minmax_run_001/export/native/ioreg_state.json",
+      "bytes": 10235009
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_policy_restored_002/export/native/ioreg_state.json",
+      "bytes": 10235009
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_whole_changed_trees_003/export/native/ioreg_state.json",
+      "bytes": 10235009
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/export/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/qualification/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_carry_macro_trial_001/export/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_trial_001/export/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_full_fanout_trial_001/export_repair_001/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/export_repair_001/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/qualification/export/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/export/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/qualification/export/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_shared_dag_trial_001/export/native/ioreg_state.json",
+      "bytes": 9428242
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_001/export/native/ioreg_state.json",
+      "bytes": 9408981
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/export/native/ioreg_state.json",
+      "bytes": 9408981
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/qualification/export/native/ioreg_state.json",
+      "bytes": 9408981
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_001/export/native/ioreg_state.json",
+      "bytes": 9404869
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_002/export/native/ioreg_state.json",
+      "bytes": 9404869
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/export/native/ioreg_state.json",
+      "bytes": 9404869
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/qualification/export/native/ioreg_state.json",
+      "bytes": 9404869
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/export/native/ioreg_state.json",
+      "bytes": 9404771
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/qualification/export/native/ioreg_state.json",
+      "bytes": 9404771
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_001/export/native/ioreg_state.json",
+      "bytes": 9404771
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_trial_001/export/native/ioreg_state.json",
+      "bytes": 9404771
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_minmax_001/packed.json",
+      "bytes": 9390220
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_minmax_run_001/route/reuse_source/packed.json",
+      "bytes": 9390220
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_policy_restored_002/route/reuse_source/packed.json",
+      "bytes": 9390220
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_whole_changed_trees_003/route/reuse_source/packed.json",
+      "bytes": 9390220
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/vexriscv_run_001/route/reuse_source/packed.json",
+      "bytes": 9390220
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/vexriscv_placement/packed.json",
+      "bytes": 9389772
+    },
+    {
+      "path": "results/independent_ff_input_trial_017/candidate_vexriscv/packed.json",
+      "bytes": 9389772
+    },
+    {
+      "path": "results/vexriscv_wide_mapping_search_001/placement/packed.json",
+      "bytes": 9349238
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_003/placement/packed.json",
+      "bytes": 9331090
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_004/placement/packed.json",
+      "bytes": 9328876
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_001/placement/packed.json",
+      "bytes": 9328076
+    },
+    {
+      "path": "results/vexriscv_shared_dag_search_002/placement/packed.json",
+      "bytes": 9325584
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_002/placement/packed.json",
+      "bytes": 9324431
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_004/placement/packed.json",
+      "bytes": 9321864
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_003/placement/packed.json",
+      "bytes": 9321164
+    },
+    {
+      "path": "results/vexriscv_path_cone_search_001/placement/packed.json",
+      "bytes": 9319551
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_search_008/placement/packed.json",
+      "bytes": 9314441
+    },
+    {
+      "path": "results/vexriscv_carry_macro_search_003/placement/packed.json",
+      "bytes": 9314429
+    },
+    {
+      "path": "results/vexriscv_carry_macro_search_002/placement/packed.json",
+      "bytes": 9313217
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_search_009/placement/packed.json",
+      "bytes": 9313217
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_search_007/placement/packed.json",
+      "bytes": 9311437
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_place_001/packed.json",
+      "bytes": 9311344
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_place_003/packed.json",
+      "bytes": 9311344
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_place_004/packed.json",
+      "bytes": 9311344
+    },
+    {
+      "path": "results/vexriscv_full_fanout_place_001/packed.json",
+      "bytes": 9311344
+    },
+    {
+      "path": "results/vexriscv_full_fanout_place_002/packed.json",
+      "bytes": 9311344
+    },
+    {
+      "path": "results/vexriscv_routed_branch_search_001/placement/packed.json",
+      "bytes": 9311344
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_place_001/packed.json",
+      "bytes": 9309400
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_place_002/packed.json",
+      "bytes": 9309400
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_place_002/packed.json",
+      "bytes": 9309249
+    },
+    {
+      "path": "results/vexriscv_address_state_place_001/packed.json",
+      "bytes": 9303120
+    },
+    {
+      "path": "results/vexriscv_address_state_place_002/packed.json",
+      "bytes": 9303120
+    },
+    {
+      "path": "results/vexriscv_address_state_proof_001/packed.json",
+      "bytes": 9303120
+    },
+    {
+      "path": "results/vexriscv_internal_state_place_001/packed.json",
+      "bytes": 9299443
+    },
+    {
+      "path": "results/vexriscv_internal_state_place_002/packed.json",
+      "bytes": 9299443
+    },
+    {
+      "path": "results/vexriscv_existing_state_alias_place_001/packed.json",
+      "bytes": 9298761
+    },
+    {
+      "path": "results/vexriscv_existing_state_alias_place_002/packed.json",
+      "bytes": 9298761
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_proof_001/packed.json",
+      "bytes": 9296467
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/candidate/packed.json",
+      "bytes": 9295127
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_place_001/packed.json",
+      "bytes": 9294781
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_001/candidate/packed.json",
+      "bytes": 9289929
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_002/candidate/packed.json",
+      "bytes": 9289929
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/candidate/packed.json",
+      "bytes": 9289929
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_preflight_001/packed.json",
+      "bytes": 9289929
+    },
+    {
+      "path": "results/vexriscv_selector_preflight_001/packed.json",
+      "bytes": 9289929
+    },
+    {
+      "path": "results/vexriscv_selector_candidate_001/packed.json",
+      "bytes": 9289921
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/candidate/packed.json",
+      "bytes": 9276766
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/placement/packed.json",
+      "bytes": 9276766
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/placement/packed.json",
+      "bytes": 9269678
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/candidate/packed.json",
+      "bytes": 9267143
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/candidate/packed.json",
+      "bytes": 9267143
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/candidate/packed.json",
+      "bytes": 9267143
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/candidate/packed.json",
+      "bytes": 9209628
+    },
+    {
+      "path": "results/vexriscv_path_regions_001/candidate/packed.json",
+      "bytes": 9191489
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_001/candidate/packed.json",
+      "bytes": 9178050
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_002/candidate/packed.json",
+      "bytes": 9178050
+    },
+    {
+      "path": "results/vexriscv_seven_cut_001/candidate/packed.json",
+      "bytes": 9165974
+    },
+    {
+      "path": "results/vexriscv_seven_cut_002/candidate/packed.json",
+      "bytes": 9165974
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/candidate/packed.json",
+      "bytes": 9162480
+    },
+    {
+      "path": "results/vexriscv_target_protection_001/candidate/packed.json",
+      "bytes": 9162480
+    },
+    {
+      "path": "results/vexriscv_path_regions_002/candidate/packed.json",
+      "bytes": 9157633
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_001/candidate/packed.json",
+      "bytes": 9143245
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_002/candidate/packed.json",
+      "bytes": 9143245
+    },
+    {
+      "path": "results/vexriscv_state_frontier_001/candidate/packed.json",
+      "bytes": 9132443
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/candidate/packed.json",
+      "bytes": 9132443
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/candidate/packed.json",
+      "bytes": 9132443
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/candidate/placement/packed.json",
+      "bytes": 9122891
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/candidate/placement/packed.json",
+      "bytes": 9122891
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/candidate/placement/packed.json",
+      "bytes": 9122891
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/candidate/placement/packed.json",
+      "bytes": 9122891
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/candidate/placement/packed.json",
+      "bytes": 9122891
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/candidate/packed.json",
+      "bytes": 9122891
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/candidate/packed.json",
+      "bytes": 9122891
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/candidate_fixed/packed.json",
+      "bytes": 9120761
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/placement/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_placement/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_carry_slot7_001/placement/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/candidate/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_candidate/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/candidate/placement/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/placement/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/placement/packed.json",
+      "bytes": 9101871
+    },
+    {
+      "path": "results/vexriscv_regional_replication_001/candidate/packed.json",
+      "bytes": 9084799
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/hold/round_000/placement/packed.json",
+      "bytes": 9070437
+    },
+    {
+      "path": "results/vexriscv_control_batch_place_002/packed.json",
+      "bytes": 9060297
+    },
+    {
+      "path": "results/vexriscv_global_relayout_001/packed.json",
+      "bytes": 9060297
+    },
+    {
+      "path": "results/vexriscv_dynamic_wide_place_001/packed.json",
+      "bytes": 9046812
+    },
+    {
+      "path": "results/vexriscv_batch_cut_place_002/packed.json",
+      "bytes": 9042994
+    },
+    {
+      "path": "results/vexriscv_batch_cut_place_001/packed.json",
+      "bytes": 9037634
+    },
+    {
+      "path": "results/vexriscv_timing_wide_place_001/packed.json",
+      "bytes": 9034815
+    },
+    {
+      "path": "results/vexriscv_ce_replica_002/placement/packed.json",
+      "bytes": 9031483
+    },
+    {
+      "path": "results/vexriscv_timing_cut_place_001/packed.json",
+      "bytes": 9030906
+    },
+    {
+      "path": "results/vexriscv_branch_chain_place_001/packed.json",
+      "bytes": 9030817
+    },
+    {
+      "path": "results/vexriscv_ce_replica_001/placement/packed.json",
+      "bytes": 9030817
+    },
+    {
+      "path": "results/vexriscv_critical_replica_004/placement/packed.json",
+      "bytes": 9030152
+    },
+    {
+      "path": "results/vexriscv_register_place_001/packed.json",
+      "bytes": 9030152
+    },
+    {
+      "path": "results/vexriscv_register_place_002/packed.json",
+      "bytes": 9030152
+    },
+    {
+      "path": "results/vexriscv_register_place_003/packed.json",
+      "bytes": 9030152
+    },
+    {
+      "path": "results/vexriscv_register_place_004/packed.json",
+      "bytes": 9030152
+    },
+    {
+      "path": "results/vexriscv_batch_hold_003/round_000/placement/packed.json",
+      "bytes": 9029397
+    },
+    {
+      "path": "results/vexriscv_critical_chain_001/placement/packed.json",
+      "bytes": 9029397
+    },
+    {
+      "path": "results/vexriscv_critical_chain_002/placement/packed.json",
+      "bytes": 9029397
+    },
+    {
+      "path": "results/vexriscv_batch_hold_001/round_000/placement/packed.json",
+      "bytes": 9026862
+    },
+    {
+      "path": "results/vexriscv_batch_hold_002/round_000/placement/packed.json",
+      "bytes": 9026862
+    },
+    {
+      "path": "results/vexriscv_lut_replication_003/packed.json",
+      "bytes": 8635002
+    },
+    {
+      "path": "results/vexriscv_lut_replication_002/packed.json",
+      "bytes": 8634247
+    },
+    {
+      "path": "results/vexriscv_lut_replication_001/packed.json",
+      "bytes": 8633399
+    },
+    {
+      "path": "results/vexriscv_own_hard_place_007/packed.json",
+      "bytes": 8632644
+    },
+    {
+      "path": "results/vexriscv_global_logic_001/comparators/netlist.json",
+      "bytes": 8373028
+    },
+    {
+      "path": "results/coopt_vexriscv_mapping_003/05_netlist_retry/final.json",
+      "bytes": 7548342
+    },
+    {
+      "path": "results/multicfu_large_cut_trial_026/export_retry_003/native/partial_configuration.json",
+      "bytes": 6198136
+    },
+    {
+      "path": "results/multicfu_large_cut_trial_026/export_retry_003/partial_configuration.json",
+      "bytes": 6198136
+    },
+    {
+      "path": "results/ownpr_uart_clock_coverage_002/coverage_report.json",
+      "bytes": 6086220
+    },
+    {
+      "path": "results/ownpr_uart_clock_coverage_004/coverage_report.json",
+      "bytes": 6057053
+    },
+    {
+      "path": "results/vexriscv_pin_global_loop_001/round_001/route/routes.json",
+      "bytes": 6050857
+    },
+    {
+      "path": "results/vexriscv_pin_global_route_001/routes.json",
+      "bytes": 6048674
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/implementation/route/routes.json",
+      "bytes": 6017902
+    },
+    {
+      "path": "results/vexriscv_pin_budget_tree_001/routes.json",
+      "bytes": 6005018
+    },
+    {
+      "path": "results/vexriscv_control_batch_trial_002/route/routes.json",
+      "bytes": 6004344
+    },
+    {
+      "path": "results/vexriscv_control_batch_trial_001/route/routes.json",
+      "bytes": 6003012
+    },
+    {
+      "path": "results/vexriscv_control_pruned_trial_001/route/routes.json",
+      "bytes": 6001096
+    },
+    {
+      "path": "results/vexriscv_dynamic_wide_trial_001/route/routes.json",
+      "bytes": 5995451
+    },
+    {
+      "path": "results/vexriscv_batch_cut_trial_002/route/routes.json",
+      "bytes": 5994910
+    },
+    {
+      "path": "results/vexriscv_batch_cut_trial_001/route/routes.json",
+      "bytes": 5991564
+    },
+    {
+      "path": "results/vexriscv_tree_search_005/routes.json",
+      "bytes": 5989602
+    },
+    {
+      "path": "results/vexriscv_tree_search_006/routes.json",
+      "bytes": 5989602
+    },
+    {
+      "path": "results/vexriscv_ce_replica_002/route/routes.json",
+      "bytes": 5987149
+    },
+    {
+      "path": "results/vexriscv_register_trial_002/route/routes.json",
+      "bytes": 5986472
+    },
+    {
+      "path": "results/vexriscv_critical_chain_002/route/routes.json",
+      "bytes": 5985871
+    },
+    {
+      "path": "results/vexriscv_ce_replica_001/route/routes.json",
+      "bytes": 5985816
+    },
+    {
+      "path": "results/vexriscv_tree_search_001/routes.json",
+      "bytes": 5985816
+    },
+    {
+      "path": "results/vexriscv_tree_search_002/routes.json",
+      "bytes": 5985816
+    },
+    {
+      "path": "results/vexriscv_tree_search_003/routes.json",
+      "bytes": 5985816
+    },
+    {
+      "path": "results/vexriscv_tree_search_004/routes.json",
+      "bytes": 5985816
+    },
+    {
+      "path": "results/vexriscv_register_trial_003/route/routes.json",
+      "bytes": 5985348
+    },
+    {
+      "path": "results/vexriscv_cone_tree_search_001/routes.json",
+      "bytes": 5984337
+    },
+    {
+      "path": "results/vexriscv_tree_repair_001/routes.json",
+      "bytes": 5984337
+    },
+    {
+      "path": "results/vexriscv_critical_replica_004/route/routes.json",
+      "bytes": 5980130
+    },
+    {
+      "path": "results/vexriscv_branch_chain_trial_001/route/routes.json",
+      "bytes": 5979889
+    },
+    {
+      "path": "results/vexriscv_timing_wide_trial_001/route/routes.json",
+      "bytes": 5979793
+    },
+    {
+      "path": "results/vexriscv_register_trial_001/route/routes.json",
+      "bytes": 5979656
+    },
+    {
+      "path": "results/vexriscv_critical_chain_001/route/routes.json",
+      "bytes": 5978982
+    },
+    {
+      "path": "results/vexriscv_timing_cut_trial_001/route/routes.json",
+      "bytes": 5978141
+    },
+    {
+      "path": "results/vexriscv_critical_branch_search_001/routes.json",
+      "bytes": 5977452
+    },
+    {
+      "path": "results/vexriscv_batch_hold_003/round_000/route/routes.json",
+      "bytes": 5972131
+    },
+    {
+      "path": "results/vexriscv_batch_hold_002/round_000/route/routes.json",
+      "bytes": 5971235
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/implementation/route/routes.json",
+      "bytes": 5959719
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/repair_001/route/routes.json",
+      "bytes": 5936866
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/implementation/route/routes.json",
+      "bytes": 5934257
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/resume_checkpoint/partial_routes.json",
+      "bytes": 5933981
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/implementation/route/incremental_fallback_checkpoint.json",
+      "bytes": 5932761
+    },
+    {
+      "path": "results/vexriscv_path_regions_001/implementation/route/incremental_fallback_checkpoint.json",
+      "bytes": 5915553
+    },
+    {
+      "path": "results/vexriscv_path_regions_001/implementation/route/routes.json",
+      "bytes": 5914074
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/route/incremental_fallback_checkpoint.json",
+      "bytes": 5902304
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/route/routes.json",
+      "bytes": 5884272
+    },
+    {
+      "path": "results/vexriscv_seven_cut_002/implementation/route/routes.json",
+      "bytes": 5870436
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_002/implementation/route/routes.json",
+      "bytes": 5866504
+    },
+    {
+      "path": "results/vexriscv_seven_cut_001/implementation/route/routes.json",
+      "bytes": 5865364
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_001/implementation/route/routes.json",
+      "bytes": 5859702
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_002/implementation/route/routes.json",
+      "bytes": 5858352
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_001/implementation/route/routes.json",
+      "bytes": 5858217
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/route/routes.json",
+      "bytes": 5854368
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_converged_002/export/native/partial_configuration.json",
+      "bytes": 5853536
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_converged_002/export/partial_configuration.json",
+      "bytes": 5853536
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/implementation/route/routes.json",
+      "bytes": 5843615
+    },
+    {
+      "path": "results/vexriscv_target_protection_001/implementation/route/routes.json",
+      "bytes": 5840235
+    },
+    {
+      "path": "results/vexriscv_path_regions_002/implementation/route/routes.json",
+      "bytes": 5828045
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/repair_route/routes.json",
+      "bytes": 5823602
+    },
+    {
+      "path": "results/vexriscv_state_frontier_001/implementation/route/routes.json",
+      "bytes": 5823420
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_002/export/native/partial_configuration.json",
+      "bytes": 5816992
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_002/export/partial_configuration.json",
+      "bytes": 5816992
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_001/export/native/partial_configuration.json",
+      "bytes": 5814154
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_001/export/partial_configuration.json",
+      "bytes": 5814154
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/implementation/route/routes.json",
+      "bytes": 5813265
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/clock_data_export_retry_014/native/partial_configuration.json",
+      "bytes": 5812986
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/export_003/native/partial_configuration.json",
+      "bytes": 5812904
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/export_003/partial_configuration.json",
+      "bytes": 5812904
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/time_states_004/partial_configuration.json",
+      "bytes": 5812904
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/time_states_007/partial_configuration.json",
+      "bytes": 5812904
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/implementation/route/routes.json",
+      "bytes": 5812761
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/native_export_005/native/partial_configuration.json",
+      "bytes": 5811084
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/seed/partial_routes.json",
+      "bytes": 5810739
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/post_state_export_012/native/partial_configuration.json",
+      "bytes": 5809095
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/post_state_export_012/partial_configuration.json",
+      "bytes": 5809095
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_001/seed/partial_routes.json",
+      "bytes": 5808250
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/implementation/route/routes.json",
+      "bytes": 5808013
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_timed_batch_run_001/export/native/partial_configuration.json",
+      "bytes": 5807201
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_timed_batch_run_001/export/partial_configuration.json",
+      "bytes": 5807201
+    },
+    {
+      "path": "results/vexriscv_replica_route_003/routes.json",
+      "bytes": 5807137
+    },
+    {
+      "path": "results/vexriscv_hard_data_route_011/routes.json",
+      "bytes": 5806658
+    },
+    {
+      "path": "results/vexriscv_replica_route_001/routes.json",
+      "bytes": 5806413
+    },
+    {
+      "path": "results/vexriscv_replica_route_002/routes.json",
+      "bytes": 5806375
+    },
+    {
+      "path": "results/vexriscv_hard_data_route_010_checkpoint/partial_routes.json",
+      "bytes": 5806014
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/implementation/route/routes.json",
+      "bytes": 5802872
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/joint_macro_checkpoint_010/export/native/partial_configuration.json",
+      "bytes": 5802780
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_001/route/routes.json",
+      "bytes": 5802163
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/route/routes.json",
+      "bytes": 5802163
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/implementation/route/routes.json",
+      "bytes": 5799905
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_implementation/route/routes.json",
+      "bytes": 5798715
+    },
+    {
+      "path": "results/vexriscv_carry_slot7_001/implementation/route/routes.json",
+      "bytes": 5797497
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/implementation/route/routes.json",
+      "bytes": 5796796
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_001/route/routes.json",
+      "bytes": 5796796
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_implementation/route/routes.json",
+      "bytes": 5795536
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_002/route/routes.json",
+      "bytes": 5794521
+    },
+    {
+      "path": "results/vexriscv_regional_replication_001/implementation/route/routes.json",
+      "bytes": 5791635
+    },
+    {
+      "path": "results/backend_regression_frontier_001/tmds_baseline/export/native/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/backend_regression_frontier_001/tmds_baseline/export/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/tmds_baseline/export/native/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/tmds_baseline/export/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/tmds_baseline/export/native/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/tmds_baseline/export/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/tmds_baseline/export/native/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/tmds_baseline/export/partial_configuration.json",
+      "bytes": 5790407
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/routes.json",
+      "bytes": 5789367
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/trust_export_004/native/partial_configuration.json",
+      "bytes": 5785925
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/candidate/routes.json",
+      "bytes": 5785805
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/routes.json",
+      "bytes": 5785805
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_000/route/routes.json",
+      "bytes": 5784173
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_001/route/routes.json",
+      "bytes": 5784154
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/state_macro_retry_008/export/native/partial_configuration.json",
+      "bytes": 5773652
+    },
+    {
+      "path": "results/vexriscv_hard_data_route_010/routes.json",
+      "bytes": 5766190
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_001/export/partial_configuration.json",
+      "bytes": 5703694
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_001/partial_configuration.json",
+      "bytes": 5703694
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_003/export/partial_configuration.json",
+      "bytes": 5703555
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_003/partial_configuration.json",
+      "bytes": 5703555
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_002/export/native/partial_configuration.json",
+      "bytes": 5699110
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_002/export/partial_configuration.json",
+      "bytes": 5699110
+    },
+    {
+      "path": "results/tmds_general_replay_001/export/native/partial_configuration.json",
+      "bytes": 5698979
+    },
+    {
+      "path": "results/tmds_general_replay_001/export/partial_configuration.json",
+      "bytes": 5698979
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_002/export/partial_configuration.json",
+      "bytes": 5698979
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_002/partial_configuration.json",
+      "bytes": 5698979
+    },
+    {
+      "path": "results/tmds_vex_generalization_001/qualification/native/partial_configuration.json",
+      "bytes": 5698979
+    },
+    {
+      "path": "results/tmds_vex_generalization_001/qualification/partial_configuration.json",
+      "bytes": 5698979
+    },
+    {
+      "path": "results/vexriscv_hard_data_route_009/partial_routes.json",
+      "bytes": 5696465
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_whole_changed_trees_003/route/routes.json",
+      "bytes": 5683515
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_001/export/native/partial_configuration.json",
+      "bytes": 5683344
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_001/export/partial_configuration.json",
+      "bytes": 5683344
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_policy_restored_002/route/routes.json",
+      "bytes": 5673784
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_minmax_run_001/route/routes.json",
+      "bytes": 5672861
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_000/export/native/partial_configuration.json",
+      "bytes": 5668827
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_000/export/partial_configuration.json",
+      "bytes": 5668827
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/vexriscv_run_001/route/routes.json",
+      "bytes": 5661938
+    },
+    {
+      "path": "results/tmds_global_wide_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 5652737
+    },
+    {
+      "path": "results/tmds_global_wide_checkpoint_001/export/partial_configuration.json",
+      "bytes": 5652737
+    },
+    {
+      "path": "results/tmds_global_wide_export_002/native/partial_configuration.json",
+      "bytes": 5652737
+    },
+    {
+      "path": "results/tmds_global_wide_export_002/partial_configuration.json",
+      "bytes": 5652737
+    },
+    {
+      "path": "results/tmds_guided_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 5651793
+    },
+    {
+      "path": "results/tmds_guided_checkpoint_001/export/partial_configuration.json",
+      "bytes": 5651793
+    },
+    {
+      "path": "results/tmds_97_4mhz_001/export/native/partial_configuration.json",
+      "bytes": 5644997
+    },
+    {
+      "path": "results/tmds_97_4mhz_001/export/partial_configuration.json",
+      "bytes": 5644997
+    },
+    {
+      "path": "results/tmds_feedback_clock_001/export/native/partial_configuration.json",
+      "bytes": 5644997
+    },
+    {
+      "path": "results/tmds_feedback_clock_001/export/partial_configuration.json",
+      "bytes": 5644997
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_trial_001/route/routes.json",
+      "bytes": 5629097
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 5628094
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_001/export/partial_configuration.json",
+      "bytes": 5628094
+    },
+    {
+      "path": "results/tmds_general_replay_002/export/native/partial_configuration.json",
+      "bytes": 5628094
+    },
+    {
+      "path": "results/tmds_general_replay_002/export/partial_configuration.json",
+      "bytes": 5628094
+    },
+    {
+      "path": "results/tmds_vex_generalization_001/qualification92_5/native/partial_configuration.json",
+      "bytes": 5628094
+    },
+    {
+      "path": "results/tmds_vex_generalization_001/qualification92_5/partial_configuration.json",
+      "bytes": 5628094
+    },
+    {
+      "path": "results/tmds_global_wide_prune_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 5623241
+    },
+    {
+      "path": "results/tmds_global_wide_prune_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 5623241
+    },
+    {
+      "path": "results/vexriscv_full_fanout_trial_001/route/routes.json",
+      "bytes": 5602406
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_002/export/native/partial_configuration.json",
+      "bytes": 5598861
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_002/export/partial_configuration.json",
+      "bytes": 5598861
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_002/route/routes.json",
+      "bytes": 5582457
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_001/route/routes.json",
+      "bytes": 5581134
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_001/route/routes.json",
+      "bytes": 5577998
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/route/routes.json",
+      "bytes": 5577917
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/route/routes.json",
+      "bytes": 5572396
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/route/routes.json",
+      "bytes": 5562551
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_001/route/routes.json",
+      "bytes": 5558670
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_002/route/routes.json",
+      "bytes": 5558670
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_trial_001/route/routes.json",
+      "bytes": 5547865
+    },
+    {
+      "path": "results/tmds_feedback_clock_001/data_configuration.json",
+      "bytes": 5546798
+    },
+    {
+      "path": "results/tmds_feedback_clock_001/search/base_configuration.json",
+      "bytes": 5546798
+    },
+    {
+      "path": "results/vexriscv_selector_trial_001/route/routes.json",
+      "bytes": 5541409
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_002/implementation/route/routes.json",
+      "bytes": 5541075
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/implementation/route/routes.json",
+      "bytes": 5538808
+    },
+    {
+      "path": "results/vexriscv_110_short_detour_002/routes.json",
+      "bytes": 5537236
+    },
+    {
+      "path": "results/vexriscv_110_short_detour_001/routes.json",
+      "bytes": 5537042
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/route/routes.json",
+      "bytes": 5537042
+    },
+    {
+      "path": "results/vexriscv_110_batch_trees_001/route/routes.json",
+      "bytes": 5536832
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/route/routes.json",
+      "bytes": 5536673
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_001/implementation/route/routes.json",
+      "bytes": 5535450
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_trial_001/route/routes.json",
+      "bytes": 5535373
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/implementation/route/partial_routes.json",
+      "bytes": 5522174
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_route_001/routes.json",
+      "bytes": 5518687
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/route/routes.json",
+      "bytes": 5515762
+    },
+    {
+      "path": "results/vexriscv_global_tree_repair_001/routes.json",
+      "bytes": 5515762
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree/routes.json",
+      "bytes": 5514617
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/route/routes.json",
+      "bytes": 5513906
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/implementation/route/routes.json",
+      "bytes": 5513096
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/implementation/route/routes.json",
+      "bytes": 5509476
+    },
+    {
+      "path": "results/vexriscv_reset_regions_001/implementation/route/routes.json",
+      "bytes": 5504096
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/route/routes.json",
+      "bytes": 5499624
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/route/routes.json",
+      "bytes": 5498997
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/route/routes.json",
+      "bytes": 5498997
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/route/routes.json",
+      "bytes": 5498516
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/trade_route_001/routes.json",
+      "bytes": 5497889
+    },
+    {
+      "path": "results/vexriscv_receiver_ranking_002/ranking.json",
+      "bytes": 5495043
+    },
+    {
+      "path": "results/vexriscv_receiver_ranking_001/ranking.json",
+      "bytes": 5495006
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/route/incremental_fallback_checkpoint.json",
+      "bytes": 5479891
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/copy_generalization_020/vexriscv/candidate.json",
+      "bytes": 5317156
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/generalization_cross_011/vexriscv/candidate.json",
+      "bytes": 5316937
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/generalization_general_009/vexriscv/candidate.json",
+      "bytes": 5316924
+    },
+    {
+      "path": "results/vexriscv_reset_regions_001/placement/packed.json",
+      "bytes": 5264796
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/placement/packed.json",
+      "bytes": 5264796
+    },
+    {
+      "path": "results/vexriscv_global_logic_001/input.json",
+      "bytes": 4986996
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 4802137
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_checkpoint_001/export/partial_configuration.json",
+      "bytes": 4802137
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_minmax_run_001/export/native/pin_route_audit.json",
+      "bytes": 4410476
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_policy_restored_002/export/native/pin_route_audit.json",
+      "bytes": 4410476
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_whole_changed_trees_003/export/native/pin_route_audit.json",
+      "bytes": 4410476
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/vexriscv_run_001/export/native/pin_route_audit.json",
+      "bytes": 4410182
+    },
+    {
+      "path": "results/vexriscv_shared_dag_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4353444
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4342286
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/qualification/native/pin_route_audit.json",
+      "bytes": 4342286
+    },
+    {
+      "path": "results/vexriscv_carry_macro_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4333942
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/export_repair_001/native/pin_route_audit.json",
+      "bytes": 4332676
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4332676
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4330341
+    },
+    {
+      "path": "results/vexriscv_87_3_pin_feedback_001/pin_route_audit.json",
+      "bytes": 4330328
+    },
+    {
+      "path": "results/vexriscv_87_3_time_states_002/pin_route_audit.json",
+      "bytes": 4330328
+    },
+    {
+      "path": "results/vexriscv_full_fanout_trial_001/export_repair_001/native/pin_route_audit.json",
+      "bytes": 4330328
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4330328
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4330328
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4330294
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_002/export/native/pin_route_audit.json",
+      "bytes": 4330294
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4325983
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/export/native/pin_route_audit.json",
+      "bytes": 4325983
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/qualification/export/native/pin_route_audit.json",
+      "bytes": 4325983
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/export/native/pin_route_audit.json",
+      "bytes": 4321838
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/qualification/export/native/pin_route_audit.json",
+      "bytes": 4321838
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_pins_001/pin_route_audit.json",
+      "bytes": 4316672
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4316672
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4316672
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4315970
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4315970
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_001/export/native/pin_route_audit.json",
+      "bytes": 4315928
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_001/pins/pin_route_audit.json",
+      "bytes": 4315928
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_002/pins/pin_route_audit.json",
+      "bytes": 4315928
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4315928
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_002/implementation/export/native/pin_route_audit.json",
+      "bytes": 4311220
+    },
+    {
+      "path": "results/vexriscv_selector_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4311220
+    },
+    {
+      "path": "results/vexriscv_selector_trial_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4311220
+    },
+    {
+      "path": "results/vexriscv_110_batch_trees_001/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_110_batch_trees_001/pins/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/pins/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/qualification_retry/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_110_pin_feedback_001/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_110_short_detour_002/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_002/pins/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_001/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/qualification/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/refinement_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/refinement_002/pin_feedback/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/refinement_002/qualification/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_trial_001/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_trial_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4311218
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4311216
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4299120
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4299120
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4299120
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4299120
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4299120
+    },
+    {
+      "path": "results/vexriscv_reset_regions_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4297004
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4296995
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/implementation/export/native/pin_route_audit.json",
+      "bytes": 4296995
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/qualification/export/native/pin_route_audit.json",
+      "bytes": 4296995
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/export/native/pin_route_audit.json",
+      "bytes": 4294015
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4294015
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/export/native/pin_route_audit.json",
+      "bytes": 4294015
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4294015
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4291918
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4291918
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4291918
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4291918
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/export/native/pin_route_audit.json",
+      "bytes": 4291774
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4291774
+    },
+    {
+      "path": "results/vexriscv69_pin_inventory_001/pin_route_audit.json",
+      "bytes": 4239503
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/repair_001/export/native/pin_route_audit.json",
+      "bytes": 4239503
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/repair_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4239503
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4239503
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4210437
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/export/native/pin_route_audit.json",
+      "bytes": 4186568
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4173257
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_002/pin_feedback/pin_route_audit.json",
+      "bytes": 4173257
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4173257
+    },
+    {
+      "path": "results/vexriscv_target_protection_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4173257
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4173257
+    },
+    {
+      "path": "results/tmds_global_mixed_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 4171431
+    },
+    {
+      "path": "results/tmds_global_mixed_checkpoint_001/export/partial_configuration.json",
+      "bytes": 4171431
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/export/native/pin_route_audit.json",
+      "bytes": 4170015
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/qualified65_2/export/native/pin_route_audit.json",
+      "bytes": 4170015
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/export/native/pin_route_audit.json",
+      "bytes": 4170015
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/implementation/export/native/pin_route_audit.json",
+      "bytes": 4167392
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/qualification/export/native/pin_route_audit.json",
+      "bytes": 4167390
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_002/pin_feedback/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/qualification/export/native/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/pin_feedback/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/pin_feedback/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/qualification/export/native/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/pin_feedback/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/qualification/export/native/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/pin_feedback/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/implementation/export/native/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/qualification/export/native/pin_route_audit.json",
+      "bytes": 4167383
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/qualification/export/native/pin_route_audit.json",
+      "bytes": 4167379
+    },
+    {
+      "path": "results/vexriscv_seven_cut_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4167379
+    },
+    {
+      "path": "results/vexriscv_seven_cut_002/pin_feedback/pin_route_audit.json",
+      "bytes": 4167379
+    },
+    {
+      "path": "results/vexriscv_state_frontier_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4167379
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/pin_feedback/pin_route_audit.json",
+      "bytes": 4167379
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_002/export/native/pin_route_audit.json",
+      "bytes": 4152448
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/qualified65_4/export/native/pin_route_audit.json",
+      "bytes": 4152444
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_implementation/export/native/pin_route_audit.json",
+      "bytes": 4152444
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/export/native/pin_route_audit.json",
+      "bytes": 4152444
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/feedback/pin_route_audit.json",
+      "bytes": 4152444
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/export/native/pin_route_audit.json",
+      "bytes": 4152444
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/export/native/pin_route_audit.json",
+      "bytes": 4152444
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/qualified65_9/export/native/pin_route_audit.json",
+      "bytes": 4152444
+    },
+    {
+      "path": "results/vexriscv_65_2mhz_001/export/native/pin_route_audit.json",
+      "bytes": 4152430
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_implementation/export/native/pin_route_audit.json",
+      "bytes": 4152430
+    },
+    {
+      "path": "results/vexriscv_62_2mhz_001/export/native/pin_route_audit.json",
+      "bytes": 4126637
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_export_001/native/pin_route_audit.json",
+      "bytes": 4126637
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_000/export/native/pin_route_audit.json",
+      "bytes": 4126637
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_001/export/native/pin_route_audit.json",
+      "bytes": 4126637
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4126637
+    },
+    {
+      "path": "results/vexriscv_pin_global_loop_001/round_001/pin_feedback/pin_route_audit.json",
+      "bytes": 4117903
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree_export/native/pin_route_audit.json",
+      "bytes": 4117667
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/export/native/pin_route_audit.json",
+      "bytes": 4117667
+    },
+    {
+      "path": "results/vexriscv_global_tree_export_001/native/pin_route_audit.json",
+      "bytes": 4117667
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_minmax_run_001/export/native/native_connectivity.json",
+      "bytes": 3883336
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_policy_restored_002/export/native/native_connectivity.json",
+      "bytes": 3883336
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_whole_changed_trees_003/export/native/native_connectivity.json",
+      "bytes": 3883336
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/vexriscv_run_001/export/native/native_connectivity.json",
+      "bytes": 3883104
+    },
+    {
+      "path": "results/vexriscv_shared_dag_trial_001/export/native/native_connectivity.json",
+      "bytes": 3824081
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/export/native/native_connectivity.json",
+      "bytes": 3815094
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/qualification/native/native_connectivity.json",
+      "bytes": 3815094
+    },
+    {
+      "path": "results/vexriscv_carry_macro_trial_001/export/native/native_connectivity.json",
+      "bytes": 3808202
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/export_repair_001/native/native_connectivity.json",
+      "bytes": 3807190
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3807190
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_001/export/native/native_connectivity.json",
+      "bytes": 3806808
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_002/export/native/native_connectivity.json",
+      "bytes": 3806808
+    },
+    {
+      "path": "results/vexriscv_87_3_pin_feedback_001/native_connectivity.json",
+      "bytes": 3805314
+    },
+    {
+      "path": "results/vexriscv_87_3_time_states_002/native_connectivity.json",
+      "bytes": 3805314
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_trial_001/export/native/native_connectivity.json",
+      "bytes": 3805314
+    },
+    {
+      "path": "results/vexriscv_full_fanout_trial_001/export_repair_001/native/native_connectivity.json",
+      "bytes": 3805314
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/export/native/native_connectivity.json",
+      "bytes": 3805314
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3805314
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_001/export/native/native_connectivity.json",
+      "bytes": 3802029
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/export/native/native_connectivity.json",
+      "bytes": 3802029
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/qualification/export/native/native_connectivity.json",
+      "bytes": 3802029
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/export/native/native_connectivity.json",
+      "bytes": 3798528
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/qualification/export/native/native_connectivity.json",
+      "bytes": 3798528
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3793705
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3793705
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_pins_001/native_connectivity.json",
+      "bytes": 3793276
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/export/native/native_connectivity.json",
+      "bytes": 3793276
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3793276
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_001/export/native/native_connectivity.json",
+      "bytes": 3792694
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_001/pins/native_connectivity.json",
+      "bytes": 3792694
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_002/pins/native_connectivity.json",
+      "bytes": 3792694
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_trial_001/export/native/native_connectivity.json",
+      "bytes": 3792694
+    },
+    {
+      "path": "results/vexriscv_110_batch_trees_001/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_110_batch_trees_001/pins/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/pins/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/qualification_retry/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_110_pin_feedback_001/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_110_short_detour_002/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_002/implementation/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_002/pins/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_001/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/qualification/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/refinement_001/pin_feedback/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/refinement_002/pin_feedback/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/refinement_002/qualification/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_trial_001/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_trial_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_selector_trial_001/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_selector_trial_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3788868
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/pin_feedback/native_connectivity.json",
+      "bytes": 3776467
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3776467
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3776467
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3776467
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3776467
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/pin_feedback/native_connectivity.json",
+      "bytes": 3774797
+    },
+    {
+      "path": "results/vexriscv_reset_regions_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3774797
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/implementation/export/native/native_connectivity.json",
+      "bytes": 3774797
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/qualification/export/native/native_connectivity.json",
+      "bytes": 3774797
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/export/native/native_connectivity.json",
+      "bytes": 3772469
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3772469
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/export/native/native_connectivity.json",
+      "bytes": 3772469
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3772469
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3770723
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3770723
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/pin_feedback/native_connectivity.json",
+      "bytes": 3770723
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/export/native/native_connectivity.json",
+      "bytes": 3770723
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/pin_feedback/native_connectivity.json",
+      "bytes": 3770723
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/pin_feedback/native_connectivity.json",
+      "bytes": 3770723
+    },
+    {
+      "path": "results/heterogeneous_choice_joint_trial_008/tmds_joint_checkpoint_008/export/native/partial_configuration.json",
+      "bytes": 3768650
+    },
+    {
+      "path": "results/vexriscv69_pin_inventory_001/native_connectivity.json",
+      "bytes": 3716954
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/repair_001/export/native/native_connectivity.json",
+      "bytes": 3716954
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/repair_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3716954
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/pin_feedback/native_connectivity.json",
+      "bytes": 3716954
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/pin_feedback/native_connectivity.json",
+      "bytes": 3687358
+    },
+    {
+      "path": "results/heterogeneous_choice_joint_trial_008/tmds_joint_register_export_retry_011/native/partial_configuration.json",
+      "bytes": 3673126
+    },
+    {
+      "path": "results/heterogeneous_choice_joint_trial_008/tmds_joint_register_export_retry_011/partial_configuration.json",
+      "bytes": 3673126
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/export/native/native_connectivity.json",
+      "bytes": 3666090
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/export/native/native_connectivity.json",
+      "bytes": 3652142
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/qualified65_2/export/native/native_connectivity.json",
+      "bytes": 3652142
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/export/native/native_connectivity.json",
+      "bytes": 3652142
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_001/pin_feedback/native_connectivity.json",
+      "bytes": 3651418
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_002/pin_feedback/native_connectivity.json",
+      "bytes": 3651418
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/pin_feedback/native_connectivity.json",
+      "bytes": 3651418
+    },
+    {
+      "path": "results/vexriscv_target_protection_001/pin_feedback/native_connectivity.json",
+      "bytes": 3651418
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/pin_feedback/native_connectivity.json",
+      "bytes": 3651418
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_001/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_002/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/qualification/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/qualification/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/qualification/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/qualification/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/qualification/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/implementation/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/implementation/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/qualification/export/native/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_seven_cut_001/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_seven_cut_002/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_state_frontier_001/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/pin_feedback/native_connectivity.json",
+      "bytes": 3646806
+    },
+    {
+      "path": "results/vexriscv_65_2mhz_001/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/qualified65_4/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_implementation/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_implementation/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/feedback/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/qualified65_9/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_002/export/native/native_connectivity.json",
+      "bytes": 3634280
+    },
+    {
+      "path": "results/ownpr_uart_prune_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3620093
+    },
+    {
+      "path": "results/ownpr_uart_prune_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3620093
+    },
+    {
+      "path": "results/vexriscv_62_2mhz_001/export/native/native_connectivity.json",
+      "bytes": 3610367
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_export_001/native/native_connectivity.json",
+      "bytes": 3610367
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_000/export/native/native_connectivity.json",
+      "bytes": 3610367
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_001/export/native/native_connectivity.json",
+      "bytes": 3610367
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_001/pin_feedback/native_connectivity.json",
+      "bytes": 3610367
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree_export/native/native_connectivity.json",
+      "bytes": 3603383
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/export/native/native_connectivity.json",
+      "bytes": 3603383
+    },
+    {
+      "path": "results/vexriscv_global_tree_export_001/native/native_connectivity.json",
+      "bytes": 3603383
+    },
+    {
+      "path": "results/vexriscv_pin_global_loop_001/round_001/pin_feedback/native_connectivity.json",
+      "bytes": 3603383
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_002/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3594589
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_002/round_001/eco_export/partial_configuration.json",
+      "bytes": 3594589
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3587714
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3587714
+    },
+    {
+      "path": "results/ownpr_uart_whole_net_closure_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3584398
+    },
+    {
+      "path": "results/ownpr_uart_whole_net_closure_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3584398
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3583569
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3583569
+    },
+    {
+      "path": "results/ownpr_uart_multipath_closure_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3580394
+    },
+    {
+      "path": "results/ownpr_uart_multipath_closure_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3580394
+    },
+    {
+      "path": "results/ownpr_uart_singlepath_check_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3580393
+    },
+    {
+      "path": "results/ownpr_uart_singlepath_check_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3580393
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_002/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3579256
+    },
+    {
+      "path": "results/ownpr_uart_macro_move_closure_002/round_001/initial_export/partial_configuration.json",
+      "bytes": 3579256
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3577692
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3577692
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_002/eco_export/native/partial_configuration.json",
+      "bytes": 3575976
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_002/eco_export/partial_configuration.json",
+      "bytes": 3575976
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3574972
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3574972
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_002/initial_export/native/partial_configuration.json",
+      "bytes": 3573404
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_002/initial_export/partial_configuration.json",
+      "bytes": 3573404
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_003/initial_export/native/partial_configuration.json",
+      "bytes": 3573404
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_003/initial_export/partial_configuration.json",
+      "bytes": 3573404
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_002/eco_export/native/partial_configuration.json",
+      "bytes": 3573384
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_002/eco_export/partial_configuration.json",
+      "bytes": 3573384
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_003/eco_export/native/partial_configuration.json",
+      "bytes": 3571972
+    },
+    {
+      "path": "results/ownpr_uart_ce_selector_closure_001/round_003/eco_export/partial_configuration.json",
+      "bytes": 3571972
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_002/initial_export/native/partial_configuration.json",
+      "bytes": 3570669
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_002/initial_export/partial_configuration.json",
+      "bytes": 3570669
+    },
+    {
+      "path": "results/ownpr_uart_selector_cascade_closure_002/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3534935
+    },
+    {
+      "path": "results/ownpr_uart_selector_cascade_closure_002/round_001/initial_export/partial_configuration.json",
+      "bytes": 3534935
+    },
+    {
+      "path": "results/ownpr_uart_selector_cascade_closure_002/round_002/initial_export/native/partial_configuration.json",
+      "bytes": 3533966
+    },
+    {
+      "path": "results/ownpr_uart_selector_cascade_closure_002/round_002/initial_export/partial_configuration.json",
+      "bytes": 3533966
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_001/ioreg/eco_configuration/partial_configuration.json",
+      "bytes": 3518443
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_001/ioreg/eco_export/partial_configuration.json",
+      "bytes": 3518443
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_003/export/native/partial_configuration.json",
+      "bytes": 3515062
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_003/export/partial_configuration.json",
+      "bytes": 3515062
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_001/ioreg/initial_configuration/partial_configuration.json",
+      "bytes": 3513145
+    },
+    {
+      "path": "results/ownpr_uart_mixed_closure_001/round_001/ioreg/initial_export/partial_configuration.json",
+      "bytes": 3513145
+    },
+    {
+      "path": "results/ownpr_uart_cluster_swap_002/export/native/partial_configuration.json",
+      "bytes": 3511138
+    },
+    {
+      "path": "results/ownpr_uart_cluster_swap_002/export/partial_configuration.json",
+      "bytes": 3511138
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_001/export/native/partial_configuration.json",
+      "bytes": 3510132
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_001/export/partial_configuration.json",
+      "bytes": 3510132
+    },
+    {
+      "path": "results/ownpr_uart_cascade_pin_closure_001/round_001/export/partial_configuration.json",
+      "bytes": 3509912
+    },
+    {
+      "path": "results/ownpr_uart_cascade_pin_closure_001/round_001/partial_configuration.json",
+      "bytes": 3509912
+    },
+    {
+      "path": "results/ownpr_uart_cascade_pin_closure_001/round_002/export/partial_configuration.json",
+      "bytes": 3509912
+    },
+    {
+      "path": "results/ownpr_uart_cascade_pin_closure_001/round_002/partial_configuration.json",
+      "bytes": 3509912
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_001/export/native/partial_configuration.json",
+      "bytes": 3509897
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_001/export/partial_configuration.json",
+      "bytes": 3509897
+    },
+    {
+      "path": "results/ownpr_uart_lut_slot_001/export/native/partial_configuration.json",
+      "bytes": 3508711
+    },
+    {
+      "path": "results/ownpr_uart_lut_slot_001/export/partial_configuration.json",
+      "bytes": 3508711
+    },
+    {
+      "path": "results/ownpr_uart_selector_cascade_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3508346
+    },
+    {
+      "path": "results/ownpr_uart_selector_cascade_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3508346
+    },
+    {
+      "path": "results/ownpr_uart_cluster_swap_003/export/native/partial_configuration.json",
+      "bytes": 3504005
+    },
+    {
+      "path": "results/ownpr_uart_cluster_swap_003/export/partial_configuration.json",
+      "bytes": 3504005
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_003/initial_export/native/partial_configuration.json",
+      "bytes": 3503929
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_003/initial_export/partial_configuration.json",
+      "bytes": 3503929
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_003/eco_export/native/partial_configuration.json",
+      "bytes": 3503927
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_003/eco_export/partial_configuration.json",
+      "bytes": 3503927
+    },
+    {
+      "path": "results/ownpr_constant_route_probe_001/export/native/partial_configuration.json",
+      "bytes": 3476351
+    },
+    {
+      "path": "results/ownpr_constant_route_probe_001/export/partial_configuration.json",
+      "bytes": 3476351
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_002/eco_export/native/partial_configuration.json",
+      "bytes": 3474751
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_002/eco_export/partial_configuration.json",
+      "bytes": 3474751
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3473177
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3473177
+    },
+    {
+      "path": "results/ownpr_uart_tx_ioreg_closure_002/initial_configuration/partial_configuration.json",
+      "bytes": 3470563
+    },
+    {
+      "path": "results/ownpr_uart_tx_ioreg_closure_002/initial_export/partial_configuration.json",
+      "bytes": 3470563
+    },
+    {
+      "path": "results/ownpr_uart_tx_ioreg_closure_002/eco_configuration/partial_configuration.json",
+      "bytes": 3470561
+    },
+    {
+      "path": "results/ownpr_uart_tx_ioreg_closure_002/eco_export/partial_configuration.json",
+      "bytes": 3470561
+    },
+    {
+      "path": "results/ownpr_uart_branch_pin_closure_002/round_001/export/partial_configuration.json",
+      "bytes": 3469390
+    },
+    {
+      "path": "results/ownpr_uart_branch_pin_closure_002/round_001/partial_configuration.json",
+      "bytes": 3469390
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_002/initial_export/native/partial_configuration.json",
+      "bytes": 3469309
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_002/initial_export/partial_configuration.json",
+      "bytes": 3469309
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3469262
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3469262
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3469032
+    },
+    {
+      "path": "results/ownpr_uart_selector_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3469032
+    },
+    {
+      "path": "results/ownpr_uart_branch_pin_closure_001/round_001/export/partial_configuration.json",
+      "bytes": 3467817
+    },
+    {
+      "path": "results/ownpr_uart_branch_pin_closure_001/round_001/partial_configuration.json",
+      "bytes": 3467817
+    },
+    {
+      "path": "results/ownpr_uart_branch_reuse_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3467815
+    },
+    {
+      "path": "results/ownpr_uart_branch_reuse_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3467815
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3466547
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3466547
+    },
+    {
+      "path": "results/ownpr_uart_prune_closure_002/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3465786
+    },
+    {
+      "path": "results/ownpr_uart_prune_closure_002/round_001/eco_export/partial_configuration.json",
+      "bytes": 3465786
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_003/eco_export/native/partial_configuration.json",
+      "bytes": 3464432
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_003/eco_export/partial_configuration.json",
+      "bytes": 3464432
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_002/initial_export/native/partial_configuration.json",
+      "bytes": 3461851
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_002/initial_export/partial_configuration.json",
+      "bytes": 3461851
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_002/eco_export/native/partial_configuration.json",
+      "bytes": 3461849
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_002/eco_export/partial_configuration.json",
+      "bytes": 3461849
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reexport_001/native/partial_configuration.json",
+      "bytes": 3461812
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reexport_001/partial_configuration.json",
+      "bytes": 3461812
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_002/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3461812
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_002/round_001/eco_export/partial_configuration.json",
+      "bytes": 3461812
+    },
+    {
+      "path": "results/ownpr_uart_prune_closure_002/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3461784
+    },
+    {
+      "path": "results/ownpr_uart_prune_closure_002/round_001/initial_export/partial_configuration.json",
+      "bytes": 3461784
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_003/initial_export/native/partial_configuration.json",
+      "bytes": 3460287
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_003/initial_export/partial_configuration.json",
+      "bytes": 3460287
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_002/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3459092
+    },
+    {
+      "path": "results/ownpr_uart_arrival_reorder_closure_002/round_001/initial_export/partial_configuration.json",
+      "bytes": 3459092
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_002/export/partial_configuration.json",
+      "bytes": 3414034
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_002/partial_configuration.json",
+      "bytes": 3414034
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_003/export/partial_configuration.json",
+      "bytes": 3412483
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_003/partial_configuration.json",
+      "bytes": 3412483
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_001/export/partial_configuration.json",
+      "bytes": 3412472
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_001/partial_configuration.json",
+      "bytes": 3412472
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_001/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3412449
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_001/round_001/eco_export/partial_configuration.json",
+      "bytes": 3412449
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 3412449
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_001/eco_export/partial_configuration.json",
+      "bytes": 3412449
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_004/native/partial_configuration.json",
+      "bytes": 3412402
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_004/partial_configuration.json",
+      "bytes": 3412402
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_004/native/partial_configuration.json",
+      "bytes": 3412376
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_004/partial_configuration.json",
+      "bytes": 3412376
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_004/export/partial_configuration.json",
+      "bytes": 3412340
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_002/round_004/partial_configuration.json",
+      "bytes": 3412340
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_001/round_002/initial_export/native/partial_configuration.json",
+      "bytes": 3409868
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_001/round_002/initial_export/partial_configuration.json",
+      "bytes": 3409868
+    },
+    {
+      "path": "results/ownpr_uart_joint_resume_export_001/native/partial_configuration.json",
+      "bytes": 3409868
+    },
+    {
+      "path": "results/ownpr_uart_joint_resume_export_001/partial_configuration.json",
+      "bytes": 3409868
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_002/native/partial_configuration.json",
+      "bytes": 3409819
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_002/partial_configuration.json",
+      "bytes": 3409819
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_001/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3408304
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_001/round_001/initial_export/partial_configuration.json",
+      "bytes": 3408304
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_001/initial_export/native/partial_configuration.json",
+      "bytes": 3408304
+    },
+    {
+      "path": "results/ownpr_uart_joint_closure_002/round_001/initial_export/partial_configuration.json",
+      "bytes": 3408304
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_001/native/partial_configuration.json",
+      "bytes": 3394006
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_001/partial_configuration.json",
+      "bytes": 3394006
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_003/native/partial_configuration.json",
+      "bytes": 3392549
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_003/partial_configuration.json",
+      "bytes": 3392549
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_003/native/partial_configuration.json",
+      "bytes": 3392442
+    },
+    {
+      "path": "results/ownpr_uart_wide_reorder_handoff_003/partial_configuration.json",
+      "bytes": 3392442
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_001/round_001/export/partial_configuration.json",
+      "bytes": 3367449
+    },
+    {
+      "path": "results/ownpr_uart_secondary_pin_closure_001/round_001/partial_configuration.json",
+      "bytes": 3367449
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_002/native/partial_configuration.json",
+      "bytes": 3367362
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_002/partial_configuration.json",
+      "bytes": 3367362
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/uart_clock_latency_001/export/native/partial_configuration.json",
+      "bytes": 3357764
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/uart_clock_latency_001/export/partial_configuration.json",
+      "bytes": 3357764
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/uart_run_001/export/native/partial_configuration.json",
+      "bytes": 3355678
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/uart_run_001/export/partial_configuration.json",
+      "bytes": 3355678
+    },
+    {
+      "path": "results/backend_regression_frontier_001/uart_baseline/export/native/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/backend_regression_frontier_001/uart_baseline/export/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/uart_baseline/export/native/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/uart_baseline/export/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/uart_baseline/export/native/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/uart_baseline/export/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/uart_baseline/export/native/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/uart_baseline/export/partial_configuration.json",
+      "bytes": 3352578
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_002/export/native/partial_configuration.json",
+      "bytes": 3351838
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_002/export/partial_configuration.json",
+      "bytes": 3351838
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_003/export/native/partial_configuration.json",
+      "bytes": 3351838
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_003/export/partial_configuration.json",
+      "bytes": 3351838
+    },
+    {
+      "path": "results/coopt_review_clock_merge_001/export/native/partial_configuration.json",
+      "bytes": 3351831
+    },
+    {
+      "path": "results/coopt_review_clock_merge_001/export/partial_configuration.json",
+      "bytes": 3351831
+    },
+    {
+      "path": "results/coopt_uart_197mhz_001/native/partial_configuration.json",
+      "bytes": 3351831
+    },
+    {
+      "path": "results/coopt_uart_197mhz_001/partial_configuration.json",
+      "bytes": 3351831
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_000/export/native/partial_configuration.json",
+      "bytes": 3351829
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_000/export/partial_configuration.json",
+      "bytes": 3351829
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_001/export/native/partial_configuration.json",
+      "bytes": 3351827
+    },
+    {
+      "path": "results/coopt_uart_generic_slots_001/attempt_001/export/partial_configuration.json",
+      "bytes": 3351827
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_001/native/partial_configuration.json",
+      "bytes": 3348689
+    },
+    {
+      "path": "results/ownpr_uart_ce_wide_handoff_001/partial_configuration.json",
+      "bytes": 3348689
+    },
+    {
+      "path": "results/coopt_review_stage3_reexport_001/native/partial_configuration.json",
+      "bytes": 3345728
+    },
+    {
+      "path": "results/coopt_review_stage3_reexport_001/partial_configuration.json",
+      "bytes": 3345728
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_001/data_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_001/search/base_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_002/data_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_002/search/base_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_003/data_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_closure_003/search/base_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_001/data_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_001/search/base_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_002/data_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_002/search/base_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_003/data_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_003/search/base_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_004/data_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_004/search/base_configuration.json",
+      "bytes": 3339804
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_001/data_configuration.json",
+      "bytes": 3333897
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_001/search/base_configuration.json",
+      "bytes": 3333897
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_002/data_configuration.json",
+      "bytes": 3333896
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_002/search/base_configuration.json",
+      "bytes": 3333896
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_closure_001/eco_configuration/partial_configuration.json",
+      "bytes": 3326408
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_closure_001/eco_export/partial_configuration.json",
+      "bytes": 3326408
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_002/round_002/export/partial_configuration.json",
+      "bytes": 3325183
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_002/round_002/partial_configuration.json",
+      "bytes": 3325183
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_002/round_003/export/partial_configuration.json",
+      "bytes": 3325183
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_002/round_003/partial_configuration.json",
+      "bytes": 3325183
+    },
+    {
+      "path": "results/ownpr_uart_secondary_clock_001/base_configuration.json",
+      "bytes": 3325183
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_002/round_001/export/partial_configuration.json",
+      "bytes": 3324906
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_002/round_001/partial_configuration.json",
+      "bytes": 3324906
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_001/round_001/export/partial_configuration.json",
+      "bytes": 3324902
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_pin_closure_001/round_001/partial_configuration.json",
+      "bytes": 3324902
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_closure_001/initial_configuration/partial_configuration.json",
+      "bytes": 3307735
+    },
+    {
+      "path": "results/ownpr_uart_ioreg_closure_001/initial_export/partial_configuration.json",
+      "bytes": 3307735
+    },
+    {
+      "path": "results/vexriscv_full_placement_import_002/native_connectivity.json",
+      "bytes": 3302341
+    },
+    {
+      "path": "results/vexriscv_full_placement_import_003/native_connectivity.json",
+      "bytes": 3302341
+    },
+    {
+      "path": "results/vexriscv_full_placement_import_004/native_connectivity.json",
+      "bytes": 3302341
+    },
+    {
+      "path": "results/vexriscv_full_placement_import_005/native_connectivity.json",
+      "bytes": 3302341
+    },
+    {
+      "path": "results/architecture_arithmetic_joint_trial_006/soft_lut4_checkpoint_012/export/native/partial_configuration.json",
+      "bytes": 3203907
+    },
+    {
+      "path": "results/architecture_arithmetic_joint_trial_006/arithmetic_mixed_checkpoint_008/export/native/partial_configuration.json",
+      "bytes": 3200578
+    },
+    {
+      "path": "results/tmds_global_all_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 3180850
+    },
+    {
+      "path": "results/tmds_global_all_checkpoint_001/export/partial_configuration.json",
+      "bytes": 3180850
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/uart_clock_latency_001/data_configuration.json",
+      "bytes": 3176343
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/uart_clock_latency_001/search/base_configuration.json",
+      "bytes": 3176343
+    },
+    {
+      "path": "results/coopt_review_clock_merge_001/data_configuration.json",
+      "bytes": 3175621
+    },
+    {
+      "path": "results/coopt_review_clock_merge_001/search/base_configuration.json",
+      "bytes": 3175621
+    },
+    {
+      "path": "results/ownpr_uart_secondary_clock_002/base_configuration.json",
+      "bytes": 3147510
+    },
+    {
+      "path": "results/ownpr_uart_secondary_clock_003/base_configuration.json",
+      "bytes": 3147510
+    },
+    {
+      "path": "results/tmds_global_comparators_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 3100299
+    },
+    {
+      "path": "results/tmds_global_comparators_checkpoint_001/export/partial_configuration.json",
+      "bytes": 3100299
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/measured_route_samples.json",
+      "bytes": 3096062
+    },
+    {
+      "path": "results/multicfu_large_cut_trial_026/export_retry_003/wire/wire_delays.json",
+      "bytes": 3060650
+    },
+    {
+      "path": "results/coopt_tmds_checkpoint_001/export/native/partial_configuration.json",
+      "bytes": 3054854
+    },
+    {
+      "path": "results/coopt_tmds_checkpoint_001/export/partial_configuration.json",
+      "bytes": 3054854
+    },
+    {
+      "path": "results/coopt_tmds_export_002/native/partial_configuration.json",
+      "bytes": 3054854
+    },
+    {
+      "path": "results/coopt_tmds_export_002/partial_configuration.json",
+      "bytes": 3054854
+    },
+    {
+      "path": "results/ownpr_uart_pin_closure_002/round_005/export/partial_configuration.json",
+      "bytes": 3011890
+    },
+    {
+      "path": "results/coopt_tmds_53_5mhz_001/native/partial_configuration.json",
+      "bytes": 2984517
+    },
+    {
+      "path": "results/coopt_tmds_53_5mhz_001/partial_configuration.json",
+      "bytes": 2984517
+    },
+    {
+      "path": "results/coopt_tmds_hold_closure_001/round_001/export/native/partial_configuration.json",
+      "bytes": 2984517
+    },
+    {
+      "path": "results/coopt_tmds_hold_closure_001/round_001/export/partial_configuration.json",
+      "bytes": 2984517
+    },
+    {
+      "path": "results/coopt_tmds_hold_closure_001/round_000/export/native/partial_configuration.json",
+      "bytes": 2969903
+    },
+    {
+      "path": "results/coopt_tmds_hold_closure_001/round_000/export/partial_configuration.json",
+      "bytes": 2969903
+    },
+    {
+      "path": "results/vexriscv_62_2mhz_001/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_65_2mhz_001/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_002/qualified65_2/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/qualified65_4/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_carry_neighbors_001/rollback_implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_carry_slot7_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_feedback_cuts_control_001/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_global_joint_001/tree_export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_global_joint_recovery_export_001/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_000/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_global_postroute_loop_001/round_001/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_global_relayout_trial_002/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_global_tree_export_001/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_joint_cut_frontier_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/repair_001/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_joint_cut_refresh_001/repair_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_002/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_003/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_004/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_multilevel_coopt_001/legalized_implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_multilevel_gain_001/mutable_implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_path_regions_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_path_regions_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_path_regions_003/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_path_regions_004/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_pin_batch_reproduction_001/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_pin_budget_001/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_pin_budget_002/qualified65_9/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_regional_replication_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_seven_cut_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_seven_cut_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/backend_qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_shared_wide_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_source_reconnect_002/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_state_frontier_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_state_frontier_002/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_target_protection_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/backend_qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/vexriscv_wide_neighbors_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966411
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_minmax_run_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_policy_restored_002/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/vexriscv_whole_changed_trees_003/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/vexriscv_run_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_110_batch_trees_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_110_critical_trees_001/qualification_retry/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_110_short_detour_002/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_56_0mhz_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_002/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_address_state_trial_002/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_auto_mixed_slots_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_bram_cone_trial_001/qualification/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_carry_macro_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/refinement_002/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_frontier_partition_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_full_fanout_trial_001/export_repair_001/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/export_repair_001/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_joint_lut_graph_trial_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_mixed_wide_ff_trial_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_replica_trial_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_route_repair_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_output_state_cache_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_pin_global_export_001/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_pin_global_loop_001/round_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_reset_buffer_move_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_reset_regions_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_reset_regions_002/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_routed_branch_trial_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_selector_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_selector_trial_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_shared_dag_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/reconciled_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/hold/round_000/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/refinement_001/qualification/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/vexriscv_timing_wide_trial_001/export/native/extended_timing_queries.json",
+      "bytes": 2966224
+    },
+    {
+      "path": "results/coopt_tmds_hold_export_001/native/partial_configuration.json",
+      "bytes": 2955336
+    },
+    {
+      "path": "results/coopt_tmds_hold_export_001/partial_configuration.json",
+      "bytes": 2955336
+    },
+    {
+      "path": "results/coopt_tmds_joint_002/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 2945892
+    },
+    {
+      "path": "results/coopt_tmds_joint_002/round_001/eco_export/partial_configuration.json",
+      "bytes": 2945892
+    },
+    {
+      "path": "results/coopt_tmds_joint_003/round_001/eco_export/native/partial_configuration.json",
+      "bytes": 2945892
+    },
+    {
+      "path": "results/coopt_tmds_joint_003/round_001/eco_export/partial_configuration.json",
+      "bytes": 2945892
+    },
+    {
+      "path": "results/coopt_tmds_checkpoint_002/export/native/partial_configuration.json",
+      "bytes": 2940296
+    },
+    {
+      "path": "results/coopt_tmds_checkpoint_002/export/partial_configuration.json",
+      "bytes": 2940296
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_001/route/manifest.json",
+      "bytes": 2939724
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/uart_clock_latency_001/search/search_report.json",
+      "bytes": 2911649
+    },
+    {
+      "path": "results/vexriscv_measured_carry_005/candidate/trials.json",
+      "bytes": 2886373
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_converged_002/export/wire/wire_delays.json",
+      "bytes": 2871981
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_external_001/search/search_report.json",
+      "bytes": 2858734
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_002/export/wire/wire_delays.json",
+      "bytes": 2857794
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_001/export/wire/wire_delays.json",
+      "bytes": 2855174
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_timed_batch_run_001/export/wire/wire_delays.json",
+      "bytes": 2854410
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/clock_data_export_013/wire/wire_delays.json",
+      "bytes": 2854304
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/export_003/wire/wire_delays.json",
+      "bytes": 2853887
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/post_state_export_012/wire/wire_delays.json",
+      "bytes": 2853519
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/joint_macro_checkpoint_010/export/wire/wire_delays.json",
+      "bytes": 2850879
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/trust_export_004/wire/wire_delays.json",
+      "bytes": 2839278
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/state_macro_retry_008/export/wire/wire_delays.json",
+      "bytes": 2831228
+    },
+    {
+      "path": "results/multicfu_large_cut_trial_026/export_retry_003/native/sta_endpoint_audit.json",
+      "bytes": 2828740
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_002/eco_export/wire/wire_delays.json",
+      "bytes": 2789179
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_003/eco_export/wire/wire_delays.json",
+      "bytes": 2784675
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_002/initial_export/wire/wire_delays.json",
+      "bytes": 2784592
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_001/initial_export/wire/wire_delays.json",
+      "bytes": 2782667
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_001/eco_export/wire/wire_delays.json",
+      "bytes": 2782191
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_003/initial_export/wire/wire_delays.json",
+      "bytes": 2782106
+    },
+    {
+      "path": "results/tmds_feedback_clock_001/export/wire/wire_delays.json",
+      "bytes": 2781351
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_003/eco_export/wire/wire_delays.json",
+      "bytes": 2781351
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_002/eco_export/wire/wire_delays.json",
+      "bytes": 2779991
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_003/initial_export/wire/wire_delays.json",
+      "bytes": 2779768
+    },
+    {
+      "path": "results/tmds_guided_checkpoint_001/export/wire/wire_delays.json",
+      "bytes": 2779220
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_001/eco_export/wire/wire_delays.json",
+      "bytes": 2779037
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_001/wire/wire_delays.json",
+      "bytes": 2776984
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_003/wire/wire_delays.json",
+      "bytes": 2776605
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_002/initial_export/wire/wire_delays.json",
+      "bytes": 2776509
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_002/export/wire/wire_delays.json",
+      "bytes": 2774863
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_001/export/wire/wire_delays.json",
+      "bytes": 2774507
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_002/wire/wire_delays.json",
+      "bytes": 2774484
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_001/initial_export/wire/wire_delays.json",
+      "bytes": 2771197
+    },
+    {
+      "path": "results/coopt_vexriscv_mapping_003/03_resources/register_choices.json",
+      "bytes": 2767662
+    },
+    {
+      "path": "results/coopt_vexriscv_rebuild_001/synthesis/03_resources/register_choices.json",
+      "bytes": 2767662
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_001/export/wire/wire_delays.json",
+      "bytes": 2766117
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_000/export/wire/wire_delays.json",
+      "bytes": 2759033
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_002/export/wire/wire_delays.json",
+      "bytes": 2752757
+    },
+    {
+      "path": "results/tmds_global_wide_checkpoint_001/export/wire/wire_delays.json",
+      "bytes": 2751398
+    },
+    {
+      "path": "results/tmds_global_wide_prune_001/round_001/initial_export/wire/wire_delays.json",
+      "bytes": 2717039
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/state_macro_retry_008/export/native/sta_endpoint_audit.json",
+      "bytes": 2430312
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_converged_002/export/native/sta_endpoint_audit.json",
+      "bytes": 2420079
+    },
+    {
+      "path": "results/tmds_guided_checkpoint_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2357933
+    },
+    {
+      "path": "results/vexriscv_competing_cut_plan_001/plan.json",
+      "bytes": 2356180
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/candidate/plan.json",
+      "bytes": 2356180
+    },
+    {
+      "path": "results/vexriscv_clock_prefix_timing_001/right_timing.json",
+      "bytes": 2344153
+    },
+    {
+      "path": "results/vexriscv_central_clock_timing_001/left_timing.json",
+      "bytes": 2343052
+    },
+    {
+      "path": "results/vexriscv_clock_prefix_timing_001/left_timing.json",
+      "bytes": 2343052
+    },
+    {
+      "path": "results/vexriscv_central_clock_timing_001/right_timing.json",
+      "bytes": 2341495
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_checkpoint_001/export/wire/wire_delays.json",
+      "bytes": 2334696
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_timed_batch_run_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2294073
+    },
+    {
+      "path": "results/backend_regression_frontier_001/tmds_baseline/export/native/sta_endpoint_audit.json",
+      "bytes": 2293431
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/tmds_baseline/export/native/sta_endpoint_audit.json",
+      "bytes": 2293431
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/tmds_baseline/export/native/sta_endpoint_audit.json",
+      "bytes": 2293431
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/tmds_baseline/export/native/sta_endpoint_audit.json",
+      "bytes": 2293431
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/trust_export_004/native/sta_endpoint_audit.json",
+      "bytes": 2292934
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2292482
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/clock_data_export_retry_014/native/sta_endpoint_audit.json",
+      "bytes": 2291173
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/final_time_states_016/sta_endpoint_audit.json",
+      "bytes": 2291173
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_002/export/native/sta_endpoint_audit.json",
+      "bytes": 2291129
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/export_003/native/sta_endpoint_audit.json",
+      "bytes": 2290968
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/time_states_004/sta_endpoint_audit.json",
+      "bytes": 2290968
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/time_states_007/sta_endpoint_audit.json",
+      "bytes": 2290968
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/post_state_export_012/native/sta_endpoint_audit.json",
+      "bytes": 2290408
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/post_state_time_states_012/sta_endpoint_audit.json",
+      "bytes": 2290408
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/joint_macro_checkpoint_010/export/native/sta_endpoint_audit.json",
+      "bytes": 2289777
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/joint_time_states_010/sta_endpoint_audit.json",
+      "bytes": 2289777
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_global_run_001/export/native/partial_configuration.json",
+      "bytes": 2261830
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_global_run_001/export/partial_configuration.json",
+      "bytes": 2261830
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_001/export/sta_endpoint_audit.json",
+      "bytes": 2260823
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_003/export/sta_endpoint_audit.json",
+      "bytes": 2260748
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_002/export/native/sta_endpoint_audit.json",
+      "bytes": 2260663
+    },
+    {
+      "path": "results/tmds_general_replay_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2260588
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_002/export/sta_endpoint_audit.json",
+      "bytes": 2260588
+    },
+    {
+      "path": "results/tmds_vex_generalization_001/qualification/native/sta_endpoint_audit.json",
+      "bytes": 2260588
+    },
+    {
+      "path": "results/multicfu_large_cut_trial_026/export_retry_003/native/expanded_routes.json",
+      "bytes": 2255432
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2254373
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_002/export/native/sta_endpoint_audit.json",
+      "bytes": 2249426
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_000/export/native/sta_endpoint_audit.json",
+      "bytes": 2248384
+    },
+    {
+      "path": "results/tmds_global_wide_checkpoint_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2242337
+    },
+    {
+      "path": "results/tmds_global_wide_export_002/native/sta_endpoint_audit.json",
+      "bytes": 2242337
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_002/initial_export/native/sta_endpoint_audit.json",
+      "bytes": 2239122
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_002/eco_export/native/sta_endpoint_audit.json",
+      "bytes": 2238618
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_001/eco_export/native/sta_endpoint_audit.json",
+      "bytes": 2236425
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_001/initial_export/native/sta_endpoint_audit.json",
+      "bytes": 2236385
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_002/initial_export/native/sta_endpoint_audit.json",
+      "bytes": 2235391
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_003/initial_export/native/sta_endpoint_audit.json",
+      "bytes": 2235128
+    },
+    {
+      "path": "results/tmds_feedback_checkpoint_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2234981
+    },
+    {
+      "path": "results/tmds_general_replay_002/export/native/sta_endpoint_audit.json",
+      "bytes": 2234981
+    },
+    {
+      "path": "results/tmds_vex_generalization_001/qualification92_5/native/sta_endpoint_audit.json",
+      "bytes": 2234981
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_003/eco_export/native/sta_endpoint_audit.json",
+      "bytes": 2234978
+    },
+    {
+      "path": "results/tmds_feedback_moves_001/round_002/eco_export/native/sta_endpoint_audit.json",
+      "bytes": 2234911
+    },
+    {
+      "path": "results/tmds_97_4mhz_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2234865
+    },
+    {
+      "path": "results/tmds_feedback_clock_001/export/native/sta_endpoint_audit.json",
+      "bytes": 2234865
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_003/initial_export/native/sta_endpoint_audit.json",
+      "bytes": 2234622
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_003/eco_export/native/sta_endpoint_audit.json",
+      "bytes": 2234462
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_001/eco_export/native/sta_endpoint_audit.json",
+      "bytes": 2233686
+    },
+    {
+      "path": "results/tmds_feedback_moves_002/round_001/initial_export/native/sta_endpoint_audit.json",
+      "bytes": 2233582
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_001/search/search_report.json",
+      "bytes": 2223122
+    },
+    {
+      "path": "results/coopt_review_clock_merge_001/search/search_report.json",
+      "bytes": 2222680
+    },
+    {
+      "path": "results/multicfu_large_cut_trial_026/export_retry_003/wire/expanded_routes.json",
+      "bytes": 2220547
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_cone_run_001/export/native/partial_configuration.json",
+      "bytes": 2219335
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_cone_run_001/export/partial_configuration.json",
+      "bytes": 2219335
+    },
+    {
+      "path": "results/tmds_global_wide_prune_001/round_001/initial_export/native/sta_endpoint_audit.json",
+      "bytes": 2215978
+    },
+    {
+      "path": "results/ownpr_uart_bs1_closure_002/search/search_report.json",
+      "bytes": 2198420
+    },
+    {
+      "path": "results/tmds_global_mixed_checkpoint_001/export/wire/wire_delays.json",
+      "bytes": 2186235
+    },
+    {
+      "path": "results/ownpr_uart_clock_slack_closure_004/search/search_report.json",
+      "bytes": 2183505
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/state_macro_retry_008/export/native/expanded_routes.json",
+      "bytes": 2174057
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_converged_002/export/native/expanded_routes.json",
+      "bytes": 2162328
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/state_macro_retry_008/export/wire/expanded_routes.json",
+      "bytes": 2140467
+    },
+    {
+      "path": "results/resumed_route_search_trial_010/guided_converged_002/export/wire/expanded_routes.json",
+      "bytes": 2127443
+    },
+    {
+      "path": "results/tmds_guided_checkpoint_001/export/native/expanded_routes.json",
+      "bytes": 2107922
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_minmax_run_001/export/native/partial_configuration.json",
+      "bytes": 2106420
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_minmax_run_001/export/partial_configuration.json",
+      "bytes": 2106420
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_external_export_002/native/partial_configuration.json",
+      "bytes": 2101962
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_external_export_002/partial_configuration.json",
+      "bytes": 2101962
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_only_001/export/native/partial_configuration.json",
+      "bytes": 2101822
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_only_001/export/partial_configuration.json",
+      "bytes": 2101822
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_slack_001/export/native/partial_configuration.json",
+      "bytes": 2096608
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_slack_001/export/partial_configuration.json",
+      "bytes": 2096608
+    },
+    {
+      "path": "results/endpoint_class_cooptimization_trial_019/int2float_endpoint_run_001/export/native/partial_configuration.json",
+      "bytes": 2095141
+    },
+    {
+      "path": "results/endpoint_class_cooptimization_trial_019/int2float_endpoint_run_001/export/partial_configuration.json",
+      "bytes": 2095141
+    },
+    {
+      "path": "results/vexriscv_full_fanout_trial_001/route/search_weights.json",
+      "bytes": 2088351
+    },
+    {
+      "path": "results/tmds_guided_checkpoint_001/export/wire/expanded_routes.json",
+      "bytes": 2078235
+    },
+    {
+      "path": "results/vexriscv_84_6_joint_cut_trial_003/route/search_weights.json",
+      "bytes": 2077121
+    },
+    {
+      "path": "results/int2float_constant_ioreg_trial_002/eco_configuration/partial_configuration.json",
+      "bytes": 2066318
+    },
+    {
+      "path": "results/int2float_constant_ioreg_trial_002/eco_export/partial_configuration.json",
+      "bytes": 2066318
+    },
+    {
+      "path": "results/int2float_constant_ioreg_trial_002/initial_configuration/partial_configuration.json",
+      "bytes": 2065033
+    },
+    {
+      "path": "results/int2float_constant_ioreg_trial_002/initial_export/partial_configuration.json",
+      "bytes": 2065033
+    },
+    {
+      "path": "results/vexriscv_after_buffer_multilevel_001/implementation/route/search_weights.json",
+      "bytes": 2057332
+    },
+    {
+      "path": "results/backend_regression_frontier_001/int2float_baseline/export/native/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/backend_regression_frontier_001/int2float_baseline/export/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/int2float_baseline/export/native/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/int2float_baseline/export/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/int2float_baseline/export/native/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/int2float_baseline/export/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/int2float_baseline/export/native/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/int2float_baseline/export/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/generic_int2float_competing_001/retry_001/implementation/export/native/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/generic_int2float_competing_001/retry_001/implementation/export/partial_configuration.json",
+      "bytes": 2056485
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/int2float_hold_export_002/native/partial_configuration.json",
+      "bytes": 2056442
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/int2float_hold_export_002/partial_configuration.json",
+      "bytes": 2056442
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/int2float_run_002/export/native/partial_configuration.json",
+      "bytes": 2054886
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/int2float_run_002/export/partial_configuration.json",
+      "bytes": 2054886
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_001/route/search_weights.json",
+      "bytes": 2054461
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/donor_repair_002/route/search_weights.json",
+      "bytes": 2054461
+    },
+    {
+      "path": "results/vexriscv_competing_multilevel_001/implementation/route/search_weights.json",
+      "bytes": 2054461
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_external_001/data_configuration.json",
+      "bytes": 2039486
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_external_001/search/base_configuration.json",
+      "bytes": 2039486
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_only_001/data_configuration.json",
+      "bytes": 2039486
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_only_001/search/base_configuration.json",
+      "bytes": 2039486
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_slack_001/data_configuration.json",
+      "bytes": 2039486
+    },
+    {
+      "path": "results/clock_cone_joint_trial_020/int2float_clock_slack_001/search/base_configuration.json",
+      "bytes": 2039486
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_timed_batch_run_001/export/native/expanded_routes.json",
+      "bytes": 2035470
+    },
+    {
+      "path": "results/vexriscv_budgeted_restore_001/route/trials.json",
+      "bytes": 2035388
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_001/export/native/expanded_routes.json",
+      "bytes": 2032215
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_run_002/export/native/expanded_routes.json",
+      "bytes": 2031887
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/clock_data_export_retry_014/native/expanded_routes.json",
+      "bytes": 2029584
+    },
+    {
+      "path": "results/clock_data_cooptimization_trial_007/final_time_states_016/expanded_routes.json",
+      "bytes": 2029584
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/export_003/native/expanded_routes.json",
+      "bytes": 2029117
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/time_states_004/expanded_routes.json",
+      "bytes": 2029117
+    },
+    {
+      "path": "results/joint_wide_move_map_trial_012/time_states_007/expanded_routes.json",
+      "bytes": 2029117
+    },
+    {
+      "path": "results/vexriscv_post_reset_regions_001/implementation/route/search_weights.json",
+      "bytes": 2028999
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/post_state_export_012/native/expanded_routes.json",
+      "bytes": 2027821
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/post_state_time_states_012/expanded_routes.json",
+      "bytes": 2027821
+    },
+    {
+      "path": "results/vexriscv_shared_ff_001/implementation/route/search_weights.json",
+      "bytes": 2027314
+    },
+    {
+      "path": "results/backend_regression_frontier_001/tmds_baseline/export/native/expanded_routes.json",
+      "bytes": 2026260
+    },
+    {
+      "path": "results/backend_regression_joint_cut_001/tmds_baseline/export/native/expanded_routes.json",
+      "bytes": 2026260
+    },
+    {
+      "path": "results/backend_regression_mixed_wide_ff_001/tmds_baseline/export/native/expanded_routes.json",
+      "bytes": 2026260
+    },
+    {
+      "path": "results/backend_regression_routed_branch_001/tmds_baseline/export/native/expanded_routes.json",
+      "bytes": 2026260
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/joint_macro_checkpoint_010/export/native/expanded_routes.json",
+      "bytes": 2026112
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/joint_time_states_010/expanded_routes.json",
+      "bytes": 2026112
+    },
+    {
+      "path": "results/tmds_cofactor_joint_trial_005/trust_export_004/native/expanded_routes.json",
+      "bytes": 2024921
+    },
+    {
+      "path": "results/vexriscv_pin_frontier_001/implementation/route/search_weights.json",
+      "bytes": 2023716
+    },
+    {
+      "path": "results/vexriscv_shared_global_001/implementation/route/search_weights.json",
+      "bytes": 2023076
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_006/arrivals.json",
+      "bytes": 2019619
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_005/arrivals.json",
+      "bytes": 2006858
+    },
+    {
+      "path": "results/vexriscv_cut_competing_arrivals_004/arrivals.json",
+      "bytes": 2006630
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_001/export/expanded_routes.json",
+      "bytes": 2006342
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_003/export/expanded_routes.json",
+      "bytes": 2006055
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_002/export/native/expanded_routes.json",
+      "bytes": 2005368
+    },
+    {
+      "path": "results/tmds_general_replay_001/export/native/expanded_routes.json",
+      "bytes": 2005081
+    },
+    {
+      "path": "results/tmds_global_wide_pins_001/round_002/export/expanded_routes.json",
+      "bytes": 2005081
+    },
+    {
+      "path": "results/tmds_vex_generalization_001/qualification/native/expanded_routes.json",
+      "bytes": 2005081
+    },
+    {
+      "path": "results/tmds_selected_carry_002/placement/packed.json",
+      "bytes": 2001506
+    },
+    {
+      "path": "results/tmds_global_wide_hold_001/round_001/export/native/expanded_routes.json",
+      "bytes": 2000769
+    },
+    {
+      "path": "results/independent_ff_backend_trial_018/tmds_timed_batch_run_001/export/wire/expanded_routes.json",
+      "bytes": 2000585
+    }
+  ]
+}

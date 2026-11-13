@@ -1,0 +1,15 @@
+# Native load-prior audit: mean error improves, ranking still fails
+
+This is an offline model experiment, not a new synthesis/P&R performance result. Selected own frequencies and fair-baseline status are unchanged. Gemini consultation34 terminated with exit1 and no report; no advice was accepted or process transcript read.
+
+The heterogeneous mapper uses a constant0.672ns setup wire prior for ordinary connections. The experiment extracts7186 nonconstant, nonclock physical nets from the four selected own implementations. Native wire/route/netlist/placement hashes and sink inventories must agree. Features are primitive class and logical fanout; the target is each net's mean measured setup sink delay, with one observation per net. Special dedicated links and existing hold handling stay unchanged.
+
+`ownpr_loaded_wire_prior.py` implements a nonnegative log-fanout slope with driver-class intercepts. An initial fit weighted every net equally; Vex contributes6605 of7186 nets. A second predeclared variant gives each training design equal total weight. Validation excludes the evaluated design completely; the two trial010 remaps are separately withheld from training. There are no project-name branches in inference. The explicit remap directory list in the audit script identifies test fixtures only.
+
+Balanced leave-one-design-out mean absolute errors (constant -> learned ns): Vex0.38709->0.37205, UART0.36388->0.26162, int2float0.36202->0.18467, TMDS0.28489->0.28734. Held-out remaps improve0.32694->0.20246 and0.29167->0.19633. These statistics are net-mean errors, not critical-path/endpoint errors or an uncertainty bound.
+
+Crucially, `results/loaded_wire_prediction_trial_011_balanced/ranking_audit.json` evaluates the same three packed implementations under the same native fixed-state context. Learned setup WNS predicts incumbent-3.8412, iteration1-3.9712, iteration4-3.7557ns. Actual native frequencies are123.865,94.739,82.645MHz respectively. The predictor STILL prefers the worst implementation. It must not be promoted as the default candidate selector or advertised as improving Fmax.
+
+An explicit experimental `--wire-prior` option in `experiments/run_heterogeneous_mapping.py` enables controlled future ablations and snapshots its input/source provenance. It is disabled by default. Fifteen prior/heterogeneous/inactive-clock tests pass; loaded setup feedback leaves the existing hold graph and native state/requirements unchanged. Native routed validation remains mandatory.
+
+Artifacts: initial constant-net ingestion rejection is recorded in `results/loaded_wire_prediction_trial_011/failure.json`; corrected equal-net and equal-design runs are `_retry` and `_balanced`. Next work should incorporate candidate placement and pin/receiver geometry, or directly use bounded actual-route feedback with the incumbent retained. Better aggregate wire error alone is insufficient evidence for candidate ranking. Full source/hard-state proofs and fair official baseline freezing remain required.

@@ -41,6 +41,10 @@ def capture(native):
             subtype=fn(f'?getSubType@{kind}@NETLIST@@UEAA?AW4INS_TYPE@2@XZ',C.c_int,[vp])(obj),
             physical_class=classname(phy),physical_header=header(phy),physical_base_logic_matches=bool(phy and ptr(phy+8)==obj),pins=[])
         if kind=='Reg':
+            initial=C.create_string_buffer(32)
+            fn('?getInitValue@Reg@NETLIST@@QEAA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ',vp,[vp,vp])(obj,C.addressof(initial))
+            row['initial_value']=string(C.addressof(initial))
+            row['inverted_clock']=bool(fn('?getInvertFlag@Reg@NETLIST@@QEAA_NXZ',C.c_bool,[vp])(obj))
             if phy:physical_registers[phy]=row
             row['flags']={k:fn(f'?get{k}@Reg@NETLIST@@QEAAEXZ',C.c_ubyte,[vp])(obj) for k in ('BindFlag','SpecFlag')}
             typed=fn('?getPhyReg@Reg@NETLIST@@QEAAPEAVreg@2@XZ',vp,[vp])(obj)
@@ -57,7 +61,8 @@ def capture(native):
                 row['pins'].append(dict(pin=string(C.addressof(label)),direction=direction,native_type=C.c_int.from_address(pin+0x48).value,
                     native_flags=C.c_ubyte.from_address(pin+0x4f).value,
                     raw_node=list(struct.unpack('<3h',C.string_at(raw,6))) if raw else None,sta_query_return=ok,
-                    sta_nodes=[list(struct.unpack('<3h',C.string_at(n,6))) for n in items(nodes)],source=name(source),source_site=header(getphy(source)) if source else None))
+                    sta_nodes=[list(struct.unpack('<3h',C.string_at(n,6))) for n in items(nodes)],source=name(source),source_class=classname(source),source_site=header(getphy(source)) if source else None,
+                    inversion_annotation=bool(fn('?hasInvertInPin@Pin@NETLIST@@QEAA_NXZ',C.c_bool,[vp])(pin))))
         rows.append(row)
     io_vector=fn('?getIobufVecReference@Design@NETLIST@@QEAAAEAV?$vector@PEAVIobuf@NETLIST@@V?$allocator@PEAVIobuf@NETLIST@@@std@@@std@@XZ',vp,[vp])(design)
     getgrid=fn('?getGridByRowCol@chip@NETLIST@@QEAAPEAVgrid@2@FF@Z',vp,[vp,C.c_short,C.c_short])

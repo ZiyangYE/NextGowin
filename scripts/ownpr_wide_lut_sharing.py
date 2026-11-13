@@ -30,9 +30,13 @@ def check(design,placement,device,macro,spec,extras):
         raise ValueError('Uncalibrated shared wide macro')
     if macro.get('ordinary_sharing') is not True or placement.get('mixed_wide_lut_calibration')!=evidence['admission_sha256']:raise ValueError('Wide/LUT sharing is not explicitly admitted')
     allowed=set(range(1<<(level-4),8));occupied=set(spec['leaves'].values());cells=design['modules']['top']['cells']
-    for name,row in placement['clusters'].items():
-        if (row['row'],row['column'])==(r,c) and (row.get('ff') or row.get('wide_ff_root')):raise ValueError('FF sharing with ordinary/wide LUTs is not calibrated')
+    has_ff=any((row['row'],row['column'])==(r,c) and (row.get('ff') or row.get('wide_ff_root')) for row in placement['clusters'].values())
+    if has_ff:
+        from ownpr_wide_ff_lut_sharing import check as mixed_check
+        mixed_check(design,placement,device,macro,spec,extras)
     for name,row in extras.items():
         if cells[name]['type'] not in ('LUT1','LUT2','LUT3','LUT4') or row['slot'] not in allowed or row['slot'] in occupied:raise ValueError('Conflicting ordinary LUT in wide macro')
         occupied.add(row['slot'])
+    if has_ff:
+        return dict(ordinary=evidence['admission_sha256'],wide_ff=mixed_check(design,placement,device,macro,spec,extras))
     return evidence['admission_sha256']

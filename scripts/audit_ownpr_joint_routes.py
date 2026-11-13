@@ -43,5 +43,5 @@ def audit(placement,routes,wire):
 
 
 if __name__=='__main__':
-    ap=argparse.ArgumentParser();ap.add_argument('--placement',type=Path,required=True);ap.add_argument('--routes',type=Path,required=True);ap.add_argument('--wire',type=Path,required=True);a=ap.parse_args();r=audit(a.placement,a.routes,a.wire)
-    (a.routes/'joint_route_audit.json').write_text(json.dumps(r,indent=2));print(json.dumps(r,indent=2))
+    ap=argparse.ArgumentParser();ap.add_argument('--placement',type=Path,required=True);ap.add_argument('--routes',type=Path,required=True);ap.add_argument('--wire',type=Path,required=True);ap.add_argument('--out',type=Path);a=ap.parse_args();r=audit(a.placement,a.routes,a.wire)
+    (a.out or a.routes/'joint_route_audit.json').write_text(json.dumps(r,indent=2));print(json.dumps(r,indent=2))

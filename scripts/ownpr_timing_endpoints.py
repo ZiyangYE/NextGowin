@@ -38,7 +38,13 @@ def contract(design,mapping):
         elif c['type']=='OBUF':add(name,'O',c['connections']['I'][0])
         elif name in hard:
             if c['type']=='MULTALU27X18':
-                if any(v!='BYPASS' for k,v in c['parameters'].items() if k.endswith('_CLK')):raise ValueError('Registered DSP endpoint contract is not implemented')
+                active={k:v for k,v in c['parameters'].items() if k.endswith('_CLK') and v!='BYPASS'}
+                if active:
+                    if active!={'OREG_CLK':'CLK0'} or c['parameters'].get('MULT_RESET_MODE')!='SYNC':raise ValueError('Uncalibrated registered DSP endpoint contract')
+                    clocks.add((alias,'CLK[0]'))
+                    for port in ('A','B'):
+                        for index,bit in enumerate(c['connections'][port]):add(name,f'{port}[{index}]',bit)
+                    for port in ('CE','RESET'):add(name,port+'[0]',c['connections'][port][0])
                 continue
             for pin,values in c['connections'].items():
                 if pin in ('CLKA','CLKB'):clocks.add((alias,pin));continue

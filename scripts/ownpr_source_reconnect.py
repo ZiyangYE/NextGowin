@@ -33,9 +33,10 @@ def fragments(graph,old,record,new,depth):
     if roots&parents:raise ValueError('Fragment roots have retained parents')
     return dict(roots=sorted(roots),nodes=sorted(nodes),pips=pips,retained_sinks=kept_sinks,root_sinks=dict(root_sinks),depth=depth)
 
-def reconnect_source(graph,old,record,new,owners,deadline,max_depth=6,seconds_per_depth=12):
+def reconnect_source(graph,old,record,new,owners,deadline,max_depth=6,seconds_per_depth=12,min_depth=1):
+    if not 1<=min_depth<=max_depth:raise ValueError('Invalid source-cut depth range')
     candidates=[];trials=[];seen=set();foreign={n for n,owner in owners.items() if owner!=new['name']}
-    for depth in range(1,max_depth+1):
+    for depth in range(min_depth,max_depth+1):
         if time.monotonic()>deadline:break
         fragment=fragments(graph,old,record,new,depth);roots=set(fragment['roots']);nodes=set(fragment['nodes']);key=tuple(fragment['roots'])
         if key in seen:continue

@@ -5,8 +5,17 @@ __pycache__/
 venv/
 results/
 build/
-/binary_audit/*
-!/binary_audit/dll_steps.py
+/binary_audit/**
+!/binary_audit/**/
+!/binary_audit/**/*.py
+!/binary_audit/**/*.cpp
+!/binary_audit/**/*.c
+!/binary_audit/**/*.h
+!/binary_audit/**/*.hpp
+!/binary_audit/**/*.ps1
+!/binary_audit/**/*.def
+/binary_audit/**/runtime/
+/binary_audit/python_libs/
 runtime_bundle/
 third_party/
 ip_dec/
@@ -31,3 +40,5 @@ abc.history
 repro_runs/
 repro/.downloads/
 repro/installed-dependencies.json
+checkpoint_runs/
+checkpoint/.downloads/

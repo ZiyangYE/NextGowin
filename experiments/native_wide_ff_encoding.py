@@ -21,6 +21,7 @@ def capture(n,out,device,row,groups,entries):
     if destination not in n.fanouts(source):raise ValueError('Native wide FF fixed edge is missing')
     if row['leaf_input_conflict'] or row['selector_input_conflict']:raise ValueError('Wide FF data endpoint conflicts with its own macro')
     r,c=row['site'];slot=row['ff_slot'];level=int(row['driver']);prefix=f't{row["tile_type"]}_lut{level}'
+    if 'ordinary_sharing' in row:prefix+=f'_r{r}_c{c}_mixed{int(row["ordinary_sharing"])}'
     encode=n.fn('?generateFusemap@@YAHPEAVglobalMem@@@Z',C.c_int,[C.c_void_p])
     projection=NativeFrameProjection(device);lut=LutInitChoices(device);cls=ClsChoices(device)
     leaf_slots={entry['slot'] for entry in entries if entry['level']==4}
@@ -51,7 +52,7 @@ def capture(n,out,device,row,groups,entries):
     recovered=payload(out/baseline['file'])==payload(out/restored['file'])
     stable=payload(out/warmup['file'])==payload(out/baseline['file'])
     attrs_match=baseline['attributes']==predicted and routed['attributes']==predicted
-    result=dict(site=[r,c],tile_type=row['tile_type'],level=level,slot=slot,source=list(source),destination=list(destination),
+    result=dict(ordinary_sharing=row.get('ordinary_sharing',False),ordinary_slots=row.get('ordinary_slots',[]),mixed_pin_nodes=row.get('mixed_pin_nodes'),site=[r,c],tile_type=row['tile_type'],level=level,slot=slot,source=list(source),destination=list(destination),
         first=first,warmup=warmup,baseline=baseline,linked=routed,restored=restored,source_fse_sha256=device.fse.sha256,ff_profile=profile,
         stable_baseline=stable,full_payload_restored=recovered,linked_payload_equals_unrouted=payload(out/baseline['file'])==payload(out/routed['file']),
         changed_frame_bits=len(actual),frame_changes=[dict(index=i,before=int(before[i])-48,after=int(after[i])-48) for i in actual],

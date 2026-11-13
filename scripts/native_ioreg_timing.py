@@ -3,7 +3,7 @@ import ctypes as C
 import json,math,struct
 
 
-def capture_one(native,obj,name):
+def capture_one(native,obj,name,control=None):
     fn=native.fn;ptr=native.ptr;vp=C.c_void_p
     phy=fn('?getPhyInst@Instance@NETLIST@@QEAAPEAVinstance@2@XZ',vp,[vp])(obj)
     site=list(struct.unpack('<4h',C.string_at(phy+0x10,8)))
@@ -11,7 +11,8 @@ def capture_one(native,obj,name):
     pin=fn('?getOnePin@Reg@NETLIST@@UEAAPEAVPin@2@I@Z',vp,[vp,C.c_uint]);clock=pin(obj,1)
     monitor=fn('?getTmMonitor@globalMem@@QEAAPEAVTmMonitor@STA@@XZ',vp,[vp])(native.mem);library=ptr(ptr(monitor+8)+0x38)
     query=C.CFUNCTYPE(None,vp,vp,vp,vp,C.c_int,C.c_bool,C.c_bool)(native.dll._handle+0x1446fc0);rows=[]
-    controls=[(label,index) for label,index in [('PRESET',5),('CLEAR',6)] if pin(obj,index) and ptr(pin(obj,index)+8)]
+    if control is not None and control not in (('RESET',4),('CLEAR',6)):raise ValueError('Unsupported explicit control query')
+    controls=[(label,index) for label,index in ([control] if control is not None else [('PRESET',5),('CLEAR',6),('RESET',4)]) if pin(obj,index) and ptr(pin(obj,index)+8)]
     if len(controls)!=1:raise ValueError('Output I/O timing requires one connected asynchronous control')
     for label,index in [('D',0),('CE',2),controls[0],('Q',7)]:
         target=pin(obj,index)
@@ -21,7 +22,8 @@ def capture_one(native,obj,name):
                 values=(C.c_float*4)(*[float('nan')]*4);query(library,C.addressof(values),clock,target,selector,maximum,True)
                 if not all(math.isfinite(v) for v in values):raise ValueError('Incomplete output-register timing query')
                 rows.append(dict(pin=label,selector=selector,maximum=maximum,values=list(values)))
-    return dict(instance=name,site=site,clock_positive=True,queries=rows)
+    return dict(instance=name,site=site,clock_positive=True,queries=rows,
+        control_native_type=C.c_int.from_address(pin(obj,controls[0][1])+0x48).value,control_pin=controls[0][0])
 
 
 def capture(native,out):

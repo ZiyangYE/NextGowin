@@ -1,64 +1,50 @@
-# NextGowin
+# NextGowin — WIP checkpoint, 2026-11-13
 
-> **WIP — 2026-11-06。** 优化工作已暂停。本分支提供算法源码和一个小设计的完整复现入口；运行依赖从 Release 分块下载，每块不超过 8 MB。见 [小设计复现步骤](repro/README.md) 和 [WIP 说明](docs/WIP.md)。
+面向 Gowin GW5AST-138 的通用综合与自研布局布线协同优化。此次发布是按用户要求整理的中间点，优化暂停，尚未完成目标。
 
-面向高云（Gowin）FPGA 的综合（Synthesis）与布局布线（Place & Route，P&R）工具项目。
+目标是让 UART、int2float、TMDS、VexRiscv **分别超过公平原厂综合 + P&R 基线20%**。保留固定引脚、接口周期、初始化语义及完整 I/O 时序；允许使用高云最终 STA 和位流编码，不使用开源器件数据库，不自动烧录硬件。
 
-**首版仅面向 138K 器件。** 先围绕这一目标打通流程、验证结果，再考虑扩展支持范围。
+当前保留的自研实现原生报告如下。公平基线仍未冻结，完整源级/配置证明尚未完成，因此这些数字不能解读为已实现20%优势或对应目标约束已闭合。
 
-## 为什么做这个项目
+| 工程 | 原生报告 Fmax（MHz） |
+| --- | ---: |
+| UART | 197.028 |
+| int2float | 167.613 |
+| TMDS | 137.743 |
+| VexRiscv | 90.380 |
 
-这个项目源于我在使用高云现有工具时的实际体验：P&R 太难用了，而我需要的时序驱动综合能力也没有得到满足。
+## 中间点内容
 
-我希望时序目标能够从综合阶段就参与优化决策，并贯穿后续的布局布线过程。遇到时序问题时，工具也应该提供足够清晰的反馈，让优化有依据，而不是反复尝试参数、等待结果。
+- 当前综合、打包、自研布局布线、原生导出及验证源码，以及历史探索文档和测试。
+- 4个当前实现的76项哈希绑定证据，包括时序报告。
+- 最新存储器证明输入、模型、命令、日志、反例和67项检查点回归。
+- 标签常量位压缩的逐位映射、经原始模型验证的补齐位投影、33组隐藏流水状态候选、183个已证明状态不变量。
 
-NextGowin 就是为此开始的：为高云 FPGA 开发一套更好用、以时序优化为核心目标的综合与布局布线工具。
+**完整等价性仍未证明。** 最新实际四阶归纳反例剩下4组存储器 `write_high` 条件；它不是从原始初值出发的可达硬件反例。复现这个失败不会被计为功能验证成功。[当前进展及下一步](docs/PADDING_PROJECTION_CHECKPOINT_20261113.md)，[位映射诊断](docs/MEMORY_LANE_AND_CLOCK_PROOF_20261113.md)。
 
-## 项目目标
+## 独立复现
 
-- **时序驱动综合**：让时序约束参与综合与映射过程中的优化决策。
-- **时序驱动布局布线**：围绕关键路径改进布局与布线结果。
-- **清晰的诊断与报告**：让资源使用、关键路径和时序瓶颈更容易理解。
-- **可复现的流程**：让配置、运行与结果比较更直接，方便持续迭代。
-
-以上是开发目标，不代表当前已经实现的功能。
-
-## 首版范围
-
-首版聚焦 **138K**，暂不承诺支持其他容量或系列的高云器件。
-
-具体器件型号、封装、速度等级，以及可用的逻辑、存储和专用资源支持情况，将随实现与验证进度补充。首版的重点是把单一目标做扎实，而不是尽早覆盖整个产品线。
-
-## 当前状态
-
-已提交综合映射、自研打包/布局/布线、时序反馈、等价检查和原厂最终 STA/编码适配的实验源码。自研 P&R 入口为 `scripts/run_ownpr_region_coopt.py`；历史 `scripts/nextgowin.py` 完整命令会调用原厂 P&R，不能作为自研 P&R 的结果。
-
-本地完整数据下，VexRiscv 最近达到 **74.0 MHz、完整 I/O 时序零违例**；这是已有 mapped checkpoint 的增量结果，尚未实现 90/150/200 MHz、通用优于原厂或冷 RTL 一键闭环。本包未携带该实验的大型证据和器件校准数据；摘要及证据哈希见 [本地结果摘要](docs/local_result_summary.json)。
-
-只验证不依赖厂商工具/器件数据的轻量算法测试（Python 3.11）：
-
-```sh
-python -m pip install -r requirements-dev.txt
-python tools/verify_source_package.py
-python -m pytest -q
-```
-
-小设计完整复现（Windows x64，无需预装 Python）：
+Windows x64、PowerShell，仓库路径尽量短。先安装已发布的固定运行依赖，再安装本次数据：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\repro\Get-Dependencies.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\repro\Run-Small.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\checkpoint\Get-Checkpoint.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\checkpoint\Run-Checkpoint.ps1 -Mode audit
+powershell -NoProfile -ExecutionPolicy Bypass -File .\checkpoint\Run-Checkpoint.ps1 -Mode tests
+powershell -NoProfile -ExecutionPolicy Bypass -File .\checkpoint\Run-Checkpoint.ps1 -Mode projection
+powershell -NoProfile -ExecutionPolicy Bypass -File .\checkpoint\Run-Checkpoint.ps1 -Mode reproduce
 ```
 
-Git 中只保存源码、小例子及校验清单；对应 WIP Release 提供经过裁剪的 Gowin/ABC/Yosys/Python 运行时和本地提取的校准数据。没有使用开源芯片数据库，不附带旧交接 ZIP。小例子约束为 20 MHz，不能用它替代 VexRiscv 或其他设计的性能评测。
+固定运行依赖约185 MB，沿用既有发布；新增数据约31 MB，分成4块，每块不超过8,000,000字节，逐块及整体核验 SHA-256。无需预装 Python、Yosys 或 ABC。[模式和证据边界](checkpoint/README.md)。
 
-## 开发方向
+`audit` 核对保留的证据和报告，不重新执行 P&R。`projection` 重建最新投影控制器并比较字节哈希。`reproduce` 预期重现尚未解决的归纳反例；超时、不同反例或意外“通过”都会要求复查。
 
-- 明确 138K 目标器件的资源与约束模型。
-- 建立综合、技术映射与布局布线的基础流程。
-- 引入时序分析与时序驱动优化。
-- 使用测试设计验证正确性，并评估资源占用、运行时间和时序表现。
+本次源码也重新通过了六行 RTL 的完整综合、自研 P&R、hold 修复和 STA/位流流程：20 MHz 约束下 setup +44.407 ns、hold +0.022 ns，约340秒。安装运行依赖后执行 `repro/Run-Small.ps1` 即可；这不是大型 CPU 的性能证明。早期固定标签 [wip-small-repro-20261106](https://github.com/ZiyangYE/NextGowin/tree/wip-small-repro-20261106) 及其原始验证记录保持不变。本次新增数据不是整个工作目录，也不是所有历史大工程的完整运行缓存。
 
----
+## 继续开发
 
-本项目为独立项目，并非高云官方产品，也不代表高云官方立场。
+先解决使能与无效分支地址之间的关联，以实际阵列转移语义证明规范化；随后完成源级、SDK原语、存储器及配置证明，冻结公平基线，再继续多工程联合优化。不得删除真实 I/O 或必要存储器条件、假定复位序列、补造初值，或把原厂 P&R 当作自研结果。
+
+每个完整优化尝试不超过1小时，工作目录不超过40,000,000,000字节。历史大 JSON 的无损压缩清单包含在检查点中；原始内容与哈希保留，直接读取旧文件的工具应先恢复原始字节。
+
+项目许可见 [LICENSE](LICENSE)。第三方运行时和高云组件保留原有许可，发布不含许可证密钥。历史 README 已保存于 [docs/history](docs/history/WORKSPACE_README_BEFORE_CHECKPOINT_20261113.md)。

@@ -5,12 +5,12 @@ Moves ordinary LUT/FF units, whole carry chains and whole wide macros together.
 Hard sites and package I/O are fixed. Wirelength/density are optimization
 surrogates; a fresh clock/data route and complete STA decide acceptance.
 """
-import argparse,copy,json,math,shutil,time
+import argparse,copy,json,math,shutil,time,re
 from collections import defaultdict
 from pathlib import Path
 import numpy as np
 from ownpr_device import ROOT,Device
-from ownpr_image_storage import load_json,sha
+from ownpr_image_storage import load_json,sha,read_text
 from ownpr_placement_feedback import load as pin_weights
 from workspace_budget import reserve
 
@@ -44,11 +44,45 @@ def units(design,placed):
         key='hard:'+name;rows[key]=dict(kind='fixed',point=(row['row'],row['column']+1),area=0.,members=[name]);owner[name]=key
     for name,row in placed['fixed_io'].items():
         r,c,_=row['native_ports']['out'];key='io:'+name;rows[key]=dict(kind='fixed',point=(r-1,c-1),area=0.,members=[name]);owner[name]=key
+    # I/O FFs are fixed physical endpoints, distinct from their OBUF cells.
+    # Include their data/control edges when relaxing the whole upstream graph.
+    if placed.get('ioreg_clusters'):
+        from ownpr_ioreg_macros import validate as validate_ioreg
+        validate_ioreg(design,placed,Device())
+    for name,row in placed.get('ioreg_clusters',{}).items():
+        if name in owner:raise ValueError('I/O FF has duplicate physical ownership')
+        r,c,_=row['site'];key='ioreg:'+name
+        rows[key]=dict(kind='fixed',point=(r-1,c-1),area=0.,members=[name]);owner[name]=key
     expected={n for n,c in design['modules']['top']['cells'].items() if c['type'] not in ('GND','VCC','GSR')}
     if set(owner)!=expected:raise ValueError('Global unit inventory omits physical cells')
     return rows,owner
 
-def edges(design,owner,priorities):
+def path_demands(folder,design,window=4.):
+    """Accumulate complete near-critical path demand without fanout dilution."""
+    from project_timing import section
+    reverse={v:k for k,v in load_json(folder/'name_map.json')['instances'].items()};cells=design['modules']['top']['cells']
+    text=section(read_text(folder/'probe.tr'),'3.3.1 Setup Analysis Report');paths=[]
+    for block in re.split(r'^\s*Path\d+\s*$',text,flags=re.M)[1:]:
+        slack=re.search(r'^Slack\s*:\s*([-\d.]+)',block,re.M);data=re.search(r'Data Arrival Path:\n(.*?)(?=\nData Required Path:)',block,re.S)
+        if not slack or not data:raise ValueError('Incomplete setup path demand witness')
+        sinks=set()
+        for alias,pin in re.findall(r'^\s*[-\d.]+\s+[-\d.]+\s+tNET\s+\w+\s+\d+\s+\S+\s+(own_i_\d+)/(\w+(?:\[\d+\])?)\s*$',data[1],re.M):
+            name=reverse[alias];port=pin.split('[',1)[0]
+            if cells[name]['type']=='OBUF' and port=='O':port='I'
+            if port not in ('CLK','CLKA','CLKB','CIN') and cells[name]['port_directions'].get(port)=='input':sinks.add((name,port))
+        paths.append((float(slack[1]),sinks))
+    if not paths:raise ValueError('No complete setup paths')
+    worst=min(s for s,_ in paths);demand=defaultdict(float);used=0
+    for slack,sinks in paths:
+        if slack>worst+window:continue
+        used+=1;weight=max(.05,1.-(slack-worst)/window)**2
+        for sink in sinks:demand[sink]+=weight
+    scale=max(demand.values(),default=0.)
+    if not scale:raise ValueError('No supported near-critical path wires')
+    return {k:v/scale for k,v in demand.items()},dict(paths=used,reported_paths=len(paths),window_ns=window,worst_slack_ns=worst,weighted_pins=len(demand),source_report_sha256=sha(folder/'probe.tr'))
+
+
+def edges(design,owner,priorities,path_weights=None,path_gain=200.):
     cells=design['modules']['top']['cells'];drivers={};loads=defaultdict(list)
     clocks={b for c in cells.values() for p,bs in c['connections'].items() if p in ('CLK','CLKA','CLKB') for b in bs}
     for name,c in cells.items():
@@ -64,10 +98,10 @@ def edges(design,owner,priorities):
         if source is None:continue
         for name,pin in sinks:
             a,b=owner[source],owner[name]
-            if a!=b:result[a,b]+=(1+39*priorities.get((name,pin),0.)**2)/math.sqrt(len(sinks))
+            if a!=b:result[a,b]+=(1+39*priorities.get((name,pin),0.)**2)/math.sqrt(len(sinks))+path_gain*(path_weights or {}).get((name,pin),0.)
     return [(a,b,w) for (a,b),w in sorted(result.items())]
 
-def relax(rows,edge_rows,device,iterations=160,density=.65):
+def relax(rows,edge_rows,device,iterations=160,density=.65,anchor_strength=.025):
     names=sorted(rows);ids={n:i for i,n in enumerate(names)};initial=np.array([rows[n]['point'] for n in names],float);pos=initial.copy()
     moving=np.array([rows[n]['kind']!='fixed' for n in names]);area=np.array([rows[n]['area'] for n in names]);a=np.array([ids[x] for x,y,w in edge_rows]);b=np.array([ids[y] for x,y,w in edge_rows]);w=np.array([w for x,y,w in edge_rows])
     degree=np.bincount(np.r_[a,b],weights=np.r_[w,w],minlength=len(names));bw=4;nr=(device.rows+bw-1)//bw;nc=(device.cols+bw-1)//bw
@@ -79,7 +113,7 @@ def relax(rows,edge_rows,device,iterations=160,density=.65):
     initial_cost=metric(pos);history=[]
     for iteration in range(iterations):
         sums=np.zeros_like(pos);np.add.at(sums,a,pos[b]*w[:,None]);np.add.at(sums,b,pos[a]*w[:,None])
-        anchor=.025*degree+.1;target=(sums+initial*anchor[:,None])/np.maximum((degree+anchor)[:,None],1e-12)
+        anchor=anchor_strength*degree+.1;target=(sums+initial*anchor[:,None])/np.maximum((degree+anchor)[:,None],1e-12)
         delta=.3*(target-pos);delta=np.clip(delta,-2.,2.)
         bins=np.clip((pos[:,0]/bw).astype(int),0,nr-1)*nc+np.clip((pos[:,1]/bw).astype(int),0,nc-1)
         mass=np.bincount(bins,weights=area,minlength=nr*nc);overflow=np.maximum(0,mass-capacity)/np.maximum(capacity,1.)
@@ -137,23 +171,32 @@ def legalize(design,placed,rows,targets,edge_rows,device):
     from ownpr_ff_configuration import compile_initial
     from ownpr_hard_architecture import HardArchitecture
     wide_validate(design,result,device);carry_validate(design,result,device);compile_initial(design,result);HardArchitecture().validate(design,result,device)
-    if result['fixed_io']!=placed['fixed_io'] or result['hard_clusters']!=placed['hard_clusters']:raise ValueError('Fixed physical boundaries changed')
+    if result.get('ioreg_clusters'):
+        from ownpr_ioreg_macros import validate as validate_ioreg
+        validate_ioreg(design,result,device)
+    if result['fixed_io']!=placed['fixed_io'] or result.get('hard_clusters',{})!=placed.get('hard_clusters',{}) or result.get('ioreg_clusters',{})!=placed.get('ioreg_clusters',{}):raise ValueError('Fixed physical boundaries changed')
     result.pop('weighted_internal_manhattan',None);result.update(timing_signoff=False,physical_legality_complete=False)
     return result,dict(legal_weighted_wirelength=cost,moved_units=sum(tuple(rows[n]['point'])!=tuple(chosen[n]) for n in rows),units=len(rows))
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    for n in ('base','sta','pin-feedback','out'):p.add_argument('--'+n,type=Path,required=True)
-    p.add_argument('--iterations',type=int,default=160);p.add_argument('--density',type=float,default=.65);a=p.parse_args()
+    for n in ('base','sta','out'):p.add_argument('--'+n,type=Path,required=True)
+    p.add_argument('--pin-feedback',type=Path,help='Optional independently calibrated internal-pin feedback directory')
+    p.add_argument('--iterations',type=int,default=160);p.add_argument('--density',type=float,default=.65)
+    p.add_argument('--path-weighted',action='store_true',help='Add full-path demand without fanout dilution and reduce initial-location anchoring')
+    a=p.parse_args()
     if not 1<=a.iterations<=500 or not .1<=a.density<=.9:p.error('Invalid global placement budget/density')
     reserve(ROOT,100_000_000);started=time.monotonic();out=a.out.resolve();out.mkdir(exist_ok=False)
     design=load_json(a.base/'packed.json');placed=load_json(a.base/'placement.json');sta=load_json(a.sta/'manifest.json')
     if sta['packed_sha256']!=sha(a.base/'packed.json') or sta['placement_sha256']!=sha(a.base/'placement.json'):raise ValueError('Global placement source changed')
-    priorities,feedback=pin_weights(a.sta,design,4.,a.pin_feedback);device=Device();groups,owner=units(design,placed);edge_rows=edges(design,owner,priorities)
-    targets,continuous=relax(groups,edge_rows,device,a.iterations,a.density);candidate,legal=legalize(design,placed,groups,targets,edge_rows,device)
+    priorities,feedback=pin_weights(a.sta,design,4.,a.pin_feedback);device=Device();groups,owner=units(design,placed)
+    demand,info=path_demands(a.sta,design) if a.path_weighted else ({},None)
+    edge_rows=edges(design,owner,priorities,demand)
+    targets,continuous=relax(groups,edge_rows,device,a.iterations,a.density,anchor_strength=.0025 if a.path_weighted else .025);candidate,legal=legalize(design,placed,groups,targets,edge_rows,device)
+    continuous.update(path_weighted=a.path_weighted,path_demand=info,path_gain=200. if a.path_weighted else 0.)
     shutil.copyfile(a.base/'packed.json',out/'packed.json');(out/'placement.json').write_text(json.dumps(candidate,indent=2));(out/'continuous.json').write_text(json.dumps(dict(targets=targets,metrics=continuous),indent=2))
     shutil.copyfile(__file__,out/'operator_source.py.txt')
-    meta=dict(status='placed',netlist_sha256=sha(out/'packed.json'),placement_sha256=sha(out/'placement.json'),source_placement_sha256=sha(a.base/'placement.json'),source_sta_sha256=sha(a.sta/'probe.tr'),
+    meta=dict(status='placed',netlist_sha256=sha(out/'packed.json'),placement_sha256=sha(out/'placement.json'),source_placement=str(a.base.resolve()),source_placement_sha256=sha(a.base/'placement.json'),source_sta_sha256=sha(a.sta/'probe.tr'),
         operator_sha256=sha(out/'operator_source.py.txt'),feedback=feedback,continuous=continuous,legal=legal,wall_seconds=time.monotonic()-started,logical_netlist_byte_identical=True,
         fixed_pins_unchanged=True,hard_sites_fixed=True,interface_cycles_changed=False,clock_endpoints_unchanged=False,vendor_pnr_executed=False,timing_signoff=False,
         scope='Whole-design soft-logic/carry/wide placement candidate; preserved packing; clock and data rerouting plus full STA required')

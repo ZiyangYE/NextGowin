@@ -6,10 +6,19 @@ independent DFFRE control groups with default INIT. Nondefault INIT, shared
 physical controls and complete hardware legality remain separate requirements.
 """
 import argparse,hashlib,json
+from functools import lru_cache
 from pathlib import Path
 from ownpr_device import DLL_SHA
 
 FF_CONTROLS={'DFFRE':'RESET','DFFSE':'SET','DFFCE':'CLEAR','DFFPE':'PRESET'}
+
+
+@lru_cache(None)
+def single_ff_any_slot_calibration():
+    folder=Path(__file__).resolve().parents[1]/'results/native_ff_attributes_paired_001'
+    result=audit(folder)
+    if result['status']!='verified_single_ff_controls' or result['cases']!=1024 or not result['paired_lut_data_verified'] or not result['default_init_only']:raise ValueError('Incomplete single-FF all-slot calibration')
+    return result['source_attributes_sha256']
 
 
 def single_ff_attributes(cell_type,slot,ce,control,clock='signal'):
@@ -65,7 +74,9 @@ def independent_ff_groups(ffs):
     occupied=set()
     for ff in ffs:
         slot=ff['slot']
-        if slot not in (0,2,4) or slot in occupied:raise ValueError('Unverified shared FF control group')
+        if len(ffs)==1 and slot in range(8) and slot not in (0,2,4):single_ff_any_slot_calibration()
+        elif slot not in (0,2,4):raise ValueError('Unverified shared FF control group')
+        if slot in occupied:raise ValueError('Unverified shared FF control group')
         occupied.add(slot)
         attrs=single_ff_attributes(ff['cell_type'],slot,ff['ce'],ff['control'],ff.get('clock','signal'))
         groups[slot//2]=attrs[slot//2]
@@ -75,6 +86,11 @@ def independent_ff_groups(ffs):
 def compile_initial(design,placement,top='top'):
     """Compile current LUT1-4/FF pairs with independent control groups."""
     cells=design['modules'][top]['cells'];constants={'0':0,'1':1};sites={};static=[];pairs=[]
+    independent={}
+    if any(r.get('independent_ff_input') for r in placement['clusters'].values()):
+        from ownpr_independent_ff_inputs import validate as validate_independent
+        from ownpr_device import Device
+        independent={r['ff']:r for r in validate_independent(design,placement,Device())}
     wide={}
     if any(r.get('wide_ff_root') for r in placement['clusters'].values()):
         from ownpr_wide_ff_packing import pairs as wide_pairs
@@ -96,13 +112,13 @@ def compile_initial(design,placement,top='top'):
         if not name:continue
         cell=cells[name];typ=cell['type'];lut=cells[cluster['lut']]
         if typ not in control_names or lut['type'] not in ('LUT1','LUT2','LUT3','LUT4'):raise ValueError('Unverified FF/LUT pairing primitive')
-        if name not in wide and cell['connections']['D']!=lut['connections']['F']:raise ValueError('FF data is not its paired LUT output')
+        if name not in wide and name not in independent and cell['connections']['D']!=lut['connections']['F']:raise ValueError('FF data is not its paired LUT output')
         default=int(typ in ('DFFSE','DFFPE'));init=cell.get('parameters',{}).get('INIT',str(default))
         if not isinstance(init,str) or set(init)-{'0','1'} or int(init,2)!=default:raise ValueError('Nondefault FF INIT has not been calibrated')
         if source(cell,'CLK')!='signal':raise ValueError('Constant FF clock not supported by initial configuration')
         control=control_names[typ];profile=dict(cell_type=typ,slot=cluster['slot'],ce=source(cell,'CE'),control=source(cell,control),clock='signal')
         key=cluster['row'],cluster['column'];sites.setdefault(key,[]).append(profile)
-        if name not in wide:pairs.append(dict(lut=cluster['lut'],ff=name,tile=list(key),slot=cluster['slot'],native_internal_connection_verified=True))
+        if name not in wide and name not in independent:pairs.append(dict(lut=cluster['lut'],ff=name,tile=list(key),slot=cluster['slot'],native_internal_connection_verified=True))
         for pin in ('CE',control):
             label=source(cell,pin)
             if label in ('zero','one'):static.append(dict(cell=name,pin=pin,value=int(label=='one'),configuration_mode_verified=True,bitstream_verified=False))
@@ -112,9 +128,18 @@ def compile_initial(design,placement,top='top'):
         from ownpr_shared_ff_packing import compile_sites
         from ownpr_device import Device
         shared_sites,shared_info=compile_sites(design,placement,Device())
+    for (r,c),ffs in sites.items():
+        if (r,c) not in wide_sites and (r,c) not in shared_sites and any(ff['slot'] not in (0,2,4) for ff in ffs):
+            from ownpr_device import Device
+            if len(ffs)!=1 or Device().grid[r][c]!=17 or placement.get('single_ff_any_slot_calibration')!=single_ff_any_slot_calibration():raise ValueError('Unsupported extended single-FF site or missing calibration')
+            if sum((v['row'],v['column'])==(r,c) for v in placement['clusters'].values())!=1:raise ValueError('Extended single-FF calibration requires an otherwise isolated CFU')
     result=dict(sites=[dict(row=r,column=c,groups=wide_sites[r,c] if (r,c) in wide_sites else shared_sites[r,c] if (r,c) in shared_sites else independent_ff_groups(ffs)) for (r,c),ffs in sorted(sites.items())],
         static_control_pins=static,paired_data_connections=pairs,default_init_only=True,full_bitstream_verified=False)
     if shared_info:result['shared_control_pairs']=shared_info
+    if independent:
+        bysite={(r['row'],r['column']):r for r in result['sites']}
+        for row in independent.values():bysite[row['row'],row['column']]['groups'][row['slot']//2][11+(row['slot']&1)]=1
+        result['independent_data_inputs']=list(independent.values())
     return result
 
 

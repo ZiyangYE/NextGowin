@@ -81,7 +81,7 @@ def cone_paths(model,cut,wire,cell_delay):
     return walk(cut['root'])
 
 
-def discover(design,layout,budgets,wire,device,window=4.,cut_width=7,min_cells=2,max_roots=256,reported_roots=()):
+def discover(design,layout,budgets,wire,device,window=4.,cut_width=7,min_cells=2,max_roots=256,reported_roots=(),arrival_values=None):
     if not 1<=max_roots<=1024 or not 0<window<=5:raise ValueError('Invalid critical-root bounds')
     from ownpr_cell_timing import NativeCellTiming
     from ownpr_mux_architecture import MuxArchitecture
@@ -128,10 +128,18 @@ def discover(design,layout,budgets,wire,device,window=4.,cut_width=7,min_cells=2
             new_cell=max(lib.lut_input(width-1,layout['clusters'][root]['slot'],1)[2:4]) if width<=4 else max(mux.delay(17,width,{5:0,6:1,7:3}[width],'S0',1)[2:4])
             gain=total-first_wire-new_cell
             if gain<=.05:continue
+            legacy_gain=gain;competition=None
+            if arrival_values is not None:
+                from ownpr_cut_competition import rank
+                competition=rank(cut,paths,drivers,arrival_values,lib,mux,layout['clusters'][root]['slot'])
+                if competition is None:
+                    rejected.append(dict(root=root,reason='Missing competing boundary arrival'));continue
+                gain=competition['selected']['gain_proxy_ns'];late=competition['selected']['late_bit']
             options.append(dict(cut=cut,late_bit=late,worst_slack_ns=slack,root_setup_slack_ns=slack,priority_gain_proxy_ns=gain,
+                legacy_priority_gain_proxy_ns=legacy_gain,competing_arrivals=competition,
                 old_cone_internal_delay_ns=total-first_wire,new_final_cell_delay_ns=new_cell,critical_boundary_slack_hint_ns=effective,
                 lut_growth=max(0,(1<<max(0,width-4))-1),paired_ff=layout['clusters'][root].get('ff'),witness_paths=[],priority_proxy_ns={},
-                root_was_in_reported_paths=root in set(reported_roots),ranking_scope='Old local internal delay minus new final cell only; new wires and competing boundary arrivals are unpredicted'))
+                root_was_in_reported_paths=root in set(reported_roots),ranking_scope='Competing arrivals with inherited wires; new routing unpredicted' if competition else 'Old local internal delay minus new final cell only; new wires and competing boundary arrivals are unpredicted'))
     return options,dict(eligible_roots=len(eligible),considered_roots=len(chosen_roots),max_roots=max_roots,deferred_roots=max(0,len(eligible)-max_roots),
         additional_roots_not_in_reported_paths=[n for _,n in chosen_roots if n not in set(reported_roots)],candidate_count=len(options),rejected=rejected,cell_library_sha256=lib.sha256,
         coverage_scope='Checked root output pins in a bounded window, not endpoint closure or all alternate paths')

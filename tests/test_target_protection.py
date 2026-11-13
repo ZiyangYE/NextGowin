@@ -40,3 +40,8 @@ def test_report_coverage_and_clock_relationship_must_match():
     with pytest.raises(ValueError):protection_window(sdc.replace('-clock clk','-clock another'),report,100)
 
 
+def test_qualified_cpu_contract_has_complete_target_conversion():
+    root=Path(__file__).resolve().parents[1]
+    window,audit=from_capture(root/'results/vexriscv_state_frontier_002/qualification/export/native',90,.5)
+    assert audit['checked_setup_endpoints']==2775
+    assert abs(window-(1000/67.9-1000/90+.5))<1e-9

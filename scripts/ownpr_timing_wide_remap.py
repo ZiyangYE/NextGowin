@@ -40,12 +40,16 @@ def transform(design,parent,root,late_bit):
     return after,dict(**change,promotion=promotion,lut_growth=(1<<(change['cut_width']-4))-1)
 
 
-def place(design,original,root,device,allow_paired=False,site_cost=None,share_ordinary=False):
+def place(design,original,root,device,allow_paired=False,site_cost=None,share_ordinary=False,share_paired=False):
     old=original['clusters'][root]
     ff=old.get('ff')
     if (ff and not allow_paired) or (old['row'],old['column']) in exclusive_tiles(original):raise ValueError('Root occupies a state pair or exclusive macro')
     result=copy.deepcopy(original);del result['clusters'][root];spec=tree(design,root)
-    if share_ordinary and (ff or spec['level'] not in (5,6)):raise ValueError('Shared ordinary LUTs require an unpaired LUT5/6 root')
+    if share_ordinary and (ff and not share_paired or spec['level'] not in (5,6)):raise ValueError('Shared ordinary LUTs require an admitted LUT5/6 root')
+    if share_paired:
+        from ownpr_wide_ff_lut_sharing import supports_profile,calibration as mixed_calibration
+        if not share_ordinary or not ff or not supports_profile(design,ff):raise ValueError('Uncalibrated mixed FF placement')
+        result['mixed_wide_ff_lut_calibration']=mixed_calibration()['admission_sha256']
     used={(r['row'],r['column']) for r in result['clusters'].values()}|exclusive_tiles(result)
     if share_ordinary:
         from ownpr_wide_lut_sharing import calibration
@@ -62,10 +66,11 @@ def place(design,original,root,device,allow_paired=False,site_cost=None,share_or
     result.setdefault('mux_clusters',{}).update({n:dict(row=r,column=c,**v) for n,v in spec['muxes'].items()})
     macro=dict(root=root,row=r,column=c,root_slot=spec['muxes'][root]['slot'])
     if share_ordinary:macro['ordinary_sharing']=True
+    if share_paired:macro['wide_ff_ordinary_sharing']=True
     result.setdefault('wide_macros',[]).append(macro)
     result=validate_placement(design,result,device,dict(sites={}))
     return result,dict(old_site=[old['row'],old['column'],old['slot']],new_cfu=[r,c],fixed_other_cells=True,moved_ff=ff,
-        new_ff_site=[r,c,spec['muxes'][root]['slot']] if ff else None,clock_replan_required=bool(ff),shared_ordinary_luts=share_ordinary,site_policy='Calibrated partial CFU' if share_ordinary else 'Caller-scored empty calibrated CFU' if site_cost else 'Nearest empty calibrated CFU to root; physical timing unproven')
+        new_ff_site=[r,c,spec['muxes'][root]['slot']] if ff else None,clock_replan_required=bool(ff),shared_ordinary_luts=share_ordinary,shared_paired_ff=share_paired,site_policy='Calibrated partial CFU' if share_ordinary else 'Caller-scored empty calibrated CFU' if site_cost else 'Nearest empty calibrated CFU to root; physical timing unproven')
 
 
 def candidates(d,layout,ranking,include_paired=False):

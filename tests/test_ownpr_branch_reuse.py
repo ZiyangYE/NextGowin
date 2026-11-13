@@ -71,3 +71,33 @@ def test_inconsistent_seed_occupancy_is_rejected():
     with pytest.raises(ValueError,match='occupancy'):route(graph,[new],initial_trees=seeds)
 
 
+def test_native_trial_preserves_all_33_common_paths_and_improves_over_whole_net_routing():
+    from collections import defaultdict
+    from ownpr_device import Device,RoutingGraph
+    from ownpr_incremental_routes import partition
+    root=Path(__file__).resolve().parents[1];read=lambda p:json.loads(Path(p).read_text())
+    folder=root/'results/ownpr_uart_branch_reuse_closure_001';state=read(folder/'manifest.json');source=state['initial'];target=state['selected']
+    before=read(Path(source['routes'])/'routes.json');after=read(Path(target['routes'])/'routes.json')
+    old_nets=read(Path(source['routes'])/'nets.json');new_nets=read(Path(target['routes'])/'nets.json')
+    graph=RoutingGraph(Device(),root/'results/native_rrg_001');changed,frozen,blocked,_=partition(graph,old_nets,before,new_nets)
+    seeds,info=retained_branches(graph,old_nets,before,changed,new_nets,blocked)
+    assert info['retained_sinks']==33 and audit_retention(graph,seeds,after)['preserved_pips']==82
+    for name,record in frozen.items():assert after['nets'][name]==record
+    def native_chains(sta):
+        result=defaultdict(set)
+        for r in read(Path(sta)/'sta_endpoint_audit.json'):
+            if r['direction']=='In':
+                for n in r['nodes']:result[tuple(n['node'])].add(tuple(map(tuple,n['chain'])))
+        return result
+    old_chains=native_chains(source['sta']);new_chains=native_chains(target['sta']);wire=read(Path(source['wire'])/'wire_delays.json')
+    for name,seed in seeds.items():
+        nodes={r['resource']:tuple(r['node']) for r in wire['nets'][name]['sinks']}
+        for sink in seed['retained_sinks']:
+            point=nodes[sink];assert old_chains[point] and old_chains[point]==new_chains[point]
+    unseeded=root/'results/ownpr_uart_arrival_reorder_closure_001/round_001'
+    assert (Path(target['placement'])/'packed.json').read_bytes()==(unseeded/'placement/packed.json').read_bytes()
+    assert (Path(target['placement'])/'placement.json').read_bytes()==(unseeded/'placement/placement.json').read_bytes()
+    from run_ownpr_pin_closure import metric
+    assert state['metrics']['reported_fmax_mhz']>metric(unseeded/'initial_export/native')['reported_fmax_mhz']
+    assert state['metrics']['setup_violations']==14 and state['metrics']['hold_violations']==0
+    assert not state['route_eco_enabled'] and not state['metrics']['native_constraints_satisfied']

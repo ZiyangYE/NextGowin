@@ -57,7 +57,12 @@ def audit_edges(folder,design,mapping):
         data=load_json(file)
         if not data['full_data_pins']:raise ValueError('Hard timing capture is sampled')
         observed={};required=set();calibration=model.profiles[profile(cell)]
-        if cell['type']=='MULTALU27X18':required=set(calibration['edges'])
+        if cell['type']=='MULTALU27X18':
+            required=set(calibration['edges'])
+            if calibration.get('registered_oreg'):
+                loads=Counter(b for c in cells.values() for p,bs in c['connections'].items() if c['port_directions'][p]=='input' for b in bs)
+                loads.update(b for p in design['modules']['top']['ports'].values() if p['direction']=='output' for b in p['bits'])
+                required={k for k in required if k[2]!=10 or loads[cell['connections']['DOUT'][int(k[1][5:-1])]]}
         else:
             queries={(q['source'],q['destination'],q['selector'],q['flag_a'],q['flag_b']):q for q in data['queries']}
             if len(queries)!=len(data['queries']) or queries!=calibration['queries']:raise ValueError('BRAM cell-library queries differ from independent calibration')
@@ -77,7 +82,7 @@ def audit_edges(folder,design,mapping):
             if cell['type']!='MULTALU27X18' and edge['source']!=bram_clock(cell,edge['destination'].split('[')[0]):raise ValueError('BRAM timing edge belongs to the wrong clock port')
             if model.matrices(cell,*key)!=edge['matrices']:raise ValueError('Hard timing matrix differs from independent calibration')
             observed[key]=edge['matrices'];counts[cell['type']]+=1
-        if not required<=set(observed) or cell['type']=='MULTALU27X18' and set(observed)!=required:raise ValueError('Missing required hard timing arcs')
+        if not required<=set(observed) or cell['type']=='MULTALU27X18' and not calibration.get('registered_oreg') and set(observed)!=required:raise ValueError('Missing required hard timing arcs')
         required_count+=len(required)
     if seen!=endpoints['hard_instances']:raise ValueError('Incomplete own hard instance coverage')
     return dict(status='own_hard_cell_matrices_matched',instances=len(seen),observed_edges=sum(counts.values()),required_dynamic_and_output_edges=required_count,

@@ -107,6 +107,7 @@ def worker(out,source,sta,placement,use_unused=False,candidate_rank=0,window=Non
                 node=graph.node(cluster['row'],cluster['column'],'ABCD'[int(pin[1:])]+str(cluster['slot']));logical_sinks[node]=(cluster['lut'],pin)
         if cluster['ff']:
             physical=graph.device.register_bindings_for(cells[cluster['ff']]['type'])[cluster['slot']]
+            if cluster.get('independent_ff_input'):logical_sinks[graph.node(cluster['row'],cluster['column'],'SEL'+str(cluster['slot']))]=(cluster['ff'],'D')
             for pin in cells[cluster['ff']]['connections']:
                 if pin not in ('Q','D'):logical_sinks[graph.node(cluster['row'],cluster['column'],physical[pin])]=(cluster['ff'],pin)
     for name,io in places['fixed_io'].items():

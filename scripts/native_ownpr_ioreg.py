@@ -13,7 +13,7 @@ def bind_ioregs(native,design,placed,mapping,bind):
         obj=bind(record['instance'],reg);fn('?setPin2Node@Reg@NETLIST@@UEAAXXZ',None,[vp])(obj)
         actual={}
         control=record['control_pin']
-        for label,index in [('D',0),('CLK',1),('CE',2),(control,5 if control=='PRESET' else 6),('Q',7)]:
+        for label,index in [('D',0),('CLK',1),('CE',2),(control,{'PRESET':5,'CLEAR':6,'RESET':4}[control]),('Q',7)]:
             pin=pinfn(obj,index)
             if not pin:raise ValueError('Missing native I/O-register pin')
             node=ptr(pin+0x18);actual[label]=list(struct.unpack('<3h',C.string_at(node,6))) if node else None

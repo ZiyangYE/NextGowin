@@ -23,12 +23,14 @@ def inactive_clock_projection(design,contracts,top='top'):
     rows=[]
     for name,contract in contracts.items():
         for pin in contract['inactive']:
-            if pin['reason']!='bypass_clock':continue
+            if pin['reason'] not in ('bypass_clock','unselected_dsp_control') or pin['port']!='CLK':continue
             cell=cells[name]
             if cell['type']!='MULTALU27X18' or pin['port']!='CLK' or not grounds:raise ValueError('Unsupported inactive clock projection')
             modes=[v for k,v in cell['parameters'].items() if k.endswith('_CLK')]
-            if not modes or any(v!='BYPASS' for v in modes):raise ValueError('Registered DSP clock cannot be projected')
-            rows.append(dict(instance=name,port='CLK',index=pin['index'],before=cell['connections']['CLK'][pin['index']],after=grounds[0],reason='calibrated_bypass_clock'))
+            from ownpr_registered_dsp import unused_control
+            unused=pin['reason']=='unselected_dsp_control' and unused_control(cell,'CLK',pin['index'])
+            if not unused and (not modes or any(v!='BYPASS' for v in modes)):raise ValueError('Active DSP clock cannot be projected')
+            rows.append(dict(instance=name,port='CLK',index=pin['index'],before=cell['connections']['CLK'][pin['index']],after=grounds[0],reason='calibrated_unselected_dsp_clock' if unused else 'calibrated_bypass_clock'))
     return rows
 
 

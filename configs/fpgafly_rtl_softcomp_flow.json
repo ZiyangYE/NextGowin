@@ -1,0 +1,26 @@
+{
+  "project": "build/fpgafly_cpu_project/frontend.prj",
+  "sdc": "FPGAFLY_ISCAS2027/constraints/tang_mega_pro.sdc",
+  "cst": "FPGAFLY_ISCAS2027/constraints/tang_mega_pro.cst",
+  "physical_profile": "configs/fpgafly_native.json",
+  "period_ps": 12500,
+  "strategy": "acd_remap",
+  "resource_optimizations": true,
+  "keep_hierarchy": [
+    "frame_engine",
+    "board_memory",
+    "reference_pll",
+    "memory_pll",
+    "D3_320",
+    "~*.D3_320*"
+  ],
+  "max_logic_cells": 138240,
+  "net_aliases": {
+    "core_selected_Z": {
+      "module": "thefly_top",
+      "net": "host.core_selected"
+    }
+  },
+  "timeout": 3600,
+  "soft_comparisons": true
+}

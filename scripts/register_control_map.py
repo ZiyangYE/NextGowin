@@ -15,7 +15,7 @@ def logic(c):
     kind=c['type'];p=c['connections']
     if kind in ('LUT1','LUT2','LUT3','LUT4'):
         return [p['I'+str(i)][0] for i in range(int(kind[-1]))],p['F'][0],int(c['parameters']['INIT'],2)
-    if kind in ('MUX2_LUT5','MUX2_LUT6'):
+    if kind in ('MUX2_LUT5','MUX2_LUT6','MUX2_LUT7'):
         return [p[k][0] for k in ('I0','I1','S0')],p['O'][0],0xCA
     return None
 

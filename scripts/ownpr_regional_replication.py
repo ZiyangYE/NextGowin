@@ -12,10 +12,13 @@ from native_boundary_cec import initial_values,initial
 
 LUTS={'LUT1','LUT2','LUT3','LUT4'}
 
-def replicate(design,placed,device,source,sinks,depth=3,max_registers=12,allowed_registers=None,cluster_region=False,protected_cells=()):
+def replicate(design,placed,device,source,sinks,depth=3,max_registers=12,allowed_registers=None,cluster_region=False,protected_cells=(),placement_radius=5):
     if not 1<=depth<=6:raise ValueError('Cone depth must be 1..6')
+    if not 1<=placement_radius<=24:raise ValueError('Invalid replica search radius')
+    from ownpr_state_safety import protected_cells as protected_metadata
+    metadata_protected=protected_metadata(design);protected_cells=set(protected_cells)|metadata_protected
     module=design['modules']['top'];cells=module['cells'];clusters=placed['clusters']
-    paired={p['ff']:n for n,p in clusters.items() if p.get('ff') and not p.get('wide_ff_root') and cells[n]['type'] in LUTS}
+    paired={p['ff']:n for n,p in clusters.items() if p.get('ff') and not p.get('wide_ff_root') and not p.get('independent_ff_input') and cells[n]['type'] in LUTS}
     state_root=source in paired and cells[source]['type'] in ('DFFRE','DFFSE')
     if allowed_registers is not None:
         allowed_registers=set(allowed_registers)
@@ -53,6 +56,7 @@ def replicate(design,placed,device,source,sinks,depth=3,max_registers=12,allowed
     if not frontier or len(frontier)>max_registers:raise ValueError('Register frontier is empty or exceeds budget')
     if any(n in cone for n,p in sinks):raise ValueError('Sink overlaps replicated cone')
     copied=cone|{paired[n] for n in frontier}|frontier
+    if copied&metadata_protected:raise ValueError('Replication touches protected cell or net metadata')
     new=copy.deepcopy(design);layout=copy.deepcopy(placed);out=new['modules']['top'];names=out['cells'];netnames=out.setdefault('netnames',{})
     prefix='ng_ownpr_region_';index=0
     while any(n.startswith(f'{prefix}{index}_') for n in names) or any(n.startswith(f'{prefix}{index}_') for n in netnames):index+=1
@@ -119,8 +123,8 @@ def replicate(design,placed,device,source,sinks,depth=3,max_registers=12,allowed
                     driver=drivers.get(b)
                     if driver in points and driver not in copied:external.append(points[driver])
         options=[]
-        for r in ([cluster_site[0]] if cluster_site is not None else range(max(0,center[0]-5),min(device.rows,center[0]+6))):
-            for c in ([cluster_site[1]] if cluster_site is not None else range(max(0,center[1]-5),min(device.cols,center[1]+6))):
+        for r in ([cluster_site[0]] if cluster_site is not None else range(max(0,center[0]-placement_radius),min(device.rows,center[0]+placement_radius+1))):
+            for c in ([cluster_site[1]] if cluster_site is not None else range(max(0,center[1]-placement_radius),min(device.cols,center[1]+placement_radius+1))):
                 if device.grid[r][c]!=17 or (r,c) in excluded:continue
                 for s in ([forced_slot] if forced_slot is not None else (0,2,4) if ff else range(8)):
                     if (r,c,s) in occupied or ff and (r,c,s//2) in controls:continue
