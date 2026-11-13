@@ -1,0 +1,70 @@
+{
+  "status": "isolated_checkpoint_validated_with_expected_wip_failure",
+  "date": "2026-11-13",
+  "platform": "Windows x64",
+  "python_original_workspace_reads_blocked": true,
+  "dependency_files_verified": 5137,
+  "checkpoint_artifact_files_verified": 212,
+  "selected_native_artifacts_verified": 76,
+  "tests_passed": 67,
+  "projection_byte_identical": true,
+  "expected_induction_counterexample_reproduced": true,
+  "controller_proved": false,
+  "full_source_proved": false,
+  "fair_baselines_frozen": false,
+  "goal_complete": false,
+  "design_reports": [
+    {
+      "design": "vexriscv",
+      "fmax_mhz": 90.38,
+      "setup_wns_ns": -1.973,
+      "hold_wns_ns": 0.133
+    },
+    {
+      "design": "uart",
+      "fmax_mhz": 197.028,
+      "setup_wns_ns": 0.001,
+      "hold_wns_ns": 0.037
+    },
+    {
+      "design": "int2float",
+      "fmax_mhz": 167.613,
+      "setup_wns_ns": 0.004,
+      "hold_wns_ns": 0.002
+    },
+    {
+      "design": "tmds",
+      "fmax_mhz": 137.743,
+      "setup_wns_ns": -1.272,
+      "hold_wns_ns": 0.048
+    }
+  ],
+  "small_cold_rtl_flow": {
+    "status": "small_rtl_ownpr_reproduced",
+    "wall_seconds": 339.5469999999623,
+    "constraint_mhz": 20,
+    "metrics": {
+      "setup_wns_ns": 44.407,
+      "hold_wns_ns": 0.022,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "total_negative_setup_slack_ns": 0,
+      "reported_fmax_mhz": 178.809,
+      "other_checks_passed": true,
+      "native_constraints_satisfied": true,
+      "handoff_sha256": "d3abde97ae07de93ec0da792b952b64672777be74d4ac5e7d290139d05b9c4af"
+    },
+    "vendor_pnr_executed": false,
+    "device_programmed": false,
+    "board_wiring_validated": false
+  },
+  "logs": {
+    "induction_invocation.json": "0209122e28a51d86498e373e4a13475fe0bd14791d30ea52b61863b622f74bbb",
+    "induction_reproduction.json": "3dbf6be2437ba2a4bfe453dc66dc38d88f8d59bf2d119acd209f63e9252e50c5",
+    "projection_manifest.json": "91a80d68549d3e52f06bfcb9e7bf9e86228a98d6f6ce374a83832c738e8f5ab6",
+    "small_manifest.json": "ef1a2b61b3f2ea9c058f551fcf9a251a9d818ef2d3fe30b64bc309db1bf559a0",
+    "tests.log": "2306205be3ee4110758073b8780ef65942f5a95657b8b4b829a21b35643086d9"
+  },
+  "download_manifest_sha256": "a5c715a1e341fba475c725f6d4d4a9bee57a91640bdbc9364188e5203a70c34e",
+  "artifact_inventory_sha256": "58a453042c10a3d1eeacaa7b442e536e49ffbc15a95a5d139f891981f7be8bf8"
+}

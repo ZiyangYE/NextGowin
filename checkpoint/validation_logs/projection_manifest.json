@@ -1,0 +1,6697 @@
+{
+  "status": "lane_controller_built_not_proved",
+  "full_source_equivalence_proved": false,
+  "production_model_admission": false,
+  "original_budget": {
+    "start_epoch": 1794533095.5240128,
+    "deadline_epoch": 1794533995.5240128
+  },
+  "source_manifest_sha256": "83105c3c892cbfbced93c138f2fbdac6493fb37d5e11a6159efecd0081c9f232",
+  "wall_seconds": 39.55947995185852,
+  "groups": [
+    {
+      "gold": "IBusCachedPlugin_cache.ng_memory_0",
+      "original_array": "banks_0",
+      "module": "InstructionCache",
+      "profile": {
+        "WIDTH": 32,
+        "SIZE": 1024,
+        "ABITS": 10,
+        "RD_PORTS": 1,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "IBusCachedPlugin_cache.banks_0_banks_0_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 16,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "physical_width": 16,
+          "lane_witnesses": {
+            "15": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 15,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 15,
+                "register_stages": 2
+              }
+            ],
+            "0": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 0,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 1,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 2,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 3,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 4,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 5,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 6,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 7,
+                "register_stages": 2
+              }
+            ],
+            "8": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 8,
+                "register_stages": 2
+              }
+            ],
+            "9": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 9,
+                "register_stages": 2
+              }
+            ],
+            "10": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 10,
+                "register_stages": 2
+              }
+            ],
+            "11": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 11,
+                "register_stages": 2
+              }
+            ],
+            "12": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 12,
+                "register_stages": 2
+              }
+            ],
+            "13": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 13,
+                "register_stages": 2
+              }
+            ],
+            "14": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 14,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        {
+          "gate": "IBusCachedPlugin_cache.banks_0_banks_0_0_1_s.supported.words",
+          "read_port": 0,
+          "logical_low": 16,
+          "width": 16,
+          "lane_pairs": [
+            [
+              16,
+              0
+            ],
+            [
+              17,
+              1
+            ],
+            [
+              18,
+              2
+            ],
+            [
+              19,
+              3
+            ],
+            [
+              20,
+              4
+            ],
+            [
+              21,
+              5
+            ],
+            [
+              22,
+              6
+            ],
+            [
+              23,
+              7
+            ],
+            [
+              24,
+              8
+            ],
+            [
+              25,
+              9
+            ],
+            [
+              26,
+              10
+            ],
+            [
+              27,
+              11
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              29,
+              13
+            ],
+            [
+              30,
+              14
+            ],
+            [
+              31,
+              15
+            ]
+          ],
+          "physical_width": 16,
+          "lane_witnesses": {
+            "16": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 16,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 16,
+                "register_stages": 2
+              }
+            ],
+            "17": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 17,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 17,
+                "register_stages": 2
+              }
+            ],
+            "18": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 18,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 18,
+                "register_stages": 2
+              }
+            ],
+            "19": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 19,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 19,
+                "register_stages": 2
+              }
+            ],
+            "20": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 20,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 20,
+                "register_stages": 2
+              }
+            ],
+            "21": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 21,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 21,
+                "register_stages": 2
+              }
+            ],
+            "22": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 22,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 22,
+                "register_stages": 2
+              }
+            ],
+            "23": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 23,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 23,
+                "register_stages": 2
+              }
+            ],
+            "24": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 24,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 24,
+                "register_stages": 2
+              }
+            ],
+            "25": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 25,
+                "register_stages": 2
+              }
+            ],
+            "26": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 26,
+                "register_stages": 2
+              }
+            ],
+            "27": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 27,
+                "register_stages": 2
+              }
+            ],
+            "28": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 28,
+                "register_stages": 2
+              }
+            ],
+            "29": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 29,
+                "register_stages": 2
+              }
+            ],
+            "30": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 30,
+                "register_stages": 2
+              }
+            ],
+            "31": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 31,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    },
+    {
+      "gold": "IBusCachedPlugin_cache.ng_memory_1",
+      "original_array": "ways_0_tags",
+      "module": "InstructionCache",
+      "profile": {
+        "WIDTH": 22,
+        "SIZE": 128,
+        "ABITS": 7,
+        "RD_PORTS": 1,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "IBusCachedPlugin_cache.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 22,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              21
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              10,
+              9
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              12,
+              11
+            ],
+            [
+              13,
+              12
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              15,
+              14
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              17,
+              16
+            ],
+            [
+              18,
+              17
+            ],
+            [
+              19,
+              18
+            ],
+            [
+              20,
+              19
+            ],
+            [
+              21,
+              20
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 21,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {
+            "1": {
+              "value": "0",
+              "physical": 21,
+              "basis": [
+                "unused_alias"
+              ],
+              "source_write_and_init_obligations_still_required": true
+            }
+          },
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    },
+    {
+      "gold": "dataCache_1.ng_memory_0",
+      "original_array": "ways_0_tags",
+      "module": "DataCache",
+      "profile": {
+        "WIDTH": 22,
+        "SIZE": 128,
+        "ABITS": 7,
+        "RD_PORTS": 1,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "dataCache_1.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 22,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              21
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              10,
+              9
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              12,
+              11
+            ],
+            [
+              13,
+              12
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              15,
+              14
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              17,
+              16
+            ],
+            [
+              18,
+              17
+            ],
+            [
+              19,
+              18
+            ],
+            [
+              20,
+              19
+            ],
+            [
+              21,
+              20
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 21,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {
+            "1": {
+              "value": "0",
+              "physical": 21,
+              "basis": [
+                "unused_alias"
+              ],
+              "source_write_and_init_obligations_still_required": true
+            }
+          },
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    },
+    {
+      "gold": "dataCache_1.ng_memory_1",
+      "original_array": "ways_0_data_symbol0",
+      "module": "DataCache",
+      "profile": {
+        "WIDTH": 8,
+        "SIZE": 1024,
+        "ABITS": 10,
+        "RD_PORTS": 1,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "dataCache_1.ways_0_data_symbol0_ways_0_data_symbol0_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 0,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 1,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 2,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 3,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 4,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 5,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 6,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 7,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    },
+    {
+      "gold": "dataCache_1.ng_memory_2",
+      "original_array": "ways_0_data_symbol1",
+      "module": "DataCache",
+      "profile": {
+        "WIDTH": 8,
+        "SIZE": 1024,
+        "ABITS": 10,
+        "RD_PORTS": 1,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "dataCache_1.ways_0_data_symbol1_ways_0_data_symbol1_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 8,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 9,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 10,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 11,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 12,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 13,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 14,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 15,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    },
+    {
+      "gold": "dataCache_1.ng_memory_3",
+      "original_array": "ways_0_data_symbol2",
+      "module": "DataCache",
+      "profile": {
+        "WIDTH": 8,
+        "SIZE": 1024,
+        "ABITS": 10,
+        "RD_PORTS": 1,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "dataCache_1.ways_0_data_symbol2_ways_0_data_symbol2_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 16,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 17,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 18,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 19,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 20,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 21,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 22,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 23,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    },
+    {
+      "gold": "dataCache_1.ng_memory_4",
+      "original_array": "ways_0_data_symbol3",
+      "module": "DataCache",
+      "profile": {
+        "WIDTH": 8,
+        "SIZE": 1024,
+        "ABITS": 10,
+        "RD_PORTS": 1,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "dataCache_1.ways_0_data_symbol3_ways_0_data_symbol3_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 24,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 25,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 26,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 27,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 28,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 29,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 30,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 31,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    },
+    {
+      "gold": "ng_memory_0",
+      "original_array": "RegFilePlugin_regFile",
+      "module": "VexRiscv",
+      "profile": {
+        "WIDTH": 32,
+        "SIZE": 32,
+        "ABITS": 5,
+        "RD_PORTS": 2,
+        "WR_PORTS": 1,
+        "OFFSET": 0,
+        "RD_CLK_ENABLE": 0,
+        "WR_CLK_ENABLE": 1,
+        "WR_CLK_POLARITY": 1,
+        "RD_TRANSPARENCY_MASK": 0,
+        "RD_COLLISION_X_MASK": 0
+      },
+      "spans": [
+        {
+          "gate": "RegFilePlugin_regFile_RegFilePlugin_regFile_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 32,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              16,
+              16
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              21,
+              21
+            ],
+            [
+              22,
+              22
+            ],
+            [
+              23,
+              23
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              27,
+              27
+            ],
+            [
+              28,
+              28
+            ],
+            [
+              29,
+              29
+            ],
+            [
+              30,
+              30
+            ],
+            [
+              31,
+              31
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "1": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 1,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 21,
+                "register_stages": 1
+              }
+            ],
+            "22": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 22,
+                "register_stages": 1
+              }
+            ],
+            "23": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 23,
+                "register_stages": 1
+              }
+            ],
+            "24": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 24,
+                "register_stages": 1
+              }
+            ],
+            "25": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 25,
+                "register_stages": 1
+              }
+            ],
+            "26": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 26,
+                "register_stages": 1
+              }
+            ],
+            "27": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 27,
+                "register_stages": 1
+              }
+            ],
+            "28": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 28,
+                "register_stages": 1
+              }
+            ],
+            "29": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 29,
+                "register_stages": 1
+              }
+            ],
+            "30": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 30,
+                "register_stages": 1
+              }
+            ],
+            "31": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 31,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        {
+          "gate": "RegFilePlugin_regFile_RegFilePlugin_regFile_0_0_s0.supported.words",
+          "read_port": 1,
+          "logical_low": 0,
+          "width": 32,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              16,
+              16
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              21,
+              21
+            ],
+            [
+              22,
+              22
+            ],
+            [
+              23,
+              23
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              27,
+              27
+            ],
+            [
+              28,
+              28
+            ],
+            [
+              29,
+              29
+            ],
+            [
+              30,
+              30
+            ],
+            [
+              31,
+              31
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "1": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 1,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 21,
+                "register_stages": 1
+              }
+            ],
+            "22": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 22,
+                "register_stages": 1
+              }
+            ],
+            "23": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 23,
+                "register_stages": 1
+              }
+            ],
+            "24": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 24,
+                "register_stages": 1
+              }
+            ],
+            "25": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 25,
+                "register_stages": 1
+              }
+            ],
+            "26": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 26,
+                "register_stages": 1
+              }
+            ],
+            "27": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 27,
+                "register_stages": 1
+              }
+            ],
+            "28": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 28,
+                "register_stages": 1
+              }
+            ],
+            "29": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 29,
+                "register_stages": 1
+              }
+            ],
+            "30": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 30,
+                "register_stages": 1
+              }
+            ],
+            "31": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 31,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        }
+      ],
+      "matching_basis": "Hierarchy/restored-name proposal only; command and controller proof still required"
+    }
+  ],
+  "initial_storage_relation": {
+    "status": "initial_storage_relation_checked",
+    "checks": [
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_0",
+        "logical_bits": 32768,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 32768,
+        "replica_consistency_checks": 0
+      },
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_1",
+        "logical_bits": 2816,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 2816,
+        "replica_consistency_checks": 0
+      },
+      {
+        "memory": "dataCache_1.ng_memory_0",
+        "logical_bits": 2816,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 2816,
+        "replica_consistency_checks": 0
+      },
+      {
+        "memory": "dataCache_1.ng_memory_1",
+        "logical_bits": 8192,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 8192,
+        "replica_consistency_checks": 0
+      },
+      {
+        "memory": "dataCache_1.ng_memory_2",
+        "logical_bits": 8192,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 8192,
+        "replica_consistency_checks": 0
+      },
+      {
+        "memory": "dataCache_1.ng_memory_3",
+        "logical_bits": 8192,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 8192,
+        "replica_consistency_checks": 0
+      },
+      {
+        "memory": "dataCache_1.ng_memory_4",
+        "logical_bits": 8192,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 8192,
+        "replica_consistency_checks": 0
+      },
+      {
+        "memory": "ng_memory_0",
+        "logical_bits": 1024,
+        "defined_source_bit_checks": 0,
+        "undefined_source_refinement_checks": 2048,
+        "replica_consistency_checks": 1024
+      }
+    ],
+    "full_sequential_equivalence": false
+  },
+  "padding_projection": {
+    "status": "conditional_padding_projection_authorized",
+    "noninterference": {
+      "status": "padding_read_noninterference_proved",
+      "checks": [
+        {
+          "memory": "IBusCachedPlugin_cache.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "unused_physical_lanes": [
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "tainted_bits": 20,
+          "reachable_functional_targets": []
+        },
+        {
+          "memory": "dataCache_1.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "unused_physical_lanes": [
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "tainted_bits": 20,
+          "reachable_functional_targets": []
+        }
+      ],
+      "scope": "No data dependency from listed physical read lanes to original outputs, any memory input or state clock; existing proof obligations remain unchanged",
+      "model_or_obligation_modified": false
+    },
+    "replaced_observations": [
+      {
+        "port": "ng_mem_1_part_0_padding_write",
+        "physical_memory": "IBusCachedPlugin_cache.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+        "physical_lanes": [
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      },
+      {
+        "port": "ng_mem_2_part_0_padding_write",
+        "physical_memory": "dataCache_1.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+        "physical_lanes": [
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    ],
+    "replacement": "Original-array dependency proof replaces auxiliary physical-padding-write-is-zero assertion",
+    "original_io_and_logical_memory_commands_retained": true,
+    "full_source_equivalence_proved": false,
+    "original_gate_sha256": "9d3fd935c5ee1b342838fd2929e44c83a3825ea17e8cb1d1517c815de0ba5a53"
+  },
+  "transformation_sources": {
+    "compositional_memory_cut.py": "c2625da81e339b1824a04717f93acd289855eb048985956976a8336a124da4bf",
+    "formal_memory_lanes.py": "1533c79a32e4f7179af2ef83f794fa15430931e3586342f947e65978034e7e0c",
+    "formal_padding_observability.py": "294a5dbb6407a3e475838d508e0ef18455622a1585827b5da7d8e9043e41f06f",
+    "formal_padding_projection.py": "104657dc7a008dec77a0cd4ee966ba158b23a95bcce27fcdd319ac84c63777ad"
+  },
+  "gold": {
+    "role": "gold",
+    "command_obligations": [
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_0",
+        "span": {
+          "gate": "IBusCachedPlugin_cache.banks_0_banks_0_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 16,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "physical_width": 16,
+          "lane_witnesses": {
+            "15": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 15,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 15,
+                "register_stages": 2
+              }
+            ],
+            "0": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 0,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 1,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 2,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 3,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 4,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 5,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 6,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 7,
+                "register_stages": 2
+              }
+            ],
+            "8": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 8,
+                "register_stages": 2
+              }
+            ],
+            "9": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 9,
+                "register_stages": 2
+              }
+            ],
+            "10": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 10,
+                "register_stages": 2
+              }
+            ],
+            "11": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 11,
+                "register_stages": 2
+              }
+            ],
+            "12": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 12,
+                "register_stages": 2
+              }
+            ],
+            "13": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 13,
+                "register_stages": 2
+              }
+            ],
+            "14": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 14,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_0_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_0",
+        "span": {
+          "gate": "IBusCachedPlugin_cache.banks_0_banks_0_0_1_s.supported.words",
+          "read_port": 0,
+          "logical_low": 16,
+          "width": 16,
+          "lane_pairs": [
+            [
+              16,
+              0
+            ],
+            [
+              17,
+              1
+            ],
+            [
+              18,
+              2
+            ],
+            [
+              19,
+              3
+            ],
+            [
+              20,
+              4
+            ],
+            [
+              21,
+              5
+            ],
+            [
+              22,
+              6
+            ],
+            [
+              23,
+              7
+            ],
+            [
+              24,
+              8
+            ],
+            [
+              25,
+              9
+            ],
+            [
+              26,
+              10
+            ],
+            [
+              27,
+              11
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              29,
+              13
+            ],
+            [
+              30,
+              14
+            ],
+            [
+              31,
+              15
+            ]
+          ],
+          "physical_width": 16,
+          "lane_witnesses": {
+            "16": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 16,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 16,
+                "register_stages": 2
+              }
+            ],
+            "17": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 17,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 17,
+                "register_stages": 2
+              }
+            ],
+            "18": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 18,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 18,
+                "register_stages": 2
+              }
+            ],
+            "19": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 19,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 19,
+                "register_stages": 2
+              }
+            ],
+            "20": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 20,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 20,
+                "register_stages": 2
+              }
+            ],
+            "21": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 21,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 21,
+                "register_stages": 2
+              }
+            ],
+            "22": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 22,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 22,
+                "register_stages": 2
+              }
+            ],
+            "23": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 23,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 23,
+                "register_stages": 2
+              }
+            ],
+            "24": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 24,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 24,
+                "register_stages": 2
+              }
+            ],
+            "25": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 25,
+                "register_stages": 2
+              }
+            ],
+            "26": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 26,
+                "register_stages": 2
+              }
+            ],
+            "27": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 27,
+                "register_stages": 2
+              }
+            ],
+            "28": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 28,
+                "register_stages": 2
+              }
+            ],
+            "29": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 29,
+                "register_stages": 2
+              }
+            ],
+            "30": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 30,
+                "register_stages": 2
+              }
+            ],
+            "31": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 31,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_0_part_1_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_1",
+        "span": {
+          "gate": "IBusCachedPlugin_cache.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 22,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              21
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              10,
+              9
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              12,
+              11
+            ],
+            [
+              13,
+              12
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              15,
+              14
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              17,
+              16
+            ],
+            [
+              18,
+              17
+            ],
+            [
+              19,
+              18
+            ],
+            [
+              20,
+              19
+            ],
+            [
+              21,
+              20
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 21,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {
+            "1": {
+              "value": "0",
+              "physical": 21,
+              "basis": [
+                "unused_alias"
+              ],
+              "source_write_and_init_obligations_still_required": true
+            }
+          },
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_1_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_0",
+        "span": {
+          "gate": "dataCache_1.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 22,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              21
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              10,
+              9
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              12,
+              11
+            ],
+            [
+              13,
+              12
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              15,
+              14
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              17,
+              16
+            ],
+            [
+              18,
+              17
+            ],
+            [
+              19,
+              18
+            ],
+            [
+              20,
+              19
+            ],
+            [
+              21,
+              20
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 21,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {
+            "1": {
+              "value": "0",
+              "physical": 21,
+              "basis": [
+                "unused_alias"
+              ],
+              "source_write_and_init_obligations_still_required": true
+            }
+          },
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_2_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_1",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol0_ways_0_data_symbol0_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 0,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 1,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 2,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 3,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 4,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 5,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 6,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 7,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_3_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_2",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol1_ways_0_data_symbol1_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 8,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 9,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 10,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 11,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 12,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 13,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 14,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 15,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_4_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_3",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol2_ways_0_data_symbol2_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 16,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 17,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 18,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 19,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 20,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 21,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 22,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 23,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_5_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_4",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol3_ways_0_data_symbol3_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 24,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 25,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 26,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 27,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 28,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 29,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 30,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 31,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_6_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "ng_memory_0",
+        "span": {
+          "gate": "RegFilePlugin_regFile_RegFilePlugin_regFile_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 32,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              16,
+              16
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              21,
+              21
+            ],
+            [
+              22,
+              22
+            ],
+            [
+              23,
+              23
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              27,
+              27
+            ],
+            [
+              28,
+              28
+            ],
+            [
+              29,
+              29
+            ],
+            [
+              30,
+              30
+            ],
+            [
+              31,
+              31
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "1": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 1,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 21,
+                "register_stages": 1
+              }
+            ],
+            "22": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 22,
+                "register_stages": 1
+              }
+            ],
+            "23": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 23,
+                "register_stages": 1
+              }
+            ],
+            "24": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 24,
+                "register_stages": 1
+              }
+            ],
+            "25": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 25,
+                "register_stages": 1
+              }
+            ],
+            "26": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 26,
+                "register_stages": 1
+              }
+            ],
+            "27": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 27,
+                "register_stages": 1
+              }
+            ],
+            "28": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 28,
+                "register_stages": 1
+              }
+            ],
+            "29": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 29,
+                "register_stages": 1
+              }
+            ],
+            "30": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 30,
+                "register_stages": 1
+              }
+            ],
+            "31": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 31,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_7_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "ng_memory_0",
+        "span": {
+          "gate": "RegFilePlugin_regFile_RegFilePlugin_regFile_0_0_s0.supported.words",
+          "read_port": 1,
+          "logical_low": 0,
+          "width": 32,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              16,
+              16
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              21,
+              21
+            ],
+            [
+              22,
+              22
+            ],
+            [
+              23,
+              23
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              27,
+              27
+            ],
+            [
+              28,
+              28
+            ],
+            [
+              29,
+              29
+            ],
+            [
+              30,
+              30
+            ],
+            [
+              31,
+              31
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "1": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 1,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 21,
+                "register_stages": 1
+              }
+            ],
+            "22": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 22,
+                "register_stages": 1
+              }
+            ],
+            "23": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 23,
+                "register_stages": 1
+              }
+            ],
+            "24": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 24,
+                "register_stages": 1
+              }
+            ],
+            "25": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 25,
+                "register_stages": 1
+              }
+            ],
+            "26": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 26,
+                "register_stages": 1
+              }
+            ],
+            "27": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 27,
+                "register_stages": 1
+              }
+            ],
+            "28": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 28,
+                "register_stages": 1
+              }
+            ],
+            "29": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 29,
+                "register_stages": 1
+              }
+            ],
+            "30": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 30,
+                "register_stages": 1
+              }
+            ],
+            "31": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 31,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_7_part_1_",
+        "clock_polarity_normalized": true
+      }
+    ],
+    "initial_state_modified": false,
+    "scope": "Conditional controller/interface abstraction; raw array reads are common inputs. Full proof additionally requires validated memory relations and a well-founded composition argument.",
+    "padding_projection": {
+      "status": "auxiliary_padding_monitor_projection",
+      "role": "gold",
+      "replaced_ports": [
+        "ng_mem_1_part_0_padding_write",
+        "ng_mem_2_part_0_padding_write"
+      ],
+      "original_cells_fanouts_and_init_unchanged": true,
+      "other_ports_unchanged": true,
+      "proof_scope": "Conditional array-model projection only; full composition still required"
+    },
+    "sha256": "162062b78d7c3c5e9c39def992f8e5b4f5bd98e3a0982bd355cf61e42da9a81b"
+  },
+  "gate": {
+    "role": "gate",
+    "command_obligations": [
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_0",
+        "span": {
+          "gate": "IBusCachedPlugin_cache.banks_0_banks_0_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 16,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "physical_width": 16,
+          "lane_witnesses": {
+            "15": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 15,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 15,
+                "register_stages": 2
+              }
+            ],
+            "0": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 0,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 1,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 2,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 3,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 4,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 5,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 6,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 7,
+                "register_stages": 2
+              }
+            ],
+            "8": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 8,
+                "register_stages": 2
+              }
+            ],
+            "9": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 9,
+                "register_stages": 2
+              }
+            ],
+            "10": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 10,
+                "register_stages": 2
+              }
+            ],
+            "11": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 11,
+                "register_stages": 2
+              }
+            ],
+            "12": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 12,
+                "register_stages": 2
+              }
+            ],
+            "13": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 13,
+                "register_stages": 2
+              }
+            ],
+            "14": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 14,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_0_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_0",
+        "span": {
+          "gate": "IBusCachedPlugin_cache.banks_0_banks_0_0_1_s.supported.words",
+          "read_port": 0,
+          "logical_low": 16,
+          "width": 16,
+          "lane_pairs": [
+            [
+              16,
+              0
+            ],
+            [
+              17,
+              1
+            ],
+            [
+              18,
+              2
+            ],
+            [
+              19,
+              3
+            ],
+            [
+              20,
+              4
+            ],
+            [
+              21,
+              5
+            ],
+            [
+              22,
+              6
+            ],
+            [
+              23,
+              7
+            ],
+            [
+              24,
+              8
+            ],
+            [
+              25,
+              9
+            ],
+            [
+              26,
+              10
+            ],
+            [
+              27,
+              11
+            ],
+            [
+              28,
+              12
+            ],
+            [
+              29,
+              13
+            ],
+            [
+              30,
+              14
+            ],
+            [
+              31,
+              15
+            ]
+          ],
+          "physical_width": 16,
+          "lane_witnesses": {
+            "16": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 16,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 16,
+                "register_stages": 2
+              }
+            ],
+            "17": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 17,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 17,
+                "register_stages": 2
+              }
+            ],
+            "18": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 18,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 18,
+                "register_stages": 2
+              }
+            ],
+            "19": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 19,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 19,
+                "register_stages": 2
+              }
+            ],
+            "20": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 20,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 20,
+                "register_stages": 2
+              }
+            ],
+            "21": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 21,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 21,
+                "register_stages": 2
+              }
+            ],
+            "22": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 22,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 22,
+                "register_stages": 2
+              }
+            ],
+            "23": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 23,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 23,
+                "register_stages": 2
+              }
+            ],
+            "24": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_fetch_data",
+                "index": 24,
+                "register_stages": 1
+              },
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 24,
+                "register_stages": 2
+              }
+            ],
+            "25": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 25,
+                "register_stages": 2
+              }
+            ],
+            "26": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 26,
+                "register_stages": 2
+              }
+            ],
+            "27": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 27,
+                "register_stages": 2
+              }
+            ],
+            "28": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 28,
+                "register_stages": 2
+              }
+            ],
+            "29": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 29,
+                "register_stages": 2
+              }
+            ],
+            "30": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 30,
+                "register_stages": 2
+              }
+            ],
+            "31": [
+              {
+                "name": "IBusCachedPlugin_cache_io_cpu_decode_data",
+                "index": 31,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_0_part_1_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "IBusCachedPlugin_cache.ng_memory_1",
+        "span": {
+          "gate": "IBusCachedPlugin_cache.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 22,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              21
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              10,
+              9
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              12,
+              11
+            ],
+            [
+              13,
+              12
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              15,
+              14
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              17,
+              16
+            ],
+            [
+              18,
+              17
+            ],
+            [
+              19,
+              18
+            ],
+            [
+              20,
+              19
+            ],
+            [
+              21,
+              20
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "IBusCachedPlugin_cache._zz_ways_0_tags_port1",
+                "index": 21,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {
+            "1": {
+              "value": "0",
+              "physical": 21,
+              "basis": [
+                "unused_alias"
+              ],
+              "source_write_and_init_obligations_still_required": true
+            }
+          },
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_1_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_0",
+        "span": {
+          "gate": "dataCache_1.ways_0_tags_ways_0_tags_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 22,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              21
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              5
+            ],
+            [
+              7,
+              6
+            ],
+            [
+              8,
+              7
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              10,
+              9
+            ],
+            [
+              11,
+              10
+            ],
+            [
+              12,
+              11
+            ],
+            [
+              13,
+              12
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              15,
+              14
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              17,
+              16
+            ],
+            [
+              18,
+              17
+            ],
+            [
+              19,
+              18
+            ],
+            [
+              20,
+              19
+            ],
+            [
+              21,
+              20
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "dataCache_1._zz_ways_0_tags_port0",
+                "index": 21,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {
+            "1": {
+              "value": "0",
+              "physical": 21,
+              "basis": [
+                "unused_alias"
+              ],
+              "source_write_and_init_obligations_still_required": true
+            }
+          },
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_2_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_1",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol0_ways_0_data_symbol0_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 0,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 1,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 2,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 3,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 4,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 5,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 6,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 7,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_3_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_2",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol1_ways_0_data_symbol1_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 8,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 9,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 10,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 11,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 12,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 13,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 14,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 15,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_4_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_3",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol2_ways_0_data_symbol2_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 16,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 17,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 18,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 19,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 20,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 21,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 22,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 23,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_5_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "dataCache_1.ng_memory_4",
+        "span": {
+          "gate": "dataCache_1.ways_0_data_symbol3_ways_0_data_symbol3_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 8,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ]
+          ],
+          "physical_width": 8,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 24,
+                "register_stages": 2
+              }
+            ],
+            "1": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 25,
+                "register_stages": 2
+              }
+            ],
+            "2": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 26,
+                "register_stages": 2
+              }
+            ],
+            "3": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 27,
+                "register_stages": 2
+              }
+            ],
+            "4": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 28,
+                "register_stages": 2
+              }
+            ],
+            "5": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 29,
+                "register_stages": 2
+              }
+            ],
+            "6": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 30,
+                "register_stages": 2
+              }
+            ],
+            "7": [
+              {
+                "name": "dataCache_1.stageB_dataReadRsp_0",
+                "index": 31,
+                "register_stages": 2
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_6_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "ng_memory_0",
+        "span": {
+          "gate": "RegFilePlugin_regFile_RegFilePlugin_regFile_0_0_s.supported.words",
+          "read_port": 0,
+          "logical_low": 0,
+          "width": 32,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              16,
+              16
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              21,
+              21
+            ],
+            [
+              22,
+              22
+            ],
+            [
+              23,
+              23
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              27,
+              27
+            ],
+            [
+              28,
+              28
+            ],
+            [
+              29,
+              29
+            ],
+            [
+              30,
+              30
+            ],
+            [
+              31,
+              31
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "1": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 1,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 21,
+                "register_stages": 1
+              }
+            ],
+            "22": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 22,
+                "register_stages": 1
+              }
+            ],
+            "23": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 23,
+                "register_stages": 1
+              }
+            ],
+            "24": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 24,
+                "register_stages": 1
+              }
+            ],
+            "25": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 25,
+                "register_stages": 1
+              }
+            ],
+            "26": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 26,
+                "register_stages": 1
+              }
+            ],
+            "27": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 27,
+                "register_stages": 1
+              }
+            ],
+            "28": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 28,
+                "register_stages": 1
+              }
+            ],
+            "29": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 29,
+                "register_stages": 1
+              }
+            ],
+            "30": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 30,
+                "register_stages": 1
+              }
+            ],
+            "31": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port0",
+                "index": 31,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_7_part_0_",
+        "clock_polarity_normalized": true
+      },
+      {
+        "memory": "ng_memory_0",
+        "span": {
+          "gate": "RegFilePlugin_regFile_RegFilePlugin_regFile_0_0_s0.supported.words",
+          "read_port": 1,
+          "logical_low": 0,
+          "width": 32,
+          "lane_pairs": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ],
+            [
+              6,
+              6
+            ],
+            [
+              7,
+              7
+            ],
+            [
+              8,
+              8
+            ],
+            [
+              9,
+              9
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              14
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              16,
+              16
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              21,
+              21
+            ],
+            [
+              22,
+              22
+            ],
+            [
+              23,
+              23
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              27,
+              27
+            ],
+            [
+              28,
+              28
+            ],
+            [
+              29,
+              29
+            ],
+            [
+              30,
+              30
+            ],
+            [
+              31,
+              31
+            ]
+          ],
+          "physical_width": 32,
+          "lane_witnesses": {
+            "0": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 0,
+                "register_stages": 1
+              }
+            ],
+            "1": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 1,
+                "register_stages": 1
+              }
+            ],
+            "2": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 2,
+                "register_stages": 1
+              }
+            ],
+            "3": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 3,
+                "register_stages": 1
+              }
+            ],
+            "4": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 4,
+                "register_stages": 1
+              }
+            ],
+            "5": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 5,
+                "register_stages": 1
+              }
+            ],
+            "6": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 6,
+                "register_stages": 1
+              }
+            ],
+            "7": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 7,
+                "register_stages": 1
+              }
+            ],
+            "8": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 8,
+                "register_stages": 1
+              }
+            ],
+            "9": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 9,
+                "register_stages": 1
+              }
+            ],
+            "10": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 10,
+                "register_stages": 1
+              }
+            ],
+            "11": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 11,
+                "register_stages": 1
+              }
+            ],
+            "12": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 12,
+                "register_stages": 1
+              }
+            ],
+            "13": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 13,
+                "register_stages": 1
+              }
+            ],
+            "14": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 14,
+                "register_stages": 1
+              }
+            ],
+            "15": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 15,
+                "register_stages": 1
+              }
+            ],
+            "16": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 16,
+                "register_stages": 1
+              }
+            ],
+            "17": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 17,
+                "register_stages": 1
+              }
+            ],
+            "18": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 18,
+                "register_stages": 1
+              }
+            ],
+            "19": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 19,
+                "register_stages": 1
+              }
+            ],
+            "20": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 20,
+                "register_stages": 1
+              }
+            ],
+            "21": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 21,
+                "register_stages": 1
+              }
+            ],
+            "22": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 22,
+                "register_stages": 1
+              }
+            ],
+            "23": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 23,
+                "register_stages": 1
+              }
+            ],
+            "24": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 24,
+                "register_stages": 1
+              }
+            ],
+            "25": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 25,
+                "register_stages": 1
+              }
+            ],
+            "26": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 26,
+                "register_stages": 1
+              }
+            ],
+            "27": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 27,
+                "register_stages": 1
+              }
+            ],
+            "28": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 28,
+                "register_stages": 1
+              }
+            ],
+            "29": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 29,
+                "register_stages": 1
+              }
+            ],
+            "30": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 30,
+                "register_stages": 1
+              }
+            ],
+            "31": [
+              {
+                "name": "_zz_RegFilePlugin_regFile_port1",
+                "index": 31,
+                "register_stages": 1
+              }
+            ]
+          },
+          "compacted_constant_proposals": {},
+          "lane_relation_proved": false
+        },
+        "ports_prefix": "ng_mem_7_part_1_",
+        "clock_polarity_normalized": true
+      }
+    ],
+    "initial_state_modified": false,
+    "scope": "Conditional controller/interface abstraction; raw array reads are common inputs. Full proof additionally requires validated memory relations and a well-founded composition argument.",
+    "padding_projection": {
+      "status": "auxiliary_padding_monitor_projection",
+      "role": "gate",
+      "replaced_ports": [
+        "ng_mem_1_part_0_padding_write",
+        "ng_mem_2_part_0_padding_write"
+      ],
+      "original_cells_fanouts_and_init_unchanged": true,
+      "other_ports_unchanged": true,
+      "proof_scope": "Conditional array-model projection only; full composition still required"
+    },
+    "sha256": "de2b6fc4e4fd487133353f61000bcc99a71d46383c81c7a20836d9b1493948d3"
+  }
+}

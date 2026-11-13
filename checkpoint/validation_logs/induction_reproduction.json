@@ -1,0 +1,70 @@
+{
+  "scope": "Induction trace unless independently labeled otherwise; no initial-state reachability claim",
+  "frames": [
+    {
+      "frame": 0,
+      "failures": [],
+      "definedness_violation": null
+    },
+    {
+      "frame": 2,
+      "failures": [],
+      "definedness_violation": null
+    },
+    {
+      "frame": 3,
+      "failures": [],
+      "definedness_violation": null
+    },
+    {
+      "frame": 4,
+      "failures": [],
+      "definedness_violation": null
+    },
+    {
+      "frame": 5,
+      "failures": [
+        {
+          "port": "ng_mem_3_part_0_write_high",
+          "kind": "memory",
+          "bits": [
+            0
+          ],
+          "gold": "0",
+          "gate": "x"
+        },
+        {
+          "port": "ng_mem_4_part_0_write_high",
+          "kind": "memory",
+          "bits": [
+            0
+          ],
+          "gold": "0",
+          "gate": "x"
+        },
+        {
+          "port": "ng_mem_5_part_0_write_high",
+          "kind": "memory",
+          "bits": [
+            0
+          ],
+          "gold": "0",
+          "gate": "x"
+        },
+        {
+          "port": "ng_mem_6_part_0_write_high",
+          "kind": "memory",
+          "bits": [
+            0
+          ],
+          "gold": "0",
+          "gate": "x"
+        }
+      ],
+      "definedness_violation": null
+    }
+  ],
+  "status": "expected_wip_induction_failure_reproduced",
+  "controller_proved": false,
+  "full_source_proved": false
+}

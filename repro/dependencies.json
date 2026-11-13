@@ -1,0 +1,130 @@
+{
+  "format": "nextgowin-split-zip-v1",
+  "release": "https://github.com/ZiyangYE/NextGowin/releases/download/wip-small-repro-20261106",
+  "archive_bytes": 185160011,
+  "archive_sha256": "d6777b3dafb2beb6b140e84170ead2e63ace45d47fa6bf962d096a57357ecb2f",
+  "unpacked_bytes": 668825910,
+  "max_part_bytes": 8000000,
+  "parts": [
+    {
+      "name": "NextGowin-small-dependencies.zip.part0001",
+      "bytes": 8000000,
+      "sha256": "a19fdb1912642418d05b5d3314d6501f96cb076b46a4fee70241d5c9230517be"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0002",
+      "bytes": 8000000,
+      "sha256": "b1544f4a5c4ba4291982ce6698f4c62bb1582493ac786303e2f65bfa32966c8c"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0003",
+      "bytes": 8000000,
+      "sha256": "621f24d0a5ede4842aec16374943cacb31a4d2c8e8936577f935bd19228542df"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0004",
+      "bytes": 8000000,
+      "sha256": "701740aa144e8cf38af21e231b71f11456f42131cd47ecc116f98ee041076a6f"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0005",
+      "bytes": 8000000,
+      "sha256": "b1e89d5dc852b52c810185d408a50c9edcfd620d62f94b0ce6b1a2fa31c41d38"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0006",
+      "bytes": 8000000,
+      "sha256": "2def660d4ad07e0b1fd5006ee82f1f521579174abcdc3c28677fe4eeef732049"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0007",
+      "bytes": 8000000,
+      "sha256": "4ebfeaebd5497c9f962b6499511e2f579adb87fbfa56e42c6b8cfa0c18211e4b"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0008",
+      "bytes": 8000000,
+      "sha256": "94bc25908274f704f7512f7a026302401c9f137d0e15092f5eb135e149ce3498"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0009",
+      "bytes": 8000000,
+      "sha256": "1611fa06ab9dae0f742c3c2538c4b37696b91c3f8f6d795bf988391292c44fdd"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0010",
+      "bytes": 8000000,
+      "sha256": "dcebc50b76dfdb6ff1c98827d711e4d8e182c098fcfc0ed1c70cb46d7a6958d9"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0011",
+      "bytes": 8000000,
+      "sha256": "aa57262d9897bc9c4815e2445a646d789de30a603154f0e98f5adfbe5617c68e"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0012",
+      "bytes": 8000000,
+      "sha256": "a33f931f72114feececc9e84fb773127e6b35be8c7bfa6e5c1c97a006542b4b3"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0013",
+      "bytes": 8000000,
+      "sha256": "917c2275398df8c789e04adcb2febfedf4d7d841fa2e0e92b38659a496a53251"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0014",
+      "bytes": 8000000,
+      "sha256": "056c647973811d3c5a4da390c744e79deef6a5108c75d4d042670ff72956a5f5"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0015",
+      "bytes": 8000000,
+      "sha256": "5e8c4f255ef15256b5aa8f04ea2cd1a414a5a66542b6cc20802a3fa8d49ada8f"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0016",
+      "bytes": 8000000,
+      "sha256": "05e34ac2fed63634c52aa95669ef2f23f2b42e8f59916b7bf494da2df057c1d6"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0017",
+      "bytes": 8000000,
+      "sha256": "cd1e57b7d07cd9aed96a7362285d43aee32196a051e86e713f9de658657b25a0"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0018",
+      "bytes": 8000000,
+      "sha256": "0f2cb6771d6a7f9fd35b11366cc19455d3f47ae5d21e10ce58cf6e8c72a7b97f"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0019",
+      "bytes": 8000000,
+      "sha256": "f7eb5dadd8824f4c0353f878309166e7a901945dac24524849b2d721c6fa0174"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0020",
+      "bytes": 8000000,
+      "sha256": "d40c7abbe9b17157cdd4600e3e24a31dda16338b28538979a979fd63bceb9060"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0021",
+      "bytes": 8000000,
+      "sha256": "cb4793e0c22c1f28abce23daf68c24d8e94dcbcd5e75cca21e639e1b39f2e7c9"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0022",
+      "bytes": 8000000,
+      "sha256": "e780ebed045768e18e147c8db6ba937f51ac1a0a53486d7e2f7ca847c758b713"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0023",
+      "bytes": 8000000,
+      "sha256": "6dc52d6c214455dca1ed3746ee36ce0c60fb57f8c8d89be086a224bab678366e"
+    },
+    {
+      "name": "NextGowin-small-dependencies.zip.part0024",
+      "bytes": 1160011,
+      "sha256": "6f24728277c9afb19020b2d2c1d9e14e4a497c2aec57e85fb45da11b5a9c6a9c"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+# Independent FF backend and whole-flow evaluation
+
+Trial018 implements the independent-input contract in the actual own-P&R pipeline. Calibration hashes bind all16 encoded witnesses and their source files. The FF compiler selects CLS field11/12, the router targets the real SEL node, and the native importer sets the corresponding per-half mode without running vendor packing/placement/routing. No fictitious SEL-to-DI routing edge is added. The native audit checks the FF data node, complete parent chain back to the actual own-routed driver, physical ownership and mode. Existing complete configuration, I/O, timing and hold checks remain mandatory.
+
+Implicit paired-LUT zero-delay exemptions exclude independent-input FFs. Pin feedback includes the FF's SEL input; logic rewriting/replication helpers no longer assume that every colocated LUT drives its FF. Current admission covers ordinary CFUs of types17/228, slots0/2/4 with one FF per control group. Wide-MUX/carry/hard-resource sharing and broader shared-control combinations remain separate work; the full objective is unchanged.
+
+All four designs have completed own routing, native export/bitstream encoding and the existing complete handoff checks with an independent FF input. FF locations, clock endpoints, package pins, interface cycles, hard-resource boundaries and initialization are preserved. The transformation removes one exact identity LUT and moves an unrelated ordinary LUT into that slot. These are engineering experiments at each source packet's unchanged timing constraint, not a newly frozen fair-baseline comparison.
+
+| Design/candidate | Reported Fmax MHz | Hold WNS ns | Outcome |
+|---|---:|---:|---|
+| UART single |197.028|+0.037|Same Fmax as retained incumbent|
+| int2float single, before repair |167.613|-0.016|Rejected hold violation|
+| int2float single, after own route repair |167.613|+0.002|Same Fmax; complete hold passes|
+| TMDS corrected single |124.004|+0.048|Same Fmax; TNS improves from-19.998 to-19.578ns|
+| VexRiscv single |90.380|+0.133|Same Fmax and reported TNS|
+| TMDS timed three-change batch |119.502|+0.048|Rejected frequency/TNS regression|
+
+The int2float hold violation is on an input-launched path. The existing own route ECO chooses a legal7-PIP branch in place of6 PIPs, increasing measured minimum wire delay by0.067499995ns. A fresh complete export verifies the repair; the overall worst hold returns to+0.002ns at another path. This is a new routing implementation check, not a redundant confirmation run at the reported Fmax.
+
+TMDS's first candidate removed an identity LUT on Q-to-D self-feedback. Native STA then omitted the corresponding setup endpoint. The complete coverage guard rejected it, even though serialization completed. Candidate generation and backend admission now reject direct self-feedback and constant-data elimination through this operator. No timing path was waived. A different, ordinary data candidate passes. A missing endpoint, truncated native chain and wrong input-mode readback are also rejected by actual in-memory negative controls.
+
+The new common batch proposer reads full native setup-path priorities, filters FFs by at least0.15ns source hold margin, and greedily matches nonoverlapping buffer/LUT moves. Its fixed heuristic weights buffer criticality twice moved-LUT criticality, with geometric distance as a tie break. On TMDS,119 ranked pairings yield three compatible changes. Full routing and STA show124.004->119.502MHz and TNS-25.929ns, so the batch is rejected. Hold filtering alone does not predict setup gains; proximity and criticality do not account for changed loaded route trees. No incumbent source packet is replaced by these experiments.
+
+The round also retains a calibration-path failure: native workers change their current directory, exposing relative paths in the new calibration loader. Resolution now anchors relative evidence paths at the workspace root. A later int2float repair export was stopped by the1GB disk reservation before output creation, then retried only after dependency-checked lossless cleanup. The original3300-second trial deadline is retained across all failures and repairs.
+
+Twenty-eight focused tests pass. The successful independent-mode captures preserve the source packet's four-class endpoint inventories; timing/report/configuration gates remain explicit in each handoff. This does not close the outstanding original-RTL proof and fair-baseline requirements, particularly Vex hard state and baseline provenance. The four-design20% goal remains unfinished.
+
+Gemini consultation37 completed after an authorized retry outside the restricted environment. Only its final report `carbon-advice-coopt-backend-20261112-037.md` was read; stdout/stderr logs were not inspected. Its main critique is supported by this round: fixed-FF, nearest-neighbor identity removal is a capability improvement, not a sufficient frequency optimizer. Independently checked native endpoint types show UART's ten worst paths all end at OBUF, int2float's first seven are FF-to-OBUF, TMDS's ten worst are IBUF-to-FF, while Vex mixes FF-to-FF, input-to-FF and FF-to-BRAM. Thus an output-IOREG strategy may help UART/int2float but must not be presented as a universal TMDS/Vex fix. Gemini's mention of the relaxed63.7MHz Vex calibration is not accepted as a competitive denominator; its other detailed numerical claims require separate verification.
+
+Next priorities are endpoint-class-aware optimization across the cohort, legal output-IOREG packing where the logical fanout/control contract permits it, and movable-FF/clock/data/mapping optimization for the input/internal cones. Search should use actual incrementally routed, loaded delay feedback before expensive full exports. Preserve the independent-input backend as a useful architectural option; do not keep expanding this fixed-FF local batch search as the main route to20% speedup after its negative experiment.
+
+Cleanup receipts `cleanup/superseded_html_lossless_018_20261112.json`, `018b` and `018c` (same prefix/suffix) record53 superseded HTML presentation files compressed losslessly, saving1,742,343,456 bytes. The active trial, latest selected-source parent directories and baseline/reference/frozen paths were excluded from the broad scans. Decoded hashes remain unchanged and artifact readers resolve the gzip files; plain timing, configuration, proofs and the delivered ZIP remain intact.

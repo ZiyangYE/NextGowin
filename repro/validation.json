@@ -1,0 +1,48 @@
+{
+  "status": "small_rtl_ownpr_reproduced",
+  "wall_seconds": 211.06299999999464,
+  "budget_seconds": 900,
+  "source_sha256": "0366e8c0416fdf9a3d67858ad3e37b15fbce500c2187ef21caa2f2fc957afea7",
+  "metrics": {
+    "setup_wns_ns": 44.407,
+    "hold_wns_ns": 0.022,
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "total_negative_setup_slack_ns": 0,
+    "reported_fmax_mhz": 178.809,
+    "other_checks_passed": true,
+    "native_constraints_satisfied": true,
+    "handoff_sha256": "f43c2f37b708aa86e4962ca2ca3b9c14c8c08c10ea7508e01531b4e3d23ccff7"
+  },
+  "vendor_pnr_executed": false,
+  "io_reference_is_vendor_calibration": true,
+  "device_programmed": false,
+  "board_wiring_validated": false,
+  "example_clock_mhz": 20,
+  "platform": "Windows x64",
+  "python_version": "3.11.7",
+  "python_original_workspace_reads_blocked": true,
+  "isolated_dependency_verification_files": 5137,
+  "fixture_free_tests_passed": 46,
+  "reported_fmax_is_not_a_separate_timing_qualification": true,
+  "run_manifest_sha256": "7e541c545fc4afb17ed40adb7c0ce5df67fa80e67469bf694813c3cbc96528e2",
+  "selected": {
+    "placement": "hold/round_001/placement",
+    "routes": "hold/round_001/route",
+    "sta": "hold/round_001/export/native",
+    "wire": "hold/round_001/export/wire",
+    "clock_capture": "implementation/clock_encoding"
+  },
+  "artifacts": [
+    {
+      "path": "hold/round_001/export/native/probe.tr",
+      "bytes": 30642,
+      "sha256": "2903d80537417d5536481f53499af055eeddd3830f913009baa3c9824cb0e569"
+    },
+    {
+      "path": "hold/round_001/export/native/probe.fs",
+      "bytes": 34690859,
+      "sha256": "a5bb6da6ddb88da9bad08c9d813a8708e54e62762c6aa9a4547b8e1e5201fa19"
+    }
+  ]
+}

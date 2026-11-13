@@ -1,0 +1,11 @@
+{
+  "part": "GW5AST-LV138FPG676AC1/I0",
+  "max_bsram": 270,
+  "clock_periods_ns": {
+    "board_clk": 20.0,
+    "jtag_clk": 1000.0,
+    "memory_clk": 3.125,
+    "ui_clk": 12.5,
+    "ddr_ref_clk": 15.625
+  }
+}

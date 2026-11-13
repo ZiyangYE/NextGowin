@@ -1,0 +1,19 @@
+{
+  "schema": "gw5a-observed-cut-cost-v1",
+  "part": "GW5AST-LV138FPG676AC1/I0",
+  "lut_ps": 521.0,
+  "mux_data_ps": 200.0,
+  "mux_select_ps": 250.0,
+  "cut_wire_ps": 672.0,
+  "scope": "Analytical synthesis costs. Mux costs guard the observed standalone setup arcs; wire cost is development-set 75th percentile. Not exhaustive or signoff bounds.",
+  "wire_training_sha256": "32e47b02fa61184ed98d75e5148c19b3fdddbbf93dc17969e53121555ac134fd",
+  "wire_training_designs": [
+    "ctrl",
+    "priority",
+    "int2float"
+  ],
+  "mux_calibration": {
+    "results\\architecture_native_003\\observed_setup_costs.json": "18036c16312eb0e24093128e3991f93a8f9a065e6342020414b15cae0b446564",
+    "results\\architecture_native_late_001\\observed_setup_costs.json": "f58780efe673ebd678e69b075f9f6d6e352b927bc593c6a65ee1356d44e113db"
+  }
+}

@@ -1,0 +1,6 @@
+create_clock -name clk -period 50 [get_ports {clk}]
+set_input_delay -max 0 -clock clk [get_ports {a[*]}]
+set_input_delay -min 0 -clock clk [get_ports {a[*]}]
+set_output_delay -max 0 -clock clk [get_ports {q[*]}]
+set_output_delay -min 0 -clock clk [get_ports {q[*]}]
+set_clock_uncertainty -hold 0.050 -from [get_clocks {clk}] -to [get_clocks {clk}]

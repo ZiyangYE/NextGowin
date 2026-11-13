@@ -1,0 +1,9 @@
+{
+  "project": "FPGAFLY_ISCAS2027/build/audit_191204/impl/gwsynthesis/audit_191204.prj",
+  "sdc": "FPGAFLY_ISCAS2027/constraints/tang_mega_pro.sdc",
+  "cst": "FPGAFLY_ISCAS2027/constraints/tang_mega_pro.cst",
+  "physical_profile": "configs/fpgafly_native.json",
+  "period_ps": 12500,
+  "strategy": "acd_remap",
+  "timeout": 3600
+}

@@ -1,0 +1,8 @@
+{
+  "units": "ps",
+  "default_input_arrival_ps": 0,
+  "default_output_required_ps": 5500,
+  "input_arrivals_ps": {
+    "f": 5000
+  }
+}

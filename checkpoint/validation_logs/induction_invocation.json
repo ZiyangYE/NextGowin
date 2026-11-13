@@ -1,0 +1,7 @@
+{
+  "returncode": 1,
+  "wall_seconds": 142.03926859999774,
+  "binary_sha256": "879416d8395bbb340f4c4e4cfea93c59fc2486b3bad7f187e7dd1eaf0e3aebce",
+  "script_sha256": "a87f65164c86a8552063414a850f30b16d426fa491275e437b54007198c28436",
+  "log": "induction.log"
+}
