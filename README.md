@@ -27,19 +27,27 @@ NextGowin 就是为此开始的：为高云 FPGA 开发一套更好用、以时�
 
 具体器件型号、封装、速度等级，以及可用的逻辑、存储和专用资源支持情况，将随实现与验证进度补充。首版的重点是把单一目标做扎实，而不是尽早覆盖整个产品线。
 
-## 当前状态
+## Windows x64 发行版
 
-项目处于起步阶段。当前仓库尚未提供可运行的综合或布局布线流程，也没有可公布的性能与时序对比结果。
+[下载运行程序、配套源码和示例](https://github.com/ZiyangYE/NextGowin/releases/tag/win64-20261118)。以下命令在解压后的目录运行。
 
-构建方式、使用说明、示例设计和验证结果将在对应功能可用后补充。
 
-## 开发方向
 
-- 明确 138K 目标器件的资源与约束模型。
-- 建立综合、技术映射与布局布线的基础流程。
-- 引入时序分析与时序驱动优化。
-- 使用测试设计验证正确性，并评估资源占用、运行时间和时序表现。
+1. 将整个 ZIP 解压到可写目录。在本机安装 Gowin V1.9.12.04 x64，把安装目录（例如 `C:\Gowin\Gowin_V1.9.12.04_x64`）写入 `bin/gowin-path.txt`。
+2. 在解压目录打开 PowerShell，运行自检，再用随包示例生成位流。
 
----
+```powershell
+.\bin\nextgowin.exe --self-test --no-pause
+.\bin\nextgowin.exe .\src\examples\blinky_gw5ast138\blinky.gprj --no-sync-ide --no-pause
+```
 
-本项目为独立项目，并非高云官方产品，也不代表高云官方立场。
+3. 在工程旁的 `blinky_nextgowin` 目录查看位流、时序报告和日志。运行自己的工程时，也可以把 `.gprj` 拖到 `bin/nextgowin.exe` 上。**默认运行会覆盖工程中 `impl/gwsynthesis` 和 `impl/pnr` 下的同名生成文件**。上例中的 `--no-sync-ide` 可关闭同步。
+
+[使用指南](docs/USAGE.md) · [构建说明](docs/BUILD.md) · [支持范围与限制](docs/LIMITATIONS.md) · [第三方组件](docs/THIRD_PARTY.md) · [English](README.en.md)
+
+
+## 致谢
+
+感谢 Gemini Carbon 和 astra6.2 对 NextGowin 项目的帮助，也感谢 Yosys、UC Berkeley ABC 及其他开源组件的维护者。
+
+本项目为独立项目。
