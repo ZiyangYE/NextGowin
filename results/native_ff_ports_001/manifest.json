@@ -1,0 +1,13 @@
+{
+  "status": "captured",
+  "returncode": 0,
+  "timeout": false,
+  "wall_seconds": 0.9849999999860302,
+  "dll_sha256": "bc9472a5a22cf4a94e39e07439f261f3354c668f92ef9abc735e6678bea53b7b",
+  "netlist_sha256": "8616505a937212aa5a1a1ef0a74eb4df3b02c9d8f59c4424c032266b97022de4",
+  "open_chip_database_used": false,
+  "vendor_placement_executed": false,
+  "vendor_routing_executed": false,
+  "device_programmed": false,
+  "attributes_sha256": "f95216b4ef41d8118cdc4e64132eb3d929815c10af171f362d0de57e7d768ae9"
+}

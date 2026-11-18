@@ -1,53 +1,50 @@
-# NextGowin
+# NextGowin v0.1.0
 
-面向高云（Gowin）FPGA 的综合（Synthesis）与布局布线（Place & Route，P&R）工具项目。
+NextGowin 是面向高云 GW5AST-138C 和 GW5AST-138B 的 Windows x64 FPGA 综合与布局布线工具。输入是 Gowin IDE 的 `.gprj` 工程，输出包括可交给 Gowin Programmer 的 `.fs` 位流、布线后网表、引脚分配和时序报告。
 
-**首版仅面向 138K 器件。** 先围绕这一目标打通流程、验证结果，再考虑扩展支持范围。
+[下载 Windows x64 运行包](https://github.com/ZiyangYE/NextGowin/releases/download/v0.1.0/nextgowin-win64-release.zip) · [版本说明与 SHA-256](https://github.com/ZiyangYE/NextGowin/releases/tag/v0.1.0) · [English](README.en.md)
 
-## 为什么做这个项目
+## 第一次运行
 
-这个项目源于我在使用高云现有工具时的实际体验：P&R 太难用了，而我需要的时序驱动综合能力也没有得到满足。
-
-我希望时序目标能够从综合阶段就参与优化决策，并贯穿后续的布局布线过程。遇到时序问题时，工具也应该提供足够清晰的反馈，让优化有依据，而不是反复尝试参数、等待结果。
-
-NextGowin 就是为此开始的：为高云 FPGA 开发一套更好用、以时序优化为核心目标的综合与布局布线工具。
-
-## 项目目标
-
-- **时序驱动综合**：让时序约束参与综合与映射过程中的优化决策。
-- **时序驱动布局布线**：围绕关键路径改进布局与布线结果。
-- **清晰的诊断与报告**：让资源使用、关键路径和时序瓶颈更容易理解。
-- **可复现的流程**：让配置、运行与结果比较更直接，方便持续迭代。
-
-以上是开发目标，不代表当前已经实现的功能。
-
-## 首版范围
-
-首版聚焦 **138K**，暂不承诺支持其他容量或系列的高云器件。
-
-具体器件型号、封装、速度等级，以及可用的逻辑、存储和专用资源支持情况，将随实现与验证进度补充。首版的重点是把单一目标做扎实，而不是尽早覆盖整个产品线。
-
-## Windows x64 发行版
-
-[下载运行程序、配套源码和示例](https://github.com/ZiyangYE/NextGowin/releases/tag/win64-20261118)。以下命令在解压后的目录运行。
-
-
-
-1. 将整个 ZIP 解压到可写目录。在本机安装 Gowin V1.9.12.04 x64，把安装目录（例如 `C:\Gowin\Gowin_V1.9.12.04_x64`）写入 `bin/gowin-path.txt`。
-2. 在解压目录打开 PowerShell，运行自检，再用随包示例生成位流。
+1. 准备 Windows 10/11 x64、支持 SSE2 和 SSE3 的处理器，以及本机安装的 **Gowin V1.9.12.04 x64**。运行包自带 Yosys、ABC 和所需运行库，无需安装 Python。
+2. 解压整个运行包，用文本编辑器打开 `bin/gowin-path.txt`，填入 Gowin 安装根目录，例如 `C:\Gowin\Gowin_V1.9.12.04_x64`。
+3. 从解压目录运行环境自检。它会检查原生 DLL、综合工具、资源文件和本机 Gowin SDK。
 
 ```powershell
 .\bin\nextgowin.exe --self-test --no-pause
-.\bin\nextgowin.exe .\src\examples\blinky_gw5ast138\blinky.gprj --no-sync-ide --no-pause
 ```
 
-3. 在工程旁的 `blinky_nextgowin` 目录查看位流、时序报告和日志。运行自己的工程时，也可以把 `.gprj` 拖到 `bin/nextgowin.exe` 上。**默认运行会覆盖工程中 `impl/gwsynthesis` 和 `impl/pnr` 下的同名生成文件**。上例中的 `--no-sync-ide` 可关闭同步。
+4. 把自己的 `.gprj` 拖到 `bin/nextgowin.exe` 上，或在 PowerShell 中指定工程路径。想先试一个小工程，可以从[对应版本的源码](https://github.com/ZiyangYE/NextGowin/tree/v0.1.0/examples/blinky_gw5ast138)取得完整的 `blinky_gw5ast138` 目录，其中包含工程、RTL、引脚约束和时序约束。
 
-[使用指南](docs/USAGE.md) · [构建说明](docs/BUILD.md) · [支持范围与限制](docs/LIMITATIONS.md) · [第三方组件](docs/THIRD_PARTY.md) · [English](README.en.md)
+```powershell
+.\bin\nextgowin.exe "D:\FPGA\blinky_gw5ast138\blinky.gprj" --no-sync-ide --no-pause
+```
 
+**默认会覆盖工程中 `impl/gwsynthesis` 和 `impl/pnr` 下的同名生成文件。** 上例使用 `--no-sync-ide`，结果单独保存在工程旁的 `blinky_nextgowin` 目录。先查看 `.tr` 的建立与保持时序、`.pin.html` 的引脚分配，再决定是否用 Gowin Programmer 下载位流。
+
+## 从 RTL 到位流
+
+| 阶段 | 工作内容 |
+| --- | --- |
+| 工程读取与展开 | 读取工程、HDL、CST 和 SDC，调用本机 Gowin 前端展开层次、参数和 IP。 |
+| 综合与映射 | NextGowin 配合 Yosys 和 ABC 推断存储器、DSP 与进位链，把逻辑映射到 LUT 和多路选择器，并进行组合等价检查。 |
+| 布局与布线 | NextGowin 的布局器和布线器根据时序调整单元位置与走线，检查布线树。 |
+| 报告与位流 | 调用本机 Gowin 库进行布线后静态时序分析和位流编码，检查配置帧 CRC，并输出 `.fs`、`.vo`、资源及引脚报告。 |
+
+## 工程开发与构建
+
+[源码目录](https://github.com/ZiyangYE/NextGowin/tree/v0.1.0/src)包含 C++ 启动器和六阶段流程实现。构建脚本在 `scripts/`，映射配置在 `configs/`，时序与布线数据在 `results/`，随包构建的 ABC 源码在 `third_party/abc/`。开发者可以从发布标签检出与此版本对应的文件。
+
+```powershell
+git clone --branch v0.1.0 https://github.com/ZiyangYE/NextGowin.git
+cd NextGowin
+python scripts\build_native_binaries.py --clean --out-dir build\tier1_bins
+```
+
+详细说明见[使用指南](docs/USAGE.md)、[构建说明](docs/BUILD.md)、[器件与工程限制](docs/LIMITATIONS.md)和[第三方许可](docs/THIRD_PARTY.md)。
 
 ## 致谢
 
-感谢 Gemini Carbon 和 astra6.2 对 NextGowin 项目的帮助，也感谢 Yosys、UC Berkeley ABC 及其他开源组件的维护者。
+感谢 Google DeepMind 的 **Gemini 4 Carbon** 和 OpenAI 的 **GPT-6.2 Astra** 对项目开发的帮助。感谢 Yosys、UC Berkeley ABC 及其他开源组件的作者和维护者。模型名称见 [Google DeepMind 模型评估](https://storage.googleapis.com/deepmind-media/gemini/gemini_4_carbon_model_evaluation.pdf)和 [OpenAI 模型文档](https://developers.openai.com/api/docs/models/gpt-6.2-astra)。
 
-本项目为独立项目。
+NextGowin 是独立项目。

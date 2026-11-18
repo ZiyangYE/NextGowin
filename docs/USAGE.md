@@ -9,7 +9,7 @@
 ```powershell
 .\bin\nextgowin.exe --cpu-info
 .\bin\nextgowin.exe --self-test --no-pause
-.\bin\nextgowin.exe .\src\examples\blinky_gw5ast138\blinky.gprj --no-sync-ide --no-pause
+.\bin\nextgowin.exe D:\FPGA\blinky_gw5ast138\blinky.gprj --no-sync-ide --no-pause
 .\bin\nextgowin.exe .\project.gprj --out .\build_out --gowin-dir "C:\Gowin\Gowin_V1.9.12.04_x64" --no-pause
 .\bin\nextgowin.exe --config config.json --out .\flow_out --no-pause
 ```

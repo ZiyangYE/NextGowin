@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW5AST-138C" pn="GW5AST-LV138FPG676AC1/I0">gw5ast138c-003</Device>
+    <FileList>
+        <File path="src/blinky.v" type="file.verilog" enable="1"/>
+        <File path="constraints/blinky.cst" type="file.cst" enable="1"/>
+        <File path="constraints/blinky.sdc" type="file.sdc" enable="1"/>
+    </FileList>
+    <OptionList>
+        <Option type="top_module" value="blinky"/>
+        <Option type="verilog_language" value="verilog-2001"/>
+    </OptionList>
+</Project>

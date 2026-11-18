@@ -1,0 +1,367 @@
+{
+  "cfu_count": 17280,
+  "register_count": 138240,
+  "templates": [
+    {
+      "slot": 0,
+      "ports": {
+        "D": {
+          "name": "DI0",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK0",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR0",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE0",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q0",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    },
+    {
+      "slot": 1,
+      "ports": {
+        "D": {
+          "name": "DI1",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK0",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR0",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE0",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q1",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    },
+    {
+      "slot": 2,
+      "ports": {
+        "D": {
+          "name": "DI2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK1",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR1",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE1",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q2",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    },
+    {
+      "slot": 3,
+      "ports": {
+        "D": {
+          "name": "DI3",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK1",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR1",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE1",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q3",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    },
+    {
+      "slot": 4,
+      "ports": {
+        "D": {
+          "name": "DI4",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q4",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    },
+    {
+      "slot": 5,
+      "ports": {
+        "D": {
+          "name": "DI5",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q5",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    },
+    {
+      "slot": 6,
+      "ports": {
+        "D": {
+          "name": "DI6",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q6",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    },
+    {
+      "slot": 7,
+      "ports": {
+        "D": {
+          "name": "DI7",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CLK": {
+          "name": "CLK2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "RESET": {
+          "name": "LSR2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "CE": {
+          "name": "CE2",
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "Q": {
+          "name": "Q7",
+          "offset": [
+            0,
+            0
+          ]
+        }
+      },
+      "site_count": 17280,
+      "example_native_site": [
+        2,
+        2
+      ]
+    }
+  ],
+  "scope": "All physical FF node bindings after native device initialization. Does not establish input/output mux modes or configuration encodings."
+}

@@ -1,0 +1,21 @@
+# Build & packaging outputs
+/build/
+/dist/
+/release/
+*_nextgowin/
+
+# Compiled binaries & MSVC artifacts
+*.obj
+*.lib
+*.exp
+*.pdb
+*.ilk
+*.exe
+*.dll
+*.pyd
+*.pyc
+__pycache__/
+
+# Local Gowin SDK bundles & user config overrides
+/runtime_bundle/
+gowin-path.txt

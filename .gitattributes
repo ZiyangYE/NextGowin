@@ -1,0 +1,7 @@
+src/** -text
+scripts/** -text
+third_party/** -text
+examples/** -text
+configs/** -text
+results/** -text
+licenses/** -text
