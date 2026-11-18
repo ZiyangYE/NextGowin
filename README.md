@@ -45,6 +45,6 @@ python scripts\build_native_binaries.py --clean --out-dir build\tier1_bins
 
 ## 致谢
 
-感谢 Google DeepMind 的 **Gemini 4 Carbon** 和 OpenAI 的 **GPT-6.2 Astra** 对项目开发的帮助。感谢 Yosys、UC Berkeley ABC 及其他开源组件的作者和维护者。模型名称见 [Google DeepMind 模型评估](https://storage.googleapis.com/deepmind-media/gemini/gemini_4_carbon_model_evaluation.pdf)和 [OpenAI 模型文档](https://developers.openai.com/api/docs/models/gpt-6.2-astra)。
+感谢 Google DeepMind 的 **Gemini 4 Carbon** 和 OpenAI 的 **GPT-6.2 Astra** 对项目开发的帮助。感谢 Yosys、UC Berkeley ABC 及其他开源组件的作者和维护者。
 
 NextGowin 是独立项目。
