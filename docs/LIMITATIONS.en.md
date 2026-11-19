@@ -11,7 +11,7 @@
    - Running against a non-`V1.9.12.04` Gowin installation triggers an interactive **Continue / Cancel** warning dialog; device-database or ABI changes in untested Gowin releases may cause verification checks to reject the run.
 
 3. **Target FPGA Device Scope**:
-   - Supports **Gowin GW5AST-138C** and **Gowin GW5AST-138B** devices across commercial, industrial, automotive, and engineering-sample speed grades (`C1/I0`, `C2/I1`, `ES`, etc.) and supported packages (`FCPBGA676A`, `FCPBGA484A`, etc.), including distributed SSRAM (`RAM16*` / `ROM16` on `GW5AST-138C`, enabled by default), BSRAM, DSP, ALU, CFU latches (`DL*`), `PLL`, `DDRDLL`, `DQS`, `IODELAY`/`IDES*`/`OSER*`/`IDDR*`/`ODDR*`, `CLKDIV`, `DHCE`, `GW_JTAG`, `GTR12_QUAD` SerDes, and hard `AE350_SOC`.
+   - Supports **Gowin GW5AST-138C** and **Gowin GW5AST-138B** devices across commercial, industrial, and engineering-sample speed grades (`C1/I0`, `C2/I1`, and `ES` on `GW5AST-138B`) and all official GW5AST-138 packages (`PBGA484A`, `PBGA676A`, and `FCPBGA676A`, corresponding to `PG484A`, `PG676A`, and `FPG676A` in part numbers; `FCPBGA484A` does not exist), including distributed SSRAM (`RAM16*` / `ROM16` on `GW5AST-138C`, enabled by default), BSRAM, DSP, ALU, CFU latches (`DL*`), `PLL`, `DDRDLL`, `DQS`, `IODELAY`/`IDES*`/`OSER*`/`IDDR*`/`ODDR*`, `CLKDIV`, `DHCE`, `GW_JTAG`, `GTR12_QUAD` SerDes, and hard `AE350_SOC`.
    - Projects targeting other Gowin families or densities fail fast with an explicit unsupported-device error, and `RAM16*`/`ROM16` primitives on `GW5AST-138B` (`0Kb` SSRAM) are rejected cleanly matching Gowin DRC.
 
 4. **HDL & Project Feature Scope**:
@@ -20,8 +20,10 @@
      - Synplify Pro synthesis projects
      - `Disable_Insert_Pad=true` (padless sub-module mode) in `.gprj` drag-and-drop flows
 
-5. **Post-Route Timestamp Metadata**:
-   - Gowin's report/bitstream emitters stamp the wall-clock generation time into comment headers of `.vo`, `.tr`, `.rpt.txt`, and line 1 of `.fs` (`//Generate Time: ...`). Functional netlists, placement, routing, timing slacks, and all 21,872 binary bitstream configuration frames and CRC-16 words are deterministic.
+5. **Bitstream Options & Integrity Verification Scope**:
+   - Explicit `.gprj` `<Option>` entries and `impl/*_process_config.json` settings (`COMPRESS`, `CRC_CHECK`, `SECURITY_BIT`, `PRINT_BSRAM_VALUE`, `POWER_ON_RESET_MONITOR`, `VCCX`, `Unused_Pin`, dual-purpose pins) take precedence over matching keys in any existing `impl/pnr/device.cfg` while preserving extra vendor `device.cfg` directives (`DOWNLOAD_MODE`, `user_code`, `spi_flash_address`).
+   - Post-route `.fs` verification (`--verify-fs`) validates the GW5AST-138 sync/header packet stream, exact 21,872-frame sequence, 160-bit end-of-frames marker, 6-byte `0xFF` frame tails, and per-frame CRC-16 words (when `CRC_check=true`) across compressed and uncompressed streams; compressed payload RLE semantics, post-frame footer commands, and physical board behavior remain outside offline frame-CRC verification.
+   - Gowin's report/bitstream emitters stamp the wall-clock generation time into comment headers of `.vo`, `.tr`, `.rpt.txt`, and `.fs`. Functional netlists, placement, routing, timing slacks, and all 21,872 binary bitstream configuration frames are deterministic.
 
 6. **Offline Bitstream Generation Only**:
    - NextGowin writes verified `.fs` bitstreams to disk and never programs FPGA hardware automatically (`board_programmed = false`). Use Gowin Programmer separately if hardware programming is desired.

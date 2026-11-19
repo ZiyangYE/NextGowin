@@ -556,7 +556,7 @@ bool read_gowin_path_txt(const std::wstring& exe_dir, std::wstring& out_gowin_pa
 void print_usage() {
     std::fprintf(
         stdout,
-        "NextGowin Standalone Synthesis & Custom Place-and-Route Engine (x86-64 + SSE2/SSE3)\n\n"
+        "NextGowin v0.1.1 — Standalone Synthesis & Custom Place-and-Route Engine (x86-64 + SSE2/SSE3)\n\n"
         "Drag-and-Drop Usage:\n"
         "  1. Set the Gowin V1.9.12.04 x64 path in gowin-path.txt (beside nextgowin.exe).\n"
         "  2. Drag a Gowin project (.gprj) file onto nextgowin.exe.\n\n"

@@ -875,7 +875,10 @@ EXPORT int32_t bridge_populate_p2r_carries(
     int32_t num_cin,
     const uint64_t* cout_nets,
     const uint64_t* cout_ptrs,
-    int32_t num_cout
+    int32_t num_cout,
+    const uint64_t* head_alu_ptrs,
+    const int32_t* head_cin_modes,
+    int32_t num_alu_heads
 ) {
     if (!p2r_addr) return -1;
 
@@ -928,11 +931,42 @@ EXPORT int32_t bridge_populate_p2r_carries(
     for (size_t i = 0; i < couts.size(); ++i) {
         if (i > 0 && couts[i].net == couts[i - 1].net) continue;
         uint64_t rb = reinterpret_cast<uint64_t>(std::calloc(1, 0x38));
+        if (!rb) return -6;
         wr_u64(rb + 0x20ULL, couts[i].net);
         wr_u64(rb + 0x28ULL, couts[i].nd_ptr);
         cout_rb_nodes.push_back(rb);
     }
     install_rb_tree(p2r_addr + 0x10ULL, cout_rb_nodes);
+
+    // 3. P2R + 0x0C0: std::list<std::pair<alu*, int>> (head ALU CIN mux mode: 1=VCC, 2=GND, 3=fabric West LUT5)
+    if (rd_u64(p2r_addr + 0x0C8ULL) != 0) return -9;
+    uint64_t ahead = rd_u64(p2r_addr + 0x0C0ULL);
+    if (!ahead) {
+        ahead = reinterpret_cast<uint64_t>(std::calloc(1, 0x20));
+        if (!ahead) return -7;
+        wr_u64(p2r_addr + 0x0C0ULL, ahead);
+    }
+    wr_u64(ahead + 0x00ULL, ahead);
+    wr_u64(ahead + 0x08ULL, ahead);
+    uint64_t head_cnt = 0;
+    if (head_alu_ptrs && head_cin_modes && num_alu_heads > 0) {
+        for (int32_t i = 0; i < num_alu_heads; ++i) {
+            if (!head_alu_ptrs[i]) continue;
+            int32_t cm = head_cin_modes[i];
+            if (cm < 1 || cm > 3) return -8;
+            uint64_t ln = reinterpret_cast<uint64_t>(std::calloc(1, 0x20));
+            if (!ln) return -7;
+            uint64_t prev = rd_u64(ahead + 0x08ULL);
+            wr_u64(ln + 0x00ULL, ahead);
+            wr_u64(ln + 0x08ULL, prev);
+            wr_u64(ln + 0x10ULL, head_alu_ptrs[i]);
+            std::memcpy(reinterpret_cast<void*>(ln + 0x18ULL), &cm, 4);
+            wr_u64(prev + 0x00ULL, ln);
+            wr_u64(ahead + 0x08ULL, ln);
+            ++head_cnt;
+        }
+    }
+    wr_u64(p2r_addr + 0x0C8ULL, head_cnt);
     return 0;
 }
 

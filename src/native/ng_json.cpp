@@ -552,20 +552,46 @@ std::string JsonValue::dump_pretty(int indent) const {
 
 JsonValue parse_json(std::string_view text) {
     JsonScanner sc{text.data(), text.data() + text.size()};
-    if (text.size() >= 3 && static_cast<uint8_t>(text[0]) == 0xEF && static_cast<uint8_t>(text[1]) == 0xBB && static_cast<uint8_t>(text[2]) == 0xBF) {
-        sc.p += 3;
+    try {
+        if (text.size() >= 3 && static_cast<uint8_t>(text[0]) == 0xEF && static_cast<uint8_t>(text[1]) == 0xBB && static_cast<uint8_t>(text[2]) == 0xBF) {
+            sc.p += 3;
+        }
+        JsonValue v = sc.parse_value();
+        sc.skip_ws();
+        if (sc.p != sc.end) {
+            throw std::runtime_error("Trailing data after JSON root value");
+        }
+        return v;
+    } catch (const std::exception& ex) {
+        size_t off = (sc.p && sc.p >= text.data() && sc.p <= text.data() + text.size())
+            ? static_cast<size_t>(sc.p - text.data()) : 0;
+        size_t line = 1, col = 1;
+        for (size_t i = 0; i < off; ++i) {
+            if (text[i] == '\n') { ++line; col = 1; }
+            else if (text[i] != '\r') ++col;
+        }
+        size_t sn_beg = (off > 24) ? (off - 24) : 0;
+        size_t sn_end = std::min(text.size(), off + 32);
+        std::string snippet;
+        for (size_t i = sn_beg; i < sn_end; ++i) {
+            char c = text[i];
+            if (c == '\n' || c == '\r' || c == '\t') snippet.push_back(' ');
+            else snippet.push_back(c);
+        }
+        throw std::runtime_error(
+            std::string(ex.what()) + " at line " + std::to_string(line) + ", column " + std::to_string(col)
+            + " (near \"" + snippet + "\")"
+        );
     }
-    JsonValue v = sc.parse_value();
-    sc.skip_ws();
-    if (sc.p != sc.end) {
-        throw std::runtime_error("Trailing data after JSON root value");
-    }
-    return v;
 }
 
 JsonValue parse_json_file(std::string_view path) {
     auto bytes = read_file_bytes(path);
-    return parse_json(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+    try {
+        return parse_json(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+    } catch (const std::exception& ex) {
+        throw std::runtime_error("JSON parse error in '" + std::string(path) + "': " + ex.what());
+    }
 }
 
 void write_json_pretty(std::string_view path, const JsonValue& v, int indent) {
@@ -678,7 +704,11 @@ RtlilDesign parse_rtlil_json(std::string_view text) {
 
 RtlilDesign read_rtlil_json_file(std::string_view path) {
     auto bytes = read_file_bytes(path);
-    return parse_rtlil_json(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+    try {
+        return parse_rtlil_json(std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+    } catch (const std::exception& ex) {
+        throw std::runtime_error("RTLIL JSON parse error in '" + std::string(path) + "': " + ex.what());
+    }
 }
 
 namespace {
@@ -920,9 +950,11 @@ uint64_t parse_bin_u64(std::string_view bin_str) {
 }
 
 std::string format_bin_u64(uint64_t val, int width) {
+    if (width <= 0) return "";
     std::string s(static_cast<size_t>(width), '0');
     for (int i = 0; i < width; ++i) {
-        s[static_cast<size_t>(width - 1 - i)] = static_cast<char>('0' + ((val >> i) & 1u));
+        char bit_c = (i < 64) ? static_cast<char>('0' + ((val >> i) & 1u)) : '0';
+        s[static_cast<size_t>(width - 1 - i)] = bit_c;
     }
     return s;
 }
@@ -1559,7 +1591,10 @@ JsonValue run_yosys_commands(const std::vector<std::string>& commands, std::stri
         eff_timeout
     );
     if (pr.timed_out) {
-        throw TimeoutError("Yosys timed out in " + std::string(name));
+        throw TimeoutError(
+            "Yosys step '" + std::string(name) + "' timed out after " + std::to_string(static_cast<int>(eff_timeout))
+            + "s (script: " + script + ", console log: " + clog + ")"
+        );
     }
     JsonValue res = JsonValue::object();
     res["returncode"] = pr.returncode;
@@ -1569,7 +1604,40 @@ JsonValue run_yosys_commands(const std::vector<std::string>& commands, std::stri
     res["log"] = std::string(name) + ".log";
     write_json_pretty(path_join(dir, std::string(name) + ".invocation.json"), res);
     if (pr.returncode != 0) {
-        throw std::runtime_error("Yosys failed: " + clog);
+        std::string raw_out = !pr.output.empty() ? pr.output : (file_exists(clog) ? read_file_text(clog) : "");
+        if (raw_out.empty() && file_exists(ylog)) raw_out = read_file_text(ylog);
+        auto lines = split_lines(raw_out);
+        std::string last_pass;
+        std::vector<std::string> recent_warns;
+        std::vector<std::string> err_lines;
+        std::vector<std::string> tail_nonempty;
+        for (const auto& ln : lines) {
+            std::string tr = trim(ln);
+            if (tr.empty()) continue;
+            tail_nonempty.push_back(tr);
+            if (tail_nonempty.size() > 16) tail_nonempty.erase(tail_nonempty.begin());
+            if (tr.find("Executing ") != std::string::npos && tr.find(" pass") != std::string::npos) {
+                last_pass = tr;
+                recent_warns.clear();
+            } else if (starts_with(tr, "Warning:")) {
+                recent_warns.push_back(tr);
+                if (recent_warns.size() > 12) recent_warns.erase(recent_warns.begin());
+            } else if (starts_with(tr, "ERROR:") || starts_with(tr, "Syntax error") || tr.find("ERROR:") == 0) {
+                err_lines.push_back(tr);
+            }
+        }
+        std::string detail = "Yosys step '" + std::string(name) + "' failed with exit code " + std::to_string(pr.returncode)
+                           + " (script: " + script + ", console log: " + clog + ")";
+        if (!last_pass.empty()) detail += "\n  Active pass: " + last_pass;
+        for (const auto& w : recent_warns) detail += "\n  " + w;
+        if (!err_lines.empty()) {
+            for (const auto& e : err_lines) detail += "\n  " + e;
+        } else if (!tail_nonempty.empty()) {
+            detail += "\n  Log tail:";
+            size_t start_t = (tail_nonempty.size() > 8) ? (tail_nonempty.size() - 8) : 0;
+            for (size_t i = start_t; i < tail_nonempty.size(); ++i) detail += "\n    " + tail_nonempty[i];
+        }
+        throw std::runtime_error(detail);
     }
     return res;
 }

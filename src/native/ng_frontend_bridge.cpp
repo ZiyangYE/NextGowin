@@ -178,6 +178,36 @@ TargetDeviceSpec resolve_target_device(
     std::string name = trim(dev_name);
     std::string pn   = trim(part_num);
 
+    auto format_supported_catalog = [](const std::vector<std::vector<std::string>>& rows) -> std::string {
+        std::string cat = "\n  Supported GW5AST-138 parts in Gowin V1.9.12.04 x64 (share/device/device_info.csv):";
+        for (const auto& r : rows) {
+            if (r.size() >= 13 && (r[3] == "GW5AST-138B" || r[3] == "GW5AST-138C")) {
+                cat += "\n    - " + r[0] + " : device=" + r[3] + ", pn=" + r[1]
+                     + ", package=" + r[4] + ", speed=" + r[6] + " (-" + r[7] + "), ssram=" + r[12];
+            }
+        }
+        cat += "\n  Note: GW5AST-138 484-ball package is PBGA484A (PG484A in part number); FCPBGA484A does not exist.";
+        return cat;
+    };
+
+    auto verify_sdk_pkg_files = [](const TargetDeviceSpec& spec) {
+        if (runtime_paths().gowin_sdk.empty()) return;
+        std::string pkg_json = path_join(runtime_paths().gowin_sdk, "data\\device\\" + spec.device_name + "\\" + spec.package_name + ".json");
+        std::string fse_file = path_join(runtime_paths().gowin_sdk, "share\\device\\" + spec.device_name + "\\" + spec.device_name + ".fse");
+        if (!file_exists(pkg_json)) {
+            throw std::runtime_error(
+                "Resolved target part '" + spec.part_number + "' (" + spec.dev_p
+                + "), but package pin database does not exist in Gowin SDK: " + pkg_json
+            );
+        }
+        if (!file_exists(fse_file)) {
+            throw std::runtime_error(
+                "Resolved target part '" + spec.part_number + "' (" + spec.dev_p
+                + "), but device fuse database does not exist in Gowin SDK: " + fse_file
+            );
+        }
+    };
+
     std::string csv_path = path_join(runtime_paths().gowin_sdk, "share\\device\\device_info.csv");
     if (!runtime_paths().gowin_sdk.empty() && file_exists(csv_path)) {
         std::string csv_txt = read_file_text(csv_path);
@@ -189,18 +219,58 @@ TargetDeviceSpec resolve_target_device(
             auto cols = split_csv_line_simple(t);
             if (cols.size() >= 13) rows.push_back(std::move(cols));
         }
+
         if (!code.empty()) {
             std::string cl = to_lower_ascii(code);
             for (const auto& r : rows) {
                 if (to_lower_ascii(r[0]) == cl) { matched = &r; break; }
             }
-        }
-        if (!matched && !pn.empty() && !name.empty()) {
-            std::string pl = to_lower_ascii(pn), nl = to_lower_ascii(name);
-            for (const auto& r : rows) {
-                if (to_lower_ascii(r[1]) == pl && to_lower_ascii(r[3]) == nl) { matched = &r; break; }
+            if (!matched) {
+                throw std::runtime_error(
+                    "Unrecognized Gowin device code '" + code + "' (device='" + (name.empty() ? "<unspecified>" : name)
+                    + "', partNumber='" + (pn.empty() ? "<unspecified>" : pn) + "'): not found in " + csv_path
+                    + format_supported_catalog(rows)
+                );
+            }
+            if (!name.empty() && to_lower_ascii((*matched)[3]) != to_lower_ascii(name)) {
+                throw std::runtime_error(
+                    "Conflicting <Device> specification in project: device code '" + code + "' maps to device '"
+                    + (*matched)[3] + "' (part '" + (*matched)[1] + "', package '" + (*matched)[4]
+                    + "'), which disagrees with specified device name '" + name + "'" + format_supported_catalog(rows)
+                );
+            }
+            if (!pn.empty() && to_lower_ascii((*matched)[1]) != to_lower_ascii(pn)) {
+                throw std::runtime_error(
+                    "Conflicting <Device> specification in project: device code '" + code + "' maps to partNumber '"
+                    + (*matched)[1] + "' (device '" + (*matched)[3] + "', package '" + (*matched)[4] + "', speed '"
+                    + (*matched)[6] + "'), which disagrees with specified partNumber '" + pn + "'" + format_supported_catalog(rows)
+                );
             }
         }
+
+        if (!matched && !pn.empty() && !name.empty()) {
+            std::string pl = to_lower_ascii(pn), nl = to_lower_ascii(name);
+            const std::vector<std::string>* other_dev_match = nullptr;
+            for (const auto& r : rows) {
+                if (to_lower_ascii(r[1]) == pl) {
+                    if (to_lower_ascii(r[3]) == nl) { matched = &r; break; }
+                    if (!other_dev_match) other_dev_match = &r;
+                }
+            }
+            if (!matched) {
+                std::string hint;
+                if (other_dev_match) {
+                    hint = " Note: partNumber '" + pn + "' exists under device '" + (*other_dev_match)[3]
+                         + "' (code '" + (*other_dev_match)[0] + "', package '" + (*other_dev_match)[4]
+                         + "', speed '" + (*other_dev_match)[6] + "'), not '" + name + "'.";
+                }
+                throw std::runtime_error(
+                    "Unsupported or mismatched device/part combination: device='" + name + "', partNumber='" + pn
+                    + "' is not in Gowin's official device catalog." + hint + format_supported_catalog(rows)
+                );
+            }
+        }
+
         if (!matched && !pn.empty()) {
             // Default to GW5AST-138C when only part_num is supplied (legacy .prj compatibility)
             std::string pl = to_lower_ascii(pn);
@@ -212,13 +282,33 @@ TargetDeviceSpec resolve_target_device(
                     if (to_lower_ascii(r[1]) == pl) { matched = &r; break; }
                 }
             }
+            if (!matched) {
+                throw std::runtime_error(
+                    "Unrecognized Gowin partNumber '" + pn + "': not found in " + csv_path + format_supported_catalog(rows)
+                );
+            }
         }
+
+        if (!matched && !name.empty()) {
+            // If only device name is given with no code and no partNumber, only accept exact default GW5AST-138C
+            if (to_upper_ascii(name) == "GW5AST-138C") {
+                for (const auto& r : rows) {
+                    if (r[0] == "gw5ast138c-003") { matched = &r; break; }
+                }
+            } else {
+                throw std::runtime_error(
+                    "Incomplete or unsupported target device '" + name
+                    + "' without explicit partNumber or device code." + format_supported_catalog(rows)
+                );
+            }
+        }
+
         if (matched) {
             const auto& r = *matched;
             if (r[3] != "GW5AST-138C" && r[3] != "GW5AST-138B") {
                 throw std::runtime_error(
-                    "Unsupported target device '" + r[3] + "' (part '" + r[1] +
-                    "'). NextGowin supports GW5AST-138B and GW5AST-138C devices only."
+                    "Unsupported target device '" + r[3] + "' (code='" + r[0] + "', part='" + r[1] + "', package='" + r[4]
+                    + "'). NextGowin supports GW5AST-138B and GW5AST-138C devices only." + format_supported_catalog(rows)
                 );
             }
             TargetDeviceSpec spec;
@@ -232,11 +322,12 @@ TargetDeviceSpec resolve_target_device(
             spec.dev_p        = r[3] + "-" + r[4] + "-" + r[7];
             std::string ssram_col = to_lower_ascii(r[12]);
             spec.has_ssram    = (!ssram_col.empty() && ssram_col != "0" && ssram_col != "0kb");
+            verify_sdk_pkg_files(spec);
             return spec;
         }
     }
 
-    if ((pn.empty() || pn == PINNED_PART) && (name.empty() || name == "GW5AST-138C")) {
+    if (code.empty() && (pn.empty() || pn == PINNED_PART) && (name.empty() || name == "GW5AST-138C")) {
         TargetDeviceSpec spec;
         spec.code         = "gw5ast138c-003";
         spec.series       = "GW5AST";
@@ -247,13 +338,15 @@ TargetDeviceSpec resolve_target_device(
         spec.part_number  = PINNED_PART;
         spec.dev_p        = PINNED_DEVICE;
         spec.has_ssram    = true;
+        verify_sdk_pkg_files(spec);
         return spec;
     }
 
     throw std::runtime_error(
-        "Unsupported target device '" + (name.empty() ? std::string("<unspecified>") : name) +
-        "' (part '" + (pn.empty() ? std::string("<unspecified>") : pn) +
-        "'). NextGowin supports GW5AST-138B and GW5AST-138C devices only."
+        "Unsupported target device specification (code='" + (code.empty() ? std::string("<unspecified>") : code)
+        + "', device='" + (name.empty() ? std::string("<unspecified>") : name)
+        + "', part='" + (pn.empty() ? std::string("<unspecified>") : pn)
+        + "'). NextGowin supports GW5AST-138B and GW5AST-138C (packages PBGA484A, PBGA676A, FCPBGA676A) only."
     );
 }
 
@@ -520,10 +613,21 @@ JsonValue export_gowin_frontend(std::string_view project_path, std::string_view 
     std::string script = path_join(out, "frontend.tcl");
     write_file_text(script, join_strings(commands, "\n") + "\n");
 
+    JsonValue tdev = JsonValue::object();
+    tdev["code"] = dev_spec.code;
+    tdev["device_name"] = dev_spec.device_name;
+    tdev["package_name"] = dev_spec.package_name;
+    tdev["speed_grade"] = dev_spec.speed_grade;
+    tdev["speed_num"] = dev_spec.speed_num;
+    tdev["part_number"] = dev_spec.part_number;
+    tdev["dev_p"] = dev_spec.dev_p;
+    tdev["has_ssram"] = dev_spec.has_ssram;
+
     JsonValue result = JsonValue::object();
     result["schema"] = "gowin-frontend-export-v1";
     result["status"] = "running";
     result["top"] = top;
+    result["target_device"] = std::move(tdev);
     result["boundary"] = "After elaboration and optional RTL GAO merge; before cvt/infer/map";
     result["synthesis_dll_sha256"] = actual_gwsyn_sha;
     result["inputs"] = JsonValue(snapshots);
@@ -625,11 +729,30 @@ JsonValue export_gowin_frontend(std::string_view project_path, std::string_view 
     save();
     out_alias.sync_back();
     if (!ok) {
-        std::string detail = path_join(out_real, "frontend.log");
-        if (!errs.as_arr().empty() && errs.as_arr().front().is_string()) {
-            detail += " (" + trim(errs.as_arr().front().as_str()) + ")";
+        std::string flog = path_join(out_real, "frontend.log");
+        std::string msg = "Frontend RTL elaboration failed (project='" + prj + "', top='" + top
+                        + "', device='" + dev_spec.dev_p + "', part='" + dev_spec.part_number
+                        + "', returncode=" + std::to_string(pr.returncode) + ", log='" + flog + "')";
+        if (!inputs_unchanged) {
+            msg += "\n  Reason: project source files changed on disk during elaboration";
+        } else if (pr.returncode == 0 && errs.as_arr().empty() && file_exists(destination)) {
+            msg += "\n  Reason: top module '" + top + "' was not found in elaborated netlist '" + destination + "'";
         }
-        throw std::runtime_error("Frontend export failed: " + detail);
+        if (!errs.as_arr().empty()) {
+            for (const auto& ev : errs.as_arr()) {
+                if (ev.is_string()) msg += "\n  " + trim(ev.as_str());
+            }
+        } else if (!pr.output.empty()) {
+            auto lns = split_lines(pr.output);
+            std::vector<std::string> rel;
+            for (const auto& l : lns) {
+                std::string tl = trim(l);
+                if (!tl.empty()) rel.push_back(tl);
+            }
+            size_t st_i = (rel.size() > 10) ? (rel.size() - 10) : 0;
+            for (size_t i = st_i; i < rel.size(); ++i) msg += "\n  " + rel[i];
+        }
+        throw std::runtime_error(msg);
     }
     return result;
 }
@@ -818,17 +941,84 @@ std::tuple<std::string, std::string, JsonValue> gowin_macros_prepare(
 // ============================================================================
 namespace {
 
+struct MemOffsetTerm {
+    bool neg = false;        // true when term is `-(sub_expr - (base)) * stride`
+    std::string sub_expr;    // e.g. `write_address[5:2]` or `{write_address[0:0],2'b00}`
+    int base = 0;            // integer inside `-(base)`
+    int stride = 1;          // positive integer after `*`
+};
+
 struct MemHelperSpec {
     std::string kind; // ReadPort or ClockedWritePort
     int aw = 0;
     int width = 0;
-    int left = 0;
-    int right = 0;
-    int word = 0;
-    int colbits = 0;
-    int shift_zeros = 0;
-    bool partial = false;
+    int ram_bits = 0;
+    bool is_minus_slice = false;
+    std::vector<std::pair<int, int>> name_pairs;
+    std::vector<MemOffsetTerm> terms;
 };
+
+std::string pad_escaped_verilog_tail(std::string s) {
+    if (s.empty()) return s;
+    size_t e = s.size();
+    while (e > 0 && std::isspace(static_cast<unsigned char>(s[e - 1]))) --e;
+    if (e == 0) return s;
+    size_t b = e;
+    while (b > 0 && !std::isspace(static_cast<unsigned char>(s[b - 1]))) --b;
+    if (s[b] == '\\') {
+        if (e == s.size()) s.push_back(' ');
+        return s;
+    }
+    return s;
+}
+
+std::string join_verilog_tokens_safe(const std::vector<std::string>& toks) {
+    std::string out;
+    for (size_t i = 0; i < toks.size(); ++i) {
+        if (i > 0) out.push_back(' ');
+        out += toks[i];
+        if (!toks[i].empty() && toks[i][0] == '\\' && i + 1 == toks.size()) {
+            out.push_back(' ');
+        }
+    }
+    return out;
+}
+
+std::string replace_ident_token_in_expr(std::string_view expr, std::string_view from_id, std::string_view to_id) {
+    std::string out;
+    out.reserve(expr.size() + 16);
+    size_t i = 0;
+    while (i < expr.size()) {
+        if (expr.compare(i, from_id.size(), from_id) == 0) {
+            bool lok = (i == 0) || !(std::isalnum(static_cast<unsigned char>(expr[i - 1])) || expr[i - 1] == '_' || expr[i - 1] == '$' || expr[i - 1] == '\\');
+            size_t j = i + from_id.size();
+            bool rok = (j == expr.size()) || !(std::isalnum(static_cast<unsigned char>(expr[j])) || expr[j] == '_' || expr[j] == '$');
+            if (lok && rok) {
+                out.append(to_id);
+                i = j;
+                continue;
+            }
+        }
+        out.push_back(expr[i++]);
+    }
+    return out;
+}
+
+bool parse_signed_int_str(std::string_view s, int& out_v) {
+    if (s.empty()) return false;
+    size_t i = 0;
+    if (s[i] == '-' || s[i] == '+') ++i;
+    if (i >= s.size()) return false;
+    for (; i < s.size(); ++i) {
+        if (!std::isdigit(static_cast<unsigned char>(s[i]))) return false;
+    }
+    try {
+        out_v = std::stoi(std::string(s));
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
 
 bool parse_helper_name(std::string_view name, MemHelperSpec& out) {
     std::string prefix;
@@ -836,30 +1026,72 @@ bool parse_helper_name(std::string_view name, MemHelperSpec& out) {
     else if (starts_with(name, "ClockedWritePort_")) prefix = "ClockedWritePort";
     else return false;
     auto parts = split_char(name.substr(prefix.size() + 1), '_');
-    if (parts.size() != 6) return false;
-    int nums[6];
-    for (int i = 0; i < 6; ++i) {
-        if (parts[i].empty()) return false;
-        for (char c : parts[i]) if (!std::isdigit(static_cast<unsigned char>(c))) return false;
-        nums[i] = std::stoi(parts[i]);
+    if (parts.size() < 4 || (parts.size() % 2) != 0) return false;
+    std::vector<int> nums;
+    nums.reserve(parts.size());
+    for (size_t i = 0; i < parts.size(); ++i) {
+        int v = 0;
+        if (!parse_signed_int_str(parts[i], v)) return false;
+        nums.push_back(v);
     }
-    int aw = nums[0], width = nums[1], left = nums[2], right = nums[3], high = nums[4], low = nums[5];
-    if (high < low || low != 0) throw std::runtime_error("Unsupported memory packed orientation");
-    int word = high - low + 1;
-    bool partial = (width != word);
-    int colbits = 0;
-    int shift_zeros = 0;
-    if (partial) {
-        int full_colbits = 0;
-        while ((1 << full_colbits) < word) ++full_colbits;
-        while (width > 0 && (1 << shift_zeros) < width) ++shift_zeros;
-        if (width <= 0 || width > word || (1 << shift_zeros) != width || shift_zeros > full_colbits) {
-            throw std::runtime_error("Unsupported partial memory transfer width");
+    if (nums[0] <= 0 || nums[1] <= 0) return false;
+    out = MemHelperSpec{};
+    out.kind = prefix;
+    out.aw = nums[0];
+    out.width = nums[1];
+    for (size_t i = 2; i + 1 < nums.size(); i += 2) {
+        out.name_pairs.emplace_back(nums[i], nums[i + 1]);
+    }
+    return !out.name_pairs.empty();
+}
+
+bool parse_ram_offset_terms(std::string_view expr_nospace, std::vector<MemOffsetTerm>& out_terms) {
+    out_terms.clear();
+    size_t p = 0;
+    const size_t n = expr_nospace.size();
+    while (p < n) {
+        bool neg = false;
+        if (expr_nospace[p] == '-') { neg = true; ++p; }
+        else if (expr_nospace[p] == '+') { ++p; }
+        else if (!out_terms.empty()) return false;
+
+        if (p >= n || expr_nospace[p] != '(') return false;
+        int depth = 1;
+        size_t rp = p + 1;
+        while (rp < n && depth > 0) {
+            if (expr_nospace[rp] == '(') ++depth;
+            else if (expr_nospace[rp] == ')') --depth;
+            ++rp;
         }
-        colbits = full_colbits - shift_zeros;
+        if (depth != 0) return false;
+        std::string_view inner = expr_nospace.substr(p + 1, (rp - 1) - (p + 1));
+        // `inner` ends with `-(<base_int>)`
+        if (inner.empty() || inner.back() != ')') return false;
+        int b_depth = 1;
+        size_t lp_base = inner.size() - 1;
+        while (lp_base > 0 && b_depth > 0) {
+            --lp_base;
+            if (inner[lp_base] == ')') ++b_depth;
+            else if (inner[lp_base] == '(') --b_depth;
+        }
+        if (b_depth != 0 || lp_base == 0 || inner[lp_base - 1] != '-') return false;
+        int base_v = 0;
+        if (!parse_signed_int_str(inner.substr(lp_base + 1, (inner.size() - 1) - (lp_base + 1)), base_v)) return false;
+        std::string sub_expr(inner.substr(0, lp_base - 1));
+        if (sub_expr.empty()) return false;
+
+        p = rp;
+        if (p >= n || expr_nospace[p] != '*') return false;
+        ++p;
+        size_t st_s = p;
+        while (p < n && std::isdigit(static_cast<unsigned char>(expr_nospace[p]))) ++p;
+        int stride_v = 0;
+        if (p == st_s || !parse_signed_int_str(expr_nospace.substr(st_s, p - st_s), stride_v) || stride_v <= 0) {
+            return false;
+        }
+        out_terms.push_back(MemOffsetTerm{neg, std::move(sub_expr), base_v, stride_v});
     }
-    out = MemHelperSpec{prefix, aw, width, left, right, word, colbits, shift_zeros, partial};
-    return true;
+    return !out_terms.empty();
 }
 
 OrderedMap<JsonValue> extract_memory_attributes(std::string_view decl) {
@@ -884,17 +1116,17 @@ OrderedMap<JsonValue> extract_memory_attributes(std::string_view decl) {
         }
         p += 9;
     }
-    if (styles.size() > 1) throw std::runtime_error("Conflicting memory styles");
+    if (styles.size() > 1) throw std::runtime_error("Conflicting memory styles in declaration: " + std::string(trim(decl)));
     if (!styles.empty()) {
         std::string st = *styles.begin();
         if (st != "block" && st != "distributed" && st != "logic" && st != "auto" && st != "registers") {
-            throw std::runtime_error("Unsupported memory style: " + st);
+            throw std::runtime_error("Unsupported memory style '" + st + "' in declaration: " + std::string(trim(decl)));
         }
         attrs.set("ram_style", (st == "registers") ? "logic" : st);
     }
     if (decl.find("syn_ramstyle") != std::string_view::npos && decl.find("\"registers\"") != std::string_view::npos) {
         std::string cur = attrs.contains("ram_style") ? attrs.at("ram_style").as_str() : "logic";
-        if (cur != "logic" && cur != "auto") throw std::runtime_error("Conflicting register/block memory intent");
+        if (cur != "logic" && cur != "auto") throw std::runtime_error("Conflicting register/block memory intent in declaration: " + std::string(trim(decl)));
         attrs.set("ram_style", "logic");
     }
     std::unordered_set<std::string> checks;
@@ -916,7 +1148,7 @@ OrderedMap<JsonValue> extract_memory_attributes(std::string_view decl) {
     }
     if (!checks.empty()) {
         if (checks.size() != 1 || (*checks.begin() != "0" && *checks.begin() != "1")) {
-            throw std::runtime_error("Unsupported memory collision-check attribute");
+            throw std::runtime_error("Unsupported memory collision-check attribute in declaration: " + std::string(trim(decl)));
         }
         attrs.set("no_rw_check", std::stoi(*checks.begin()));
     }
@@ -931,51 +1163,92 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
         MemHelperSpec spec;
         if (!parse_helper_name(u.name, spec)) continue;
         std::string body = masked_verilog(text.substr(u.start, u.end - u.start));
-        std::string addr = (spec.kind == "ClockedWritePort") ? "write_address" : "read_address";
-        std::string row = addr + "[" + std::to_string(spec.aw - 1) + ":" + std::to_string(spec.colbits) + "]";
-        std::string row_off = (spec.left <= spec.right)
-            ? ("-(" + row + "-(" + std::to_string(spec.right) + "))")
-            : ("(" + row + "-(" + std::to_string(spec.right) + "))");
-        std::string expected = row_off + "*" + std::to_string(spec.word);
-        if (spec.partial) {
-            if (spec.shift_zeros == 0) {
-                expected += "+(" + addr + "[" + std::to_string(spec.colbits - 1) + ":0]-(0))*1";
-            } else {
-                std::string zlit = std::to_string(spec.shift_zeros) + "'b"
-                                 + std::string(static_cast<size_t>(spec.shift_zeros), '0');
-                std::string col_base = (spec.colbits > 0)
-                    ? ("{" + addr + "[" + std::to_string(spec.colbits - 1) + ":0]," + zlit + "}")
-                    : zlit;
-                expected += "+(" + col_base + "-(0))*1";
+
+        // Extract `Ram` port bit-width (`input [H:0] Ram;` / `output [H:0] Ram;` / `inout [H:0] Ram;` or scalar)
+        int ram_bits = 0;
+        for (const auto& ln : split_lines(body)) {
+            std::string lt = trim(ln);
+            bool is_dir = starts_with(lt, "input") || starts_with(lt, "output") || starts_with(lt, "inout");
+            if (!is_dir || lt.find("Ram") == std::string::npos) continue;
+            size_t lb = lt.find('['), rb = lt.find(']');
+            size_t ram_p = lt.find("Ram", (rb != std::string::npos ? rb + 1 : 0));
+            if (ram_p == std::string::npos) continue;
+            size_t after_r = ram_p + 3;
+            if (after_r < lt.size() && (std::isalnum(static_cast<unsigned char>(lt[after_r])) || lt[after_r] == '_')) continue;
+            if (lb != std::string::npos && rb != std::string::npos && lb < rb && rb < ram_p) {
+                std::string rng;
+                for (size_t z = lb + 1; z < rb; ++z) {
+                    if (!std::isspace(static_cast<unsigned char>(lt[z]))) rng.push_back(lt[z]);
+                }
+                size_t col = rng.find(':');
+                int hi_v = 0, lo_v = -1;
+                if (col != std::string::npos && parse_signed_int_str(std::string_view(rng).substr(0, col), hi_v)
+                    && parse_signed_int_str(std::string_view(rng).substr(col + 1), lo_v) && lo_v == 0 && hi_v >= 0) {
+                    ram_bits = hi_v + 1;
+                    break;
+                }
+            } else if (lb == std::string::npos) {
+                ram_bits = 1;
+                break;
             }
         }
-        // Find `Ram[<expr>+: <width>]`
+        if (ram_bits <= 0) {
+            throw std::runtime_error("Could not parse Ram vector width in Verific memory helper '" + u.name + "'");
+        }
+        spec.ram_bits = ram_bits;
+
+        // Parse `Ram[<expr> +: <width>]` or `Ram[<expr> -: <width>]` (ascending packed partial slices)
         size_t rp = body.find("Ram[");
         bool offset_ok = false;
         if (rp != std::string::npos) {
             size_t plus_col = body.find("+:", rp + 4);
-            if (plus_col != std::string::npos) {
-                size_t rb = body.find(']', plus_col + 2);
+            size_t minus_col = body.find("-:", rp + 4);
+            size_t slice_op = std::string::npos;
+            if (plus_col != std::string::npos && (minus_col == std::string::npos || plus_col < minus_col)) {
+                slice_op = plus_col;
+                spec.is_minus_slice = false;
+            } else if (minus_col != std::string::npos) {
+                slice_op = minus_col;
+                spec.is_minus_slice = true;
+            }
+            if (slice_op != std::string::npos) {
+                size_t rb = body.find(']', slice_op + 2);
                 if (rb != std::string::npos) {
-                    std::string w_part = trim(std::string_view(body).substr(plus_col + 2, rb - (plus_col + 2)));
+                    std::string w_part = trim(std::string_view(body).substr(slice_op + 2, rb - (slice_op + 2)));
                     if (w_part == std::to_string(spec.width)) {
                         std::string actual_expr;
-                        for (size_t i = rp + 4; i < plus_col; ++i) {
+                        for (size_t i = rp + 4; i < slice_op; ++i) {
                             if (!std::isspace(static_cast<unsigned char>(body[i]))) actual_expr.push_back(body[i]);
                         }
-                        offset_ok = (actual_expr == expected);
+                        offset_ok = parse_ram_offset_terms(actual_expr, spec.terms);
                     }
                 }
             }
         }
-        if (!offset_ok) throw std::runtime_error("Unknown memory helper offset semantics: " + u.name);
+        if (!offset_ok) {
+            throw std::runtime_error("Unrecognized Ram[offset +:/-: width] expression in Verific memory helper '" + u.name + "'");
+        }
+
+        // Validate suffix products of `spec.name_pairs` against `ram_bits`
+        int64_t prod = 1;
+        for (auto [pl, pr] : spec.name_pairs) {
+            prod *= (static_cast<int64_t>(std::abs(pr - pl)) + 1);
+        }
+        if (prod != static_cast<int64_t>(ram_bits)) {
+            throw std::runtime_error(
+                "Memory helper '" + u.name + "' dimension product (" + std::to_string(prod)
+                + ") disagrees with Ram port width (" + std::to_string(ram_bits) + ")"
+            );
+        }
 
         int always_cnt = 0;
         for (const auto& tk : tokenize_verilog(body)) {
             if (tk == "always") ++always_cnt;
         }
-        if (always_cnt != 1) throw std::runtime_error("Unexpected memory helper processes: " + u.name);
-        helpers.emplace(u.name, spec);
+        if (always_cnt != 1) {
+            throw std::runtime_error("Unexpected always process count (" + std::to_string(always_cnt) + ") in memory helper '" + u.name + "'");
+        }
+        helpers.emplace(u.name, std::move(spec));
     }
 
     struct SpanEdit {
@@ -1005,7 +1278,6 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
         };
         OrderedMap<std::vector<HelperCall>> groups;
 
-        // Scan lines for `^[ \t]*((?:ReadPort|ClockedWritePort)_\w+)\s+(<IDENT>)\s*\((.*?)\)\s*(?:/\*.*?\*/\s*)?;`
         size_t pos = 0;
         while (pos < body.size()) {
             size_t ls = pos;
@@ -1014,7 +1286,7 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
             bool is_wp = !is_rp && starts_with(std::string_view(body).substr(pos), "ClockedWritePort_");
             if (is_rp || is_wp) {
                 size_t he = pos;
-                while (he < body.size() && (std::isalnum(static_cast<unsigned char>(body[he])) || body[he] == '_')) ++he;
+                while (he < body.size() && (std::isalnum(static_cast<unsigned char>(body[he])) || body[he] == '_' || body[he] == '-')) ++he;
                 std::string hname = body.substr(pos, he - pos);
                 size_t k = he;
                 while (k < body.size() && std::isspace(static_cast<unsigned char>(body[k]))) ++k;
@@ -1030,15 +1302,12 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
                         size_t p_open = ie;
                         while (p_open < body.size() && std::isspace(static_cast<unsigned char>(body[p_open]))) ++p_open;
                         if (p_open < body.size() && body[p_open] == '(') {
-                            // Find matching ')' before ';'
                             size_t semi = body.find(';', p_open + 1);
                             if (semi != std::string::npos) {
-                                // Find last ')' before semi (ignoring optional /* ... */ comment)
                                 std::string_view stmt_tail(body.data() + p_open + 1, semi - (p_open + 1));
                                 size_t c_start = stmt_tail.rfind("/*");
                                 size_t search_lim = stmt_tail.size();
                                 if (c_start != std::string_view::npos && stmt_tail.find("*/", c_start + 2) != std::string_view::npos) {
-                                    // Check only whitespace after */
                                     size_t c_end = stmt_tail.find("*/", c_start + 2) + 2;
                                     if (trim(stmt_tail.substr(c_end)).empty()) {
                                         search_lim = c_start;
@@ -1049,7 +1318,7 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
                                     std::string args_inside = rtrimmed.substr(0, rtrimmed.size() - 1);
                                     auto hit = helpers.find(hname);
                                     if (hit == helpers.end()) {
-                                        throw std::runtime_error("Unknown memory helper name: " + hname);
+                                        throw std::runtime_error("Unknown memory helper '" + hname + "' instantiated in module '" + u.name + "'");
                                     }
                                     auto conn_vec = parse_verilog_connections(tokenize_verilog(args_inside));
                                     OrderedMap<std::vector<std::string>> pmap;
@@ -1059,7 +1328,7 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
                                         if (t != "{" && t != "}") ram_toks.push_back(t);
                                     }
                                     if (ram_toks.size() != 1 || !is_valid_verilog_ident(ram_toks[0])) {
-                                        throw std::runtime_error("Memory helper needs a named full vector");
+                                        throw std::runtime_error("Memory helper '" + hname + "' in module '" + u.name + "' requires a single named Ram net");
                                     }
                                     groups[ram_toks[0]].push_back(HelperCall{ls, semi + 1, hname, std::move(pmap), hit->second});
                                     pos = semi + 1;
@@ -1085,19 +1354,84 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
         int group_idx = 0;
         for (const auto& [ram, calls] : groups) {
             const MemHelperSpec& spec0 = calls[0].spec;
+            const int ram_bits = spec0.ram_bits;
+            const size_t K = spec0.name_pairs.size();
             for (const auto& hc : calls) {
-                if (hc.spec.left != spec0.left || hc.spec.right != spec0.right || hc.spec.word != spec0.word) {
-                    throw std::runtime_error("Read/write memory geometry disagrees");
+                if (hc.spec.ram_bits != ram_bits || hc.spec.name_pairs != spec0.name_pairs) {
+                    throw std::runtime_error(
+                        "Read/write memory helper geometry disagrees on net '" + ram + "' in module '" + u.name
+                        + "' ('" + calls[0].helper_name + "' vs '" + hc.helper_name + "')"
+                    );
                 }
             }
-            std::string array_nm = "ng_memory_" + std::to_string(group_idx++);
-            if (body_tokens.count(array_nm)) {
-                throw std::runtime_error("Memory name collision: " + array_nm);
-            }
-            int depth = std::abs(spec0.right - spec0.left) + 1;
-            int total_hi = depth * spec0.word - 1;
 
-            // Find declaration `^[ \t]*(?:wire|reg)\s*\[\s*<total_hi>\s*:\s*0\s*\]\s*<ram>(?=\s|/|;)\s*[^;]*;`
+            // Determine packed element width (`word_width`) and unpacked dimension count (`num_unpacked`) across all ports of `ram`:
+            // - If any port has `terms.size() == K - 1` or `width > 1`, `name_pairs[K - 1]` is the packed word range (`word_width = |R_{K-1} - L_{K-1}| + 1`, `num_unpacked = K - 1`).
+            // - Otherwise all ports are 1-bit scalar accesses with `terms.size() == K`, so all `K` pairs are unpacked dimensions of 1-bit elements (`word_width = 1`, `num_unpacked = K`).
+            bool has_packed_pair = false;
+            for (const auto& hc : calls) {
+                if (hc.spec.terms.size() + 1 == K || hc.spec.width > 1) {
+                    has_packed_pair = true;
+                    break;
+                }
+            }
+            if (has_packed_pair && K < 2) {
+                throw std::runtime_error("Invalid packed memory helper dimensions on '" + ram + "' in module '" + u.name + "'");
+            }
+            const size_t num_unpacked = has_packed_pair ? (K - 1) : K;
+            const int word_width = has_packed_pair
+                ? (std::abs(spec0.name_pairs[K - 1].second - spec0.name_pairs[K - 1].first) + 1)
+                : 1;
+            const int total_words = ram_bits / word_width;
+            const int total_hi = ram_bits - 1;
+
+            // Validate every port's offset terms against unpacked dimensions + optional partial sub-word offset
+            std::vector<int> exp_word_strides(num_unpacked, 1);
+            for (size_t d = num_unpacked; d > 1; --d) {
+                int span_prev = std::abs(spec0.name_pairs[d - 1].second - spec0.name_pairs[d - 1].first) + 1;
+                exp_word_strides[d - 2] = exp_word_strides[d - 1] * span_prev;
+            }
+            for (const auto& hc : calls) {
+                const auto& sp = hc.spec;
+                bool is_partial = (sp.width != word_width);
+                size_t exp_terms = num_unpacked + (is_partial ? 1 : 0);
+                if (sp.width > word_width || sp.terms.size() != exp_terms) {
+                    throw std::runtime_error(
+                        "Unsupported memory port term layout in '" + hc.helper_name + "' on net '" + ram
+                        + "' in module '" + u.name + "' (width=" + std::to_string(sp.width)
+                        + ", word_width=" + std::to_string(word_width) + ", terms=" + std::to_string(sp.terms.size()) + ")"
+                    );
+                }
+                for (size_t d = 0; d < num_unpacked; ++d) {
+                    auto [dl, dr] = spec0.name_pairs[d];
+                    const auto& tm = sp.terms[d];
+                    bool exp_neg = (dl < dr);
+                    if (tm.base != dr || tm.stride != exp_word_strides[d] * word_width || (dl != dr && tm.neg != exp_neg)) {
+                        throw std::runtime_error(
+                            "Unexpected unpacked offset term " + std::to_string(d) + " in '" + hc.helper_name
+                            + "' on net '" + ram + "' in module '" + u.name + "'"
+                        );
+                    }
+                }
+                if (is_partial) {
+                    auto [pl, pr] = spec0.name_pairs[K - 1];
+                    const auto& ctm = sp.terms[num_unpacked];
+                    bool exp_cneg = (pl < pr);
+                    if (ctm.base != pr || ctm.stride != 1 || (pl != pr && ctm.neg != exp_cneg)) {
+                        throw std::runtime_error(
+                            "Unexpected packed bit-slice offset term in '" + hc.helper_name
+                            + "' on net '" + ram + "' in module '" + u.name + "'"
+                        );
+                    }
+                }
+            }
+
+            std::string array_nm = "ng_memory_" + std::to_string(group_idx++);
+            while (body_tokens.count(array_nm)) {
+                array_nm = "ng_memory_" + std::to_string(group_idx++);
+            }
+
+            // Find declaration `^[ \t]*(?:wire|reg)(?:\s*\[\s*<total_hi>\s*:\s*0\s*\])?\s*<ram>(?=\s|/|;)\s*[^;]*;`
             size_t decl_s = std::string::npos, decl_e = std::string::npos;
             size_t lp = 0;
             while (lp < body.size()) {
@@ -1107,28 +1441,39 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
                 std::string kw;
                 if (starts_with(std::string_view(body).substr(k), "wire")) kw = "wire";
                 else if (starts_with(std::string_view(body).substr(k), "reg")) kw = "reg";
-                if (!kw.empty()) {
+                if (!kw.empty() && k + kw.size() < body.size() &&
+                    !(std::isalnum(static_cast<unsigned char>(body[k + kw.size()])) || body[k + kw.size()] == '_')) {
                     size_t m = k + kw.size();
                     while (m < body.size() && std::isspace(static_cast<unsigned char>(body[m]))) ++m;
-                    if (m < body.size() && body[m] == '[') {
-                        size_t rb = body.find(']', m + 1);
-                        size_t semi = body.find(';', m + 1);
-                        if (rb != std::string::npos && semi != std::string::npos && rb < semi) {
-                            std::string rng;
-                            for (size_t z = m + 1; z < rb; ++z) {
-                                if (!std::isspace(static_cast<unsigned char>(body[z]))) rng.push_back(body[z]);
-                            }
-                            if (rng == std::to_string(total_hi) + ":0") {
-                                size_t rn = rb + 1;
-                                while (rn < semi && std::isspace(static_cast<unsigned char>(body[rn]))) ++rn;
-                                if (body.compare(rn, ram.size(), ram) == 0) {
-                                    size_t after_r = rn + ram.size();
-                                    if (after_r <= semi && (std::isspace(static_cast<unsigned char>(body[after_r])) || body[after_r] == '/' || body[after_r] == ';')) {
-                                        decl_s = ls;
-                                        decl_e = semi + 1;
-                                        break;
-                                    }
+                    size_t semi = body.find(';', m);
+                    if (semi != std::string::npos) {
+                        bool range_ok = false;
+                        size_t rn = m;
+                        if (m < semi && body[m] == '[') {
+                            size_t rb = body.find(']', m + 1);
+                            if (rb != std::string::npos && rb < semi) {
+                                std::string rng;
+                                for (size_t z = m + 1; z < rb; ++z) {
+                                    if (!std::isspace(static_cast<unsigned char>(body[z]))) rng.push_back(body[z]);
                                 }
+                                if (rng == std::to_string(total_hi) + ":0") {
+                                    range_ok = true;
+                                    rn = rb + 1;
+                                    while (rn < semi && std::isspace(static_cast<unsigned char>(body[rn]))) ++rn;
+                                }
+                            }
+                        } else if (total_hi == 0) {
+                            range_ok = true;
+                        }
+                        if (range_ok && body.compare(rn, ram.size(), ram) == 0) {
+                            size_t after_r = rn + ram.size();
+                            bool end_ok = (!ram.empty() && ram[0] == '\\')
+                                ? (after_r <= semi && std::isspace(static_cast<unsigned char>(body[after_r])))
+                                : (after_r <= semi && (std::isspace(static_cast<unsigned char>(body[after_r])) || body[after_r] == '/' || body[after_r] == ';'));
+                            if (end_ok) {
+                                decl_s = ls;
+                                decl_e = semi + 1;
+                                break;
                             }
                         }
                     }
@@ -1137,7 +1482,10 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
                 lp = (nl == std::string::npos) ? body.size() : (nl + 1);
             }
             if (decl_s == std::string::npos) {
-                throw std::runtime_error("Memory vector declaration not recognized: " + ram);
+                throw std::runtime_error(
+                    "Memory vector declaration not recognized for net '" + ram + "' (expected [" + std::to_string(total_hi)
+                    + ":0]) in module '" + u.name + "'"
+                );
             }
             std::string decl_text = body.substr(decl_s, decl_e - decl_s);
 
@@ -1155,15 +1503,18 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
             remaining.append(body, cur_c, body.size() - cur_c);
             std::string rem_masked = masked_verilog(remaining);
             for (size_t rp_pos = 0; (rp_pos = rem_masked.find(ram, rp_pos)) != std::string::npos; rp_pos += ram.size()) {
-                bool prev_ok = (rp_pos == 0) || std::isspace(static_cast<unsigned char>(rem_masked[rp_pos - 1]));
+                bool prev_ok = (rp_pos == 0) || std::isspace(static_cast<unsigned char>(rem_masked[rp_pos - 1]))
+                            || (ram[0] != '\\' && (rem_masked[rp_pos - 1] == '(' || rem_masked[rp_pos - 1] == ',' || rem_masked[rp_pos - 1] == '{'));
                 size_t after_i = rp_pos + ram.size();
                 bool next_ok = (after_i < rem_masked.size()) && (
-                    std::isspace(static_cast<unsigned char>(rem_masked[after_i])) ||
-                    rem_masked[after_i] == ';' || rem_masked[after_i] == ',' ||
-                    rem_masked[after_i] == ')' || rem_masked[after_i] == ']'
+                    (!ram.empty() && ram[0] == '\\')
+                        ? std::isspace(static_cast<unsigned char>(rem_masked[after_i]))
+                        : (std::isspace(static_cast<unsigned char>(rem_masked[after_i])) ||
+                           rem_masked[after_i] == ';' || rem_masked[after_i] == ',' ||
+                           rem_masked[after_i] == ')' || rem_masked[after_i] == ']' || rem_masked[after_i] == '[')
                 );
                 if (prev_ok && next_ok) {
-                    throw std::runtime_error("Memory vector has additional visible uses: " + ram);
+                    throw std::runtime_error("Memory vector '" + ram + "' in module '" + u.name + "' has non-port direct uses outside ReadPort/ClockedWritePort");
                 }
             }
 
@@ -1176,28 +1527,91 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
                 }
                 style_prefix = "(* " + join_strings(ap, ", ") + " *) ";
             }
-            std::string decl_repl = style_prefix + "reg [" + std::to_string(spec0.word - 1) + ":0] " + array_nm
-                                  + " [" + std::to_string(spec0.left) + ":" + std::to_string(spec0.right) + "];";
+
+            // For 1D unpacked arrays (`num_unpacked == 1`), preserve original `[L_0:R_0]` bounds directly.
+            // For multi-dimensional unpacked arrays (`num_unpacked >= 2`), flatten unpacked dimensions into `[0:total_words-1]`
+            // choosing LSB-order when all unpacked dimensions are descending `[Hi:0]`, and MSB-order otherwise so power-of-2
+            // 0-based multi-D arrays index via pure bit concatenation with zero arithmetic overhead.
+            const bool is_1d = (num_unpacked == 1);
+            bool multi_use_lsb_order = (!is_1d);
+            if (!is_1d) {
+                for (size_t d = 0; d < num_unpacked; ++d) {
+                    auto [dl, dr] = spec0.name_pairs[d];
+                    if (!(dl >= dr && dr == 0)) { multi_use_lsb_order = false; break; }
+                }
+            }
+            const int decl_left  = is_1d ? spec0.name_pairs[0].first  : 0;
+            const int decl_right = is_1d ? spec0.name_pairs[0].second : (total_words - 1);
+            std::string decl_repl = style_prefix + "reg [" + std::to_string(word_width - 1) + ":0] " + array_nm
+                                  + " [" + std::to_string(decl_left) + ":" + std::to_string(decl_right) + "];";
+
+            // Extract RAM initializer from either `/* Init Val: <bits> */` or `:: initial value of the RAM: <N>'b<bits> */`
+            std::string iv_bits;
+            {
+                size_t iv_p = decl_text.find("/* Init Val:");
+                if (iv_p != std::string::npos) {
+                    size_t iv_end = decl_text.find("*/", iv_p + 12);
+                    if (iv_end != std::string::npos) {
+                        iv_bits = to_lower_ascii(trim(std::string_view(decl_text).substr(iv_p + 12, iv_end - (iv_p + 12))));
+                    }
+                } else {
+                    size_t rv_p = decl_text.find("initial value of the RAM:");
+                    if (rv_p != std::string::npos) {
+                        size_t rv_end = decl_text.find("*/", rv_p + 25);
+                        if (rv_end != std::string::npos) {
+                            std::string raw_lit = trim(std::string_view(decl_text).substr(rv_p + 25, rv_end - (rv_p + 25)));
+                            size_t q = raw_lit.find('\'');
+                            if (q != std::string::npos && q + 2 <= raw_lit.size() &&
+                                (raw_lit[q + 1] == 'b' || raw_lit[q + 1] == 'B')) {
+                                for (size_t bi = q + 2; bi < raw_lit.size(); ++bi) {
+                                    char ch = static_cast<char>(std::tolower(static_cast<unsigned char>(raw_lit[bi])));
+                                    if (ch == '_') continue;
+                                    iv_bits.push_back(ch);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             bool has_init = false;
-            size_t iv_p = decl_text.find("/* Init Val:");
-            if (iv_p != std::string::npos) {
-                size_t iv_end = decl_text.find("*/", iv_p + 12);
-                if (iv_end != std::string::npos) {
-                    std::string iv_bits = trim(std::string_view(decl_text).substr(iv_p + 12, iv_end - (iv_p + 12)));
-                    if (static_cast<int>(iv_bits.size()) != depth * spec0.word) {
-                        throw std::runtime_error("Memory initializer width mismatch");
+            if (!iv_bits.empty()) {
+                if (static_cast<int>(iv_bits.size()) != ram_bits) {
+                    throw std::runtime_error(
+                        "Memory initializer width mismatch on '" + ram + "' in module '" + u.name
+                        + "': got " + std::to_string(iv_bits.size()) + " bits, expected " + std::to_string(ram_bits)
+                    );
+                }
+                std::vector<std::string> init_stmts;
+                int step = (decl_left <= decl_right) ? 1 : -1;
+                int row_num = decl_left;
+                for (int i = 0; i < total_words; ++i, row_num += step) {
+                    int src_word_from_msb = (!is_1d && multi_use_lsb_order) ? (total_words - 1 - i) : i;
+                    std::string_view wslice(iv_bits.data() + static_cast<size_t>(src_word_from_msb * word_width), static_cast<size_t>(word_width));
+                    bool any_def = false, any_undef = false;
+                    for (char c : wslice) {
+                        if (c == '0' || c == '1') any_def = true;
+                        else any_undef = true;
                     }
+                    if (!any_def) continue; // Leave completely undefined ('x'/'z') words uninitialized
+                    if (!any_undef) {
+                        init_stmts.push_back(
+                            array_nm + "[" + std::to_string(row_num) + "] = " + std::to_string(word_width) + "'b" + std::string(wslice) + ";"
+                        );
+                    } else {
+                        for (int bit_i = 0; bit_i < word_width; ++bit_i) {
+                            char bc = wslice[static_cast<size_t>(word_width - 1 - bit_i)];
+                            if (bc == '0' || bc == '1') {
+                                init_stmts.push_back(
+                                    array_nm + "[" + std::to_string(row_num) + "][" + std::to_string(bit_i) + "] = 1'b" + std::string(1, bc) + ";"
+                                );
+                            }
+                        }
+                    }
+                }
+                if (!init_stmts.empty()) {
                     has_init = true;
-                    decl_repl += "\ninitial begin\n";
-                    int step = (spec0.left <= spec0.right) ? 1 : -1;
-                    int row_num = spec0.left;
-                    for (int i = 0; i < depth; ++i, row_num += step) {
-                        if (i > 0) decl_repl.push_back('\n');
-                        decl_repl += array_nm + "[" + std::to_string(row_num) + "] = " + std::to_string(spec0.word) + "'b"
-                                   + iv_bits.substr(static_cast<size_t>(i * spec0.word), static_cast<size_t>(spec0.word)) + ";";
-                    }
-                    decl_repl += "\nend";
+                    decl_repl += "\ninitial begin\n" + join_strings(init_stmts, "\n") + "\nend";
                 }
             }
             edits.push_back(SpanEdit{decl_s, decl_e, std::move(decl_repl)});
@@ -1207,50 +1621,105 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
                 const auto& sp = hc.spec;
                 std::string address = array_nm + "_addr_" + std::to_string(pi);
                 std::string pfx = (sp.kind == "ClockedWritePort") ? "write" : "read";
-                auto expr = [&](const std::string& pin_nm) { return join_strings(hc.pins.at(pin_nm), " "); };
-                std::string addr_expr = expr(pfx + "_address");
+                std::string raw_addr_port = pfx + "_address";
+                auto expr = [&](const std::string& pin_nm) {
+                    return pad_escaped_verilog_tail(join_verilog_tokens_safe(hc.pins.at(pin_nm)));
+                };
+                std::string addr_expr = expr(raw_addr_port);
                 std::string call_repl = "wire [" + std::to_string(sp.aw - 1) + ":0] " + address + " = " + addr_expr + ";\n";
-                std::string row_s = address + "[" + std::to_string(sp.aw - 1) + ":" + std::to_string(sp.colbits) + "]";
+
+                std::string row_s;
+                std::string row_bounds_guard;
+                if (is_1d) {
+                    row_s = replace_ident_token_in_expr(sp.terms[0].sub_expr, raw_addr_port, address);
+                } else {
+                    // Check if all `num_unpacked` dimensions form a contiguous pure bit-slice of `address`
+                    bool pure_concat = true;
+                    int expected_next_hi = -1, first_hi = -1, last_lo = -1;
+                    for (size_t d = 0; d < num_unpacked; ++d) {
+                        auto [dl, dr] = spec0.name_pairs[d];
+                        int span_d = std::abs(dr - dl) + 1;
+                        bool zero_based = multi_use_lsb_order ? (dr == 0 && !sp.terms[d].neg) : (dl == 0 && sp.terms[d].neg);
+                        std::string sub_d = replace_ident_token_in_expr(sp.terms[d].sub_expr, raw_addr_port, address);
+                        // Check `address[hi:lo]`
+                        int hi_d = -1, lo_d = -1;
+                        if (zero_based && starts_with(sub_d, address + "[") && sub_d.back() == ']') {
+                            std::string inside = sub_d.substr(address.size() + 1, sub_d.size() - (address.size() + 2));
+                            size_t col = inside.find(':');
+                            if (col != std::string::npos && parse_signed_int_str(std::string_view(inside).substr(0, col), hi_d)
+                                && parse_signed_int_str(std::string_view(inside).substr(col + 1), lo_d) && hi_d >= lo_d) {
+                                int w_d = hi_d - lo_d + 1;
+                                if ((1 << w_d) == span_d && (d == 0 || hi_d == expected_next_hi)) {
+                                    if (d == 0) first_hi = hi_d;
+                                    last_lo = lo_d;
+                                    expected_next_hi = lo_d - 1;
+                                    continue;
+                                }
+                            }
+                        }
+                        pure_concat = false;
+                        break;
+                    }
+                    if (pure_concat && first_hi >= last_lo && last_lo >= 0) {
+                        row_s = address + "[" + std::to_string(first_hi) + ":" + std::to_string(last_lo) + "]";
+                    } else {
+                        std::vector<std::string> sum_parts;
+                        bool may_exceed = false;
+                        for (size_t d = 0; d < num_unpacked; ++d) {
+                            auto [dl, dr] = spec0.name_pairs[d];
+                            int span_d = std::abs(dr - dl) + 1;
+                            if ((span_d & (span_d - 1)) != 0 || dl != 0 || dr < 0) may_exceed = true;
+                            std::string sub_d = replace_ident_token_in_expr(sp.terms[d].sub_expr, raw_addr_port, address);
+                            std::string rel_d;
+                            if (multi_use_lsb_order) {
+                                rel_d = sp.terms[d].neg
+                                    ? ("(" + std::to_string(dr) + " - (" + sub_d + "))")
+                                    : ((dr == 0) ? sub_d : ("((" + sub_d + ") - " + std::to_string(dr) + ")"));
+                            } else {
+                                rel_d = sp.terms[d].neg
+                                    ? ((dl == 0) ? sub_d : ("((" + sub_d + ") - " + std::to_string(dl) + ")"))
+                                    : ("(" + std::to_string(dl) + " - (" + sub_d + "))");
+                            }
+                            int ws = exp_word_strides[d];
+                            sum_parts.push_back((ws == 1) ? rel_d : ("(" + rel_d + " * " + std::to_string(ws) + ")"));
+                        }
+                        row_s = join_strings(sum_parts, " + ");
+                        if (may_exceed && pfx == "write") {
+                            row_bounds_guard = " && ((" + row_s + ") < " + std::to_string(total_words) + ")";
+                        }
+                    }
+                }
+
                 std::string target = array_nm + "[" + row_s + "]";
-                std::string extra_en_guard;
-                if (sp.partial) {
-                    std::string zlit = std::to_string(sp.shift_zeros) + "'b"
-                                     + std::string(static_cast<size_t>(sp.shift_zeros), '0');
-                    std::string col_idx = (sp.shift_zeros == 0)
-                        ? (address + "[" + std::to_string(sp.colbits - 1) + ":0]")
-                        : ((sp.colbits > 0)
-                            ? ("{" + address + "[" + std::to_string(sp.colbits - 1) + ":0], " + zlit + "}")
-                            : zlit);
+                std::string extra_en_guard = row_bounds_guard;
+                const bool is_partial = (sp.width != word_width);
+                if (is_partial) {
+                    const auto& ctm = sp.terms[num_unpacked];
+                    std::string col_sub = replace_ident_token_in_expr(ctm.sub_expr, raw_addr_port, address);
+                    std::string col_idx = ctm.neg
+                        ? ("(" + std::to_string(ctm.base) + " - (" + col_sub + "))")
+                        : ((ctm.base == 0) ? col_sub : ("((" + col_sub + ") - " + std::to_string(ctm.base) + ")"));
                     if (sp.width == 1) {
                         target += "[" + col_idx + "]";
+                    } else if (sp.is_minus_slice) {
+                        target += "[" + col_idx + " -: " + std::to_string(sp.width) + "]";
                     } else {
                         target += "[" + col_idx + " +: " + std::to_string(sp.width) + "]";
                     }
-                    int max_col_base = (sp.colbits > 0 ? ((1 << sp.colbits) - 1) : 0) << sp.shift_zeros;
-                    if (max_col_base + sp.width > sp.word) {
-                        bool const_in_bounds = false;
-                        std::string tr_addr = rtrim(addr_expr);
-                        if (ends_with(tr_addr, "}")) {
-                            std::string pre = rtrim(std::string_view(tr_addr).substr(0, tr_addr.size() - 1));
-                            size_t last_sp = pre.find_last_of(" \t,");
-                            std::string last_tok = (last_sp == std::string::npos) ? pre : pre.substr(last_sp + 1);
-                            try {
-                                auto [lit_w, lit_v] = parse_verilog_literal_u64(last_tok);
-                                if (lit_w >= sp.colbits && (static_cast<int>(lit_v) << sp.shift_zeros) + sp.width <= sp.word) {
-                                    const_in_bounds = true;
-                                }
-                            } catch (...) {
-                            }
-                        }
-                        if (!const_in_bounds && pfx == "write") {
-                            extra_en_guard = " && (" + col_idx + " <= " + std::to_string(sp.word - sp.width) + ")";
+                    if (pfx == "write") {
+                        if (sp.is_minus_slice) {
+                            extra_en_guard += " && ((" + col_idx + ") >= " + std::to_string(sp.width - 1)
+                                            + ") && ((" + col_idx + ") < " + std::to_string(word_width) + ")";
+                        } else {
+                            extra_en_guard += " && ((" + col_idx + ") <= " + std::to_string(word_width - sp.width) + ")";
                         }
                     }
                 }
                 if (pfx == "write") {
+                    std::string we_expr = expr("write_enable");
                     std::string we_cond = extra_en_guard.empty()
-                        ? expr("write_enable")
-                        : ("(" + expr("write_enable") + ")" + extra_en_guard);
+                        ? we_expr
+                        : ("(" + we_expr + ")" + extra_en_guard);
                     call_repl += "always @(posedge " + expr("clk") + ") if (" + we_cond + ") " + target + " <= " + expr("write_data") + ";";
                 } else {
                     std::string temp = array_nm + "_read_" + std::to_string(pi);
@@ -1265,8 +1734,9 @@ std::pair<std::string, JsonValue> restore_verific_memories(std::string_view text
             rec["module"] = u.name;
             rec["net"] = ram;
             rec["array"] = array_nm;
-            rec["depth"] = depth;
-            rec["width"] = spec0.word;
+            rec["depth"] = total_words;
+            rec["width"] = word_width;
+            rec["unpacked_dimensions"] = static_cast<int64_t>(num_unpacked);
             rec["ports"] = static_cast<int64_t>(calls.size());
             rec["initialized"] = has_init;
             rec["restored_attributes"] = JsonValue(mem_attrs);
@@ -1304,29 +1774,49 @@ std::string strip_all_ws(std::string_view s) {
 
 bool extract_named_port_arg(std::string_view stmt, std::string_view port_name, std::string& out_arg) {
     std::string needle = "." + std::string(port_name);
-    size_t p = 0;
-    while ((p = stmt.find(needle, p)) != std::string_view::npos) {
-        if (p > 0 && (std::isalnum(static_cast<unsigned char>(stmt[p - 1])) || stmt[p - 1] == '_')) {
-            p += needle.size();
+    bool in_esc_scan = false;
+    for (size_t p = 0; p < stmt.size(); ++p) {
+        char ch_p = stmt[p];
+        if (in_esc_scan) {
+            if (std::isspace(static_cast<unsigned char>(ch_p))) in_esc_scan = false;
+            continue;
+        }
+        if (ch_p == '\\') {
+            in_esc_scan = true;
+            continue;
+        }
+        if (stmt.compare(p, needle.size(), needle) != 0) continue;
+        if (p > 0 && (std::isalnum(static_cast<unsigned char>(stmt[p - 1])) || stmt[p - 1] == '_' || stmt[p - 1] == '$')) {
+            p += needle.size() - 1;
             continue;
         }
         size_t k = p + needle.size();
         while (k < stmt.size() && std::isspace(static_cast<unsigned char>(stmt[k]))) ++k;
         if (k >= stmt.size() || stmt[k] != '(') {
-            p += needle.size();
+            p += needle.size() - 1;
             continue;
         }
         size_t start = k + 1;
         int depth = 1;
+        bool in_esc_arg = false;
         size_t i = start;
         for (; i < stmt.size(); ++i) {
-            if (stmt[i] == '(') ++depth;
-            else if (stmt[i] == ')') {
+            char c = stmt[i];
+            if (in_esc_arg) {
+                if (std::isspace(static_cast<unsigned char>(c))) in_esc_arg = false;
+                continue;
+            }
+            if (c == '\\') {
+                in_esc_arg = true;
+                continue;
+            }
+            if (c == '(') ++depth;
+            else if (c == ')') {
                 if (--depth == 0) break;
             }
         }
         if (depth != 0) return false;
-        out_arg = trim(stmt.substr(start, i - start));
+        out_arg = pad_escaped_verilog_tail(trim(stmt.substr(start, i - start)));
         return true;
     }
     return false;
@@ -4810,9 +5300,182 @@ JsonValue infer_resources_stage(
         RtlilDesign pre_des = read_rtlil_json_file(pre_ce_json);
         ram_decomp_bits = decompose_async_ram_mux_reg(pre_des, no_lutram);
         ce_factored_bits = factor_two_leaf_mux_dffe(pre_des);
+
+        // Sanitize residual wire `init` attributes before `synth_gowin` / `check -assert`:
+        // 1) Preserve defined ('0'/'1') power-up bits on live sequential state outputs ($dff*, $dlatch*, $sr, $ff, sync $memrd*)
+        //    on a single canonical netname per SigBit (detecting conflicting '0' vs '1' aliases).
+        // 2) Tie completely undriven non-port SigBits carrying a defined ('0'/'1') `init` bit to constant SIG_0/SIG_1 and clear `init`.
+        // 3) Clear spurious combinational/blackbox/port `init` bits to 'x' (removing `init` when all bits are 'x'), leaving undefined
+        //    ('x'/'z') bits undefined while keeping `check -assert` enabled in `infer.ys`.
+        static const std::unordered_set<std::string> seq_q_cell_types = {
+            "$dff", "$dffe", "$adff", "$adffe", "$aldff", "$aldffe",
+            "$sdff", "$sdffe", "$sdffce", "$dffsr", "$dffsre",
+            "$dlatch", "$dlatchsr", "$sr", "$ff"
+        };
+        auto is_seq_init_driver = [&](const RtlilCell& c, const std::string& port_nm) -> bool {
+            if (port_nm == "Q") {
+                if (seq_q_cell_types.count(c.type)) return true;
+                if (starts_with(c.type, "$_DFF") || starts_with(c.type, "$_SDFF") ||
+                    starts_with(c.type, "$_DLATCH") || starts_with(c.type, "$_ALDFF") ||
+                    starts_with(c.type, "$_SR_") || c.type == "$_FF_") {
+                    return true;
+                }
+            }
+            if (port_nm == "DATA" && (c.type == "$memrd" || c.type == "$memrd_v2")) {
+                const std::string* ce_p = c.parameters.find_ptr("CLK_ENABLE");
+                if (ce_p) {
+                    for (char ch : *ce_p) if (ch == '1') return true;
+                }
+            }
+            return false;
+        };
+
         for (const auto& [mn, mptr] : pre_des.modules) {
             if (is_module_blackbox(*mptr)) continue;
             RtlilModule& pm = pre_des.mod_mut(mn);
+
+            std::unordered_set<SigBit> port_in_bits;
+            for (const auto& [_, pr] : pm.ports) {
+                if (pr.direction == "input" || pr.direction == "inout") {
+                    for (SigBit b : pr.bits) if (b >= 0) port_in_bits.insert(b);
+                }
+            }
+            std::unordered_set<SigBit> seq_drv_bits, other_drv_bits;
+            for (const auto& [_, c] : pm.cells) {
+                bool submod_is_nonbb = pre_des.modules.contains(c.type) && !is_module_blackbox(*pre_des.modules.at(c.type));
+                for (const auto& [pnm, bs] : c.connections) {
+                    std::string dir = c.port_directions.value_or(pnm, "");
+                    if (dir.empty() && submod_is_nonbb) {
+                        const auto* sp = pre_des.modules.at(c.type)->ports.find_ptr(pnm);
+                        if (sp) dir = sp->direction;
+                    }
+                    bool is_drv = (dir == "output" || dir == "inout")
+                               || (dir.empty() && (pnm == "Y" || pnm == "Q" || pnm == "O" || pnm == "F" || pnm == "DOUT" || pnm == "DO" || pnm == "DATA"));
+                    if (!is_drv) continue;
+                    bool seq_ok = is_seq_init_driver(c, pnm);
+                    for (SigBit b : bs) {
+                        if (b < 0) continue;
+                        if (seq_ok) seq_drv_bits.insert(b);
+                        else other_drv_bits.insert(b);
+                    }
+                }
+            }
+
+            struct InitOwner {
+                char val = 'x';
+                std::string net_name;
+                int score = -1;
+            };
+            std::unordered_map<SigBit, InitOwner> best_seq_owner;
+            std::unordered_map<SigBit, SigBit> undriven_const_tie;
+
+            auto decode_net_init_msb = [](const RtlilNetname& nr, std::string& out_msb) -> bool {
+                const JsonValue* iv = nr.attributes.find_ptr("init");
+                if (!iv || iv->is_null()) return false;
+                const size_t w = nr.bits.size();
+                if (w == 0) return false;
+                if (iv->is_int()) {
+                    uint64_t u = static_cast<uint64_t>(iv->as_i64());
+                    out_msb = format_bin_u64(u, static_cast<int>(w));
+                    return true;
+                }
+                if (!iv->is_string()) return false;
+                std::string s = to_lower_ascii(iv->as_str());
+                if (s.size() < w) {
+                    bool only_01 = true;
+                    for (char ch : s) if (ch != '0' && ch != '1') { only_01 = false; break; }
+                    s = std::string(w - s.size(), only_01 ? '0' : 'x') + s;
+                } else if (s.size() > w) {
+                    s = s.substr(s.size() - w);
+                }
+                out_msb = std::move(s);
+                return true;
+            };
+
+            // Pass 1: inspect all defined ('0'/'1') `init` bits in module `mn`
+            for (const auto& [nn, nr] : pm.netnames) {
+                std::string msb;
+                if (!decode_net_init_msb(nr, msb)) continue;
+                const size_t w = nr.bits.size();
+                int net_score = (nr.hide_name == 0 ? 10 : 0) + (w == 1 ? 4 : 0) + (is_attr_truthy(nr.attributes, "keep") ? 2 : 0);
+                for (size_t bi = 0; bi < w; ++bi) {
+                    char cv = msb[w - 1 - bi];
+                    if (cv != '0' && cv != '1') continue;
+                    SigBit sb = nr.bits[bi];
+                    if (sb < 0) continue;
+                    bool has_seq = seq_drv_bits.count(sb) > 0 && !other_drv_bits.count(sb) && !port_in_bits.count(sb);
+                    bool is_undriven = !seq_drv_bits.count(sb) && !other_drv_bits.count(sb) && !port_in_bits.count(sb);
+                    if (has_seq) {
+                        auto it = best_seq_owner.find(sb);
+                        if (it == best_seq_owner.end()) {
+                            best_seq_owner[sb] = InitOwner{cv, nn, net_score};
+                        } else {
+                            if (it->second.val != cv) {
+                                throw std::runtime_error(
+                                    "Conflicting initial values ('" + std::string(1, it->second.val) + "' on '" + it->second.net_name
+                                    + "' vs '" + std::string(1, cv) + "' on '" + nn + "') on sequential state bit in module '" + mn + "'"
+                                );
+                            }
+                            if (net_score > it->second.score) {
+                                it->second.net_name = nn;
+                                it->second.score = net_score;
+                            }
+                        }
+                    } else if (is_undriven) {
+                        SigBit tie_v = (cv == '1') ? SIG_1 : SIG_0;
+                        auto uit = undriven_const_tie.find(sb);
+                        if (uit != undriven_const_tie.end() && uit->second != tie_v) {
+                            throw std::runtime_error(
+                                "Conflicting initial values on undriven net '" + nn + "' in module '" + mn + "'"
+                            );
+                        }
+                        undriven_const_tie[sb] = tie_v;
+                    }
+                }
+            }
+
+            // Pass 2: rewrite `init` attributes so only canonical sequential owners retain defined '0'/'1' bits
+            for (const auto& nn : pm.netnames.keys()) {
+                RtlilNetname& nr = pm.netnames.at(nn);
+                std::string msb;
+                if (!decode_net_init_msb(nr, msb)) continue;
+                const size_t w = nr.bits.size();
+                bool any_kept = false;
+                std::unordered_set<SigBit> seen_in_this_net;
+                for (size_t bi = 0; bi < w; ++bi) {
+                    char& cv = msb[w - 1 - bi];
+                    if (cv != '0' && cv != '1') { cv = 'x'; continue; }
+                    SigBit sb = nr.bits[bi];
+                    auto oit = (sb >= 0) ? best_seq_owner.find(sb) : best_seq_owner.end();
+                    if (oit != best_seq_owner.end() && oit->second.net_name == nn && seen_in_this_net.insert(sb).second) {
+                        any_kept = true;
+                    } else {
+                        cv = 'x';
+                    }
+                }
+                if (any_kept) {
+                    nr.attributes.set("init", JsonValue(msb));
+                } else {
+                    nr.attributes.erase("init");
+                }
+            }
+
+            // Pass 3: tie undriven defined-init SigBits to constant SIG_0/SIG_1 while leaving undefined 'x' SigBits untouched
+            if (!undriven_const_tie.empty()) {
+                auto map_vec = [&](std::vector<SigBit>& bs) {
+                    for (SigBit& b : bs) {
+                        auto tit = undriven_const_tie.find(b);
+                        if (tit != undriven_const_tie.end()) b = tit->second;
+                    }
+                };
+                for (const auto& pn : pm.ports.keys()) map_vec(pm.ports.at(pn).bits);
+                for (const auto& cn : pm.cells.keys()) {
+                    RtlilCell& c = pm.cells.at(cn);
+                    for (const auto& cpn : c.connections.keys()) map_vec(c.connections.at(cpn));
+                }
+                for (const auto& nn : pm.netnames.keys()) map_vec(pm.netnames.at(nn).bits);
+            }
+
             std::vector<std::string> drop_auto;
             for (const auto& [nn, nr] : pm.netnames) {
                 if (nr.hide_name != 0 && nr.attributes.empty() && starts_with(nn, "$auto$jsonparse.cc:")) {

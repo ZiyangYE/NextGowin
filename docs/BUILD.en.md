@@ -1,4 +1,4 @@
-# Build v0.1.0 from the Git checkout
+# Build v0.1.1 from the Git checkout
 
 Install Visual Studio 2022 (MSVC v143 x64), the Windows SDK and Python 3.10+. At the repository root, run:
 

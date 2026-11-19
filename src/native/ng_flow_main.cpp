@@ -337,7 +337,7 @@ std::tuple<JsonValue, JsonValue, JsonValue> check_flow_checkpoint(std::string_vi
 }
 
 int run_standalone_ownpr_cli(const std::vector<std::string>& args) {
-    std::string mapped_vg, final_json, sdc, cst, dev_cfg, phys_prof, out_dir;
+    std::string mapped_vg, final_json, sdc, cst, dev_cfg, phys_prof, out_dir, dev_p_arg, part_arg;
     int timeout_sec = 1800;
     for (size_t i = 0; i < args.size(); ++i) {
         const std::string& a = args[i];
@@ -348,6 +348,8 @@ int run_standalone_ownpr_cli(const std::vector<std::string>& args) {
         else if (a == "--cst" && i + 1 < args.size()) cst = args[++i];
         else if (a == "--device-config" && i + 1 < args.size()) dev_cfg = args[++i];
         else if (a == "--physical-profile" && i + 1 < args.size()) phys_prof = args[++i];
+        else if (a == "--device-p" && i + 1 < args.size()) dev_p_arg = args[++i];
+        else if (a == "--part" && i + 1 < args.size()) part_arg = args[++i];
         else if (a == "--out" && i + 1 < args.size()) out_dir = args[++i];
         else if (a == "--timeout" && i + 1 < args.size()) timeout_sec = std::stoi(args[++i]);
         else throw std::runtime_error("Unknown --ownpr option: " + a);
@@ -355,6 +357,38 @@ int run_standalone_ownpr_cli(const std::vector<std::string>& args) {
     if (mapped_vg.empty() || sdc.empty() || out_dir.empty()) {
         throw std::runtime_error("--ownpr requires --mapped-vg, --sdc, and --out");
     }
+    std::string prof_part, prof_dev_p;
+    if (!phys_prof.empty() && file_exists(phys_prof)) {
+        JsonValue pf = parse_json_file(phys_prof);
+        if (pf.contains("part") && pf["part"].is_str()) prof_part = trim(pf["part"].as_str());
+        if (pf.contains("device_p") && pf["device_p"].is_str()) prof_dev_p = trim(pf["device_p"].as_str());
+    }
+    if (!part_arg.empty() && !prof_part.empty() && to_upper_ascii(part_arg) != to_upper_ascii(prof_part)) {
+        throw std::runtime_error(
+            "Conflicting --ownpr target part: --part '" + part_arg + "' disagrees with --physical-profile part '" + prof_part + "'"
+        );
+    }
+    if (!dev_p_arg.empty() && !prof_dev_p.empty() && to_upper_ascii(dev_p_arg) != to_upper_ascii(prof_dev_p)) {
+        throw std::runtime_error(
+            "Conflicting --ownpr target device_p: --device-p '" + dev_p_arg + "' disagrees with --physical-profile device_p '" + prof_dev_p + "'"
+        );
+    }
+    std::string chosen_part = !part_arg.empty() ? part_arg : (!prof_part.empty() ? prof_part : std::string(PINNED_PART));
+    std::string chosen_dev_p = !dev_p_arg.empty() ? dev_p_arg : prof_dev_p;
+    std::string dev_name_hint;
+    if (!chosen_dev_p.empty()) {
+        auto dp_parts = split_char(chosen_dev_p, '-');
+        if (dp_parts.size() >= 2) dev_name_hint = dp_parts[0] + "-" + dp_parts[1];
+    }
+    TargetDeviceSpec ownpr_spec = resolve_target_device("", dev_name_hint, chosen_part);
+    if (!chosen_dev_p.empty() && to_upper_ascii(chosen_dev_p) != to_upper_ascii(ownpr_spec.dev_p)) {
+        throw std::runtime_error(
+            "Conflicting --ownpr target specification: device_p '" + chosen_dev_p + "' disagrees with catalog device_p '"
+            + ownpr_spec.dev_p + "' for partNumber '" + ownpr_spec.part_number + "'"
+        );
+    }
+    dev_p_arg = ownpr_spec.dev_p;
+    part_arg = ownpr_spec.part_number;
     std::string real_out = resolve_path(out_dir);
     make_dirs(parent_dir(real_out), true);
     FlowBudget budget(std::min(3600, std::max(1, timeout_sec)));
@@ -364,10 +398,10 @@ int run_standalone_ownpr_cli(const std::vector<std::string>& args) {
     if (needs_ascii_alias(real_out)) {
         make_dirs(real_out, false);
         AsciiDirAlias out_alias(real_out, true);
-        pnr_pair = run_ownpr_full(mapped_vg, final_json, sdc, cst, dev_cfg, phys_prof, path_join(out_alias.path(), "pnr"), timeout_sec);
+        pnr_pair = run_ownpr_full(mapped_vg, final_json, sdc, cst, dev_cfg, phys_prof, path_join(out_alias.path(), "pnr"), timeout_sec, dev_p_arg, part_arg);
         out_alias.sync_back();
     } else {
-        pnr_pair = run_ownpr_full(mapped_vg, final_json, sdc, cst, dev_cfg, phys_prof, real_out, timeout_sec);
+        pnr_pair = run_ownpr_full(mapped_vg, final_json, sdc, cst, dev_cfg, phys_prof, real_out, timeout_sec, dev_p_arg, part_arg);
     }
     set_active_budget(nullptr);
 
@@ -1046,7 +1080,7 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
 
     const auto& rp = runtime_paths();
     log_msg(false, "========================================================================");
-    log_msg(false, "NextGowin Standalone Flow (x86-64 + SSE2/SSE3 Baseline)");
+    log_msg(false, "NextGowin v0.1.1 Standalone Flow (x86-64 + SSE2/SSE3 Baseline)");
     log_msg(false, "  Project   : " + gprj_real);
     log_msg(false, "  Output    : " + out_real);
     log_msg(false, "  Gowin SDK : " + (g_global_aliases.sdk_alias ? g_global_aliases.sdk_alias->real_path() : rp.gowin_sdk));
@@ -1058,6 +1092,10 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
         log_msg(false, "  Version   : " + rp.expected_gowin_version + " (validated)");
     }
     log_msg(false, "========================================================================");
+
+    int err_stage_idx = 0;
+    std::string err_stage_name = "project_setup";
+    std::string err_dev_info;
 
     try {
         // Snapshot project file before reading
@@ -1134,6 +1172,9 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
         }
 
         TargetDeviceSpec dev_spec = resolve_target_device(dev_code, dev_name, dev_pn);
+        err_dev_info = dev_spec.dev_p + " / " + dev_spec.part_number;
+        log_msg(false, "[device] Target: " + dev_spec.device_name + " | Package: " + dev_spec.package_name
+                     + " | Speed: " + dev_spec.speed_grade + " | Part: " + dev_spec.part_number);
         if (verilog_files.empty() && vhdl_files.empty()) {
             throw std::runtime_error("Project '" + file_name(gprj_real) + "' has no enabled Verilog/SystemVerilog/VHDL source files.");
         }
@@ -1430,6 +1471,7 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
 
         JsonValue result = JsonValue::object();
         result["schema"] = "nextgowin-gprj-flow-v1";
+        result["tool_version"] = "0.1.1";
         result["status"] = "running";
         result["execution"] = "native-cpp20-tier1-sse3";
         result["python_runtime_present"] = false;
@@ -1437,6 +1479,9 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
         result["project_sha256"] = sha256_file(gprj_real);
         result["top_module"] = top_mod;
         result["target_device"] = dev_spec.device_name;
+        result["target_package"] = dev_spec.package_name;
+        result["target_speed"] = dev_spec.speed_grade;
+        result["target_dev_p"] = dev_spec.dev_p;
         result["target_part"] = dev_spec.part_number;
         result["no_lutram"] = no_lutram;
         result["gowin_version_check"] = build_gowin_version_manifest_entry();
@@ -1452,6 +1497,8 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
         auto run_stage = [&](int idx, const char* name, const char* desc, auto&& fn) -> JsonValue {
             (void)budget.remaining();
             double st0 = perf_counter();
+            err_stage_idx = idx;
+            err_stage_name = name;
             result["active_stage"] = name;
             save_manifest();
             log_msg(false, "[" + std::to_string(idx) + "/6] Starting " + std::string(name) + " (" + desc + ")...");
@@ -1654,25 +1701,92 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
         std::string use_dev_cfg;
         if (file_exists(existing_dev_cfg)) {
             source_guard_shas.set(existing_dev_cfg, sha256_file(existing_dev_cfg));
-            use_dev_cfg = path_join(proj_stage_dir, "device.cfg");
-            copy_file_overwrite(existing_dev_cfg, use_dev_cfg);
-        } else if (!proc_cfg.as_obj().empty() || !xml_opts.empty()) {
-            auto bool_opt = [&](const char* jkey, const char* xkey, bool def_v) -> bool {
+        }
+        // Precedence contract: explicit `.gprj` <Option> and `impl/*_process_config.json` settings
+        // override matching keys in any existing `impl/pnr/device.cfg` (preserving extra vendor keys
+        // such as `DOWNLOAD_MODE`, `user_code`, or `spi_flash_address`), so stale IDE `device.cfg`
+        // files never mask updated project options.
+        {
+            OrderedMap<std::string> explicit_cfg_kv;
+            auto set_explicit_bool = [&](const char* cfg_lhs, const char* jkey, const char* xkey, bool def_v, bool* out_val = nullptr) -> bool {
+                bool has_exp = false;
+                bool v = def_v;
                 if (const auto* xv = xml_opts.find_ptr(xkey); xv && !xv->empty()) {
+                    has_exp = true;
                     std::string s = to_lower_ascii(trim(xv->back()));
-                    return (s == "1" || s == "true");
+                    v = (s == "1" || s == "true");
+                } else if (proc_cfg.contains(jkey) && proc_cfg[jkey].is_bool()) {
+                    has_exp = true;
+                    v = proc_cfg[jkey].as_bool();
                 }
-                if (proc_cfg.contains(jkey) && proc_cfg[jkey].is_bool()) return proc_cfg[jkey].as_bool();
-                return def_v;
+                if (has_exp) explicit_cfg_kv.set(cfg_lhs, v ? "true" : "false");
+                if (out_val) *out_val = v;
+                return v;
             };
-            bool jtag_io  = bool_opt("JTAG",  "use_jtag_as_gpio",  false);
-            bool sspi_io  = bool_opt("SSPI",  "use_sspi_as_gpio",  false);
-            bool mspi_io  = bool_opt("MSPI",  "use_mspi_as_gpio",  false);
-            bool ready_io = bool_opt("READY", "use_ready_as_gpio", false);
-            bool done_io  = bool_opt("DONE",  "use_done_as_gpio",  false);
-            bool i2c_io   = bool_opt("I2C",   "use_i2c_as_gpio",   false);
-            bool cpu_io   = bool_opt("CPU",   "use_cpu_as_gpio",   false);
-            if (jtag_io || sspi_io || mspi_io || ready_io || done_io || i2c_io || cpu_io) {
+
+            bool jtag_io  = set_explicit_bool("set JTAG regular_io",         "JTAG",        "use_jtag_as_gpio",  false);
+            bool sspi_io  = set_explicit_bool("set SSPI regular_io",         "SSPI",        "use_sspi_as_gpio",  false);
+            bool mspi_io  = set_explicit_bool("set MSPI regular_io",         "MSPI",        "use_mspi_as_gpio",  false);
+            bool ready_io = set_explicit_bool("set READY regular_io",        "READY",       "use_ready_as_gpio", false);
+            bool done_io  = set_explicit_bool("set DONE regular_io",         "DONE",        "use_done_as_gpio",  false);
+            bool i2c_io   = set_explicit_bool("set I2C regular_io",          "I2C",         "use_i2c_as_gpio",   false);
+            bool cpu_io   = set_explicit_bool("set CPU regular_io",          "CPU",         "use_cpu_as_gpio",   false);
+            bool crc_chk  = set_explicit_bool("set CRC_check",               "CRC_CHECK",   "bit_crc_check",     true);
+            bool bit_comp = set_explicit_bool("set compress",                "COMPRESS",    "bit_compress",      false);
+            bool sec_bit  = set_explicit_bool("set security_bit_enable",     "SECURITY_BIT","bit_security",      true);
+            bool bsram_p  = set_explicit_bool("set bsram_init_fuse_print",   "PRINT_BSRAM_VALUE", "print_bsram_value", true);
+            bool por_mon  = set_explicit_bool("set power_on_reset_monitor",  "POWER_ON_RESET_MONITOR", "power_on_reset_monitor", true);
+
+            std::string vccx_val = "3.3";
+            if (proc_cfg.contains("VCCX") && proc_cfg["VCCX"].is_str() && !trim(proc_cfg["VCCX"].as_str()).empty()) {
+                vccx_val = trim(proc_cfg["VCCX"].as_str());
+                explicit_cfg_kv.set("set vccx", vccx_val);
+            }
+            std::string unused_pin_cfg = "default";
+            if (proc_cfg.contains("Unused_Pin") && proc_cfg["Unused_Pin"].is_str()) {
+                std::string up = to_lower_ascii(trim(proc_cfg["Unused_Pin"].as_str()));
+                if (up == "as_input_tri_stated_with_pull_down" || up == "pull_down") {
+                    unused_pin_cfg = "pull_down";
+                    explicit_cfg_kv.set("set unused_pin", unused_pin_cfg);
+                } else if (up == "as_input_tri_stated" || up == "open") {
+                    unused_pin_cfg = "open";
+                    explicit_cfg_kv.set("set unused_pin", unused_pin_cfg);
+                } else if (up == "as_output_driving_ground" || up == "ground") {
+                    unused_pin_cfg = "ground";
+                    explicit_cfg_kv.set("set unused_pin", unused_pin_cfg);
+                } else if (up == "as_input_tri_stated_with_pull_up" || up == "default" || up == "pull_up") {
+                    unused_pin_cfg = "default";
+                    explicit_cfg_kv.set("set unused_pin", unused_pin_cfg);
+                }
+            }
+
+            if (file_exists(existing_dev_cfg)) {
+                use_dev_cfg = path_join(proj_stage_dir, "device.cfg");
+                if (explicit_cfg_kv.empty()) {
+                    copy_file_overwrite(existing_dev_cfg, use_dev_cfg);
+                } else {
+                    auto base_lines = split_lines(read_file_text(existing_dev_cfg));
+                    std::unordered_set<std::string> replaced_lhs;
+                    for (std::string& ln : base_lines) {
+                        size_t eq = ln.find('=');
+                        if (eq == std::string::npos) continue;
+                        std::string lhs_norm = to_lower_ascii(trim(std::string_view(ln).substr(0, eq)));
+                        for (const auto& [ek, ev] : explicit_cfg_kv) {
+                            if (to_lower_ascii(ek) == lhs_norm) {
+                                ln = ek + " = " + ev;
+                                replaced_lhs.insert(lhs_norm);
+                                break;
+                            }
+                        }
+                    }
+                    for (const auto& [ek, ev] : explicit_cfg_kv) {
+                        if (!replaced_lhs.count(to_lower_ascii(ek))) {
+                            base_lines.push_back(ek + " = " + ev);
+                        }
+                    }
+                    write_file_text(use_dev_cfg, join_strings(base_lines, "\n") + "\n");
+                }
+            } else if (!explicit_cfg_kv.empty()) {
                 auto tf = [](bool v) { return v ? "true" : "false"; };
                 std::vector<std::string> cfg_lns = {
                     std::string("set JTAG regular_io = ") + tf(jtag_io),
@@ -1682,6 +1796,13 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
                     std::string("set DONE regular_io = ") + tf(done_io),
                     std::string("set I2C regular_io = ") + tf(i2c_io),
                     std::string("set CPU regular_io = ") + tf(cpu_io),
+                    std::string("set CRC_check = ") + tf(crc_chk),
+                    std::string("set compress = ") + tf(bit_comp),
+                    std::string("set security_bit_enable = ") + tf(sec_bit),
+                    std::string("set bsram_init_fuse_print = ") + tf(bsram_p),
+                    std::string("set power_on_reset_monitor = ") + tf(por_mon),
+                    std::string("set vccx = ") + vccx_val,
+                    std::string("set unused_pin = ") + unused_pin_cfg,
                 };
                 use_dev_cfg = path_join(proj_stage_dir, "device.cfg");
                 write_file_text(use_dev_cfg, join_strings(cfg_lns, "\n") + "\n");
@@ -2327,8 +2448,14 @@ int run_gprj_project_flow(const std::string& gprj_arg, const std::vector<std::st
     } catch (const std::exception& ex) {
         set_active_budget(nullptr);
         log_msg(true, "========================================================================");
-        log_msg(true, std::string("[nextgowin] ERROR: ") + ex.what());
-        log_msg(true, "  Run Log: " + run_log_path);
+        std::string stg_hdr = (err_stage_idx > 0)
+            ? ("Stage [" + std::to_string(err_stage_idx) + "/6] " + err_stage_name)
+            : ("Stage " + err_stage_name);
+        log_msg(true, "[nextgowin] ERROR in " + stg_hdr + ":");
+        log_msg(true, "  Project : " + gprj_real);
+        if (!err_dev_info.empty()) log_msg(true, "  Target  : " + err_dev_info);
+        log_msg(true, "  Details : " + std::string(ex.what()));
+        log_msg(true, "  Run Log : " + run_log_path);
         log_msg(true, "========================================================================");
         return 1;
     }
@@ -2651,6 +2778,17 @@ int run_full_flow_cli(const std::vector<std::string>& args) {
                 result["effective_pnr_timeout"] = eff_timeout;
                 save();
 
+                std::string cfg_dev_p = PINNED_DEVICE;
+                std::string cfg_part  = PINNED_PART;
+                if (frontend.contains("target_device") && frontend["target_device"].is_obj()) {
+                    const auto& td = frontend["target_device"];
+                    if (td.contains("dev_p") && td["dev_p"].is_str() && !td["dev_p"].as_str().empty()) {
+                        cfg_dev_p = td["dev_p"].as_str();
+                    }
+                    if (td.contains("part_number") && td["part_number"].is_str() && !td["part_number"].as_str().empty()) {
+                        cfg_part = td["part_number"].as_str();
+                    }
+                }
                 auto [prec, pchk] = run_ownpr_full(
                     path_join(out, "05_netlist\\mapped.vg"),
                     path_join(out, "05_netlist\\final.json"),
@@ -2659,7 +2797,9 @@ int run_full_flow_cli(const std::vector<std::string>& args) {
                     resolve_flow_input_path(config, "device_config", cfg_parent),
                     resolve_flow_input_path(config, "physical_profile", cfg_parent),
                     path_join(out, "06_pnr"),
-                    eff_timeout
+                    eff_timeout,
+                    cfg_dev_p,
+                    cfg_part
                 );
                 if (prec["vendor_placement_executed"].as_bool(true) || prec["vendor_routing_executed"].as_bool(true)) {
                     throw std::runtime_error("Custom ownpr backend executed vendor P&R");
@@ -2723,7 +2863,23 @@ extern "C" __declspec(dllexport) int ng_core_entry(int argc, wchar_t** argv) {
         if (args.size() >= 2 && args[0] == "--internal-pnr-worker") {
             return ng::run_internal_pnr_worker(args[1]);
         }
-        for (const auto& a : args) {
+        for (size_t i = 0; i < args.size(); ++i) {
+            const std::string& a = args[i];
+            if (a == "--version" || a == "-v") {
+                std::fprintf(stdout, "NextGowin v0.1.1 (x86-64 + SSE2/SSE3 Baseline)\n");
+                std::fflush(stdout);
+                return 0;
+            }
+            if (a == "--verify-fs") {
+                if (i + 1 >= args.size()) {
+                    throw std::runtime_error("--verify-fs requires a path to a .fs bitstream file");
+                }
+                ng::JsonValue aud = ng::audit_fs_bitstream_integrity(args[i + 1]);
+                std::string js = ng::dump_json(aud, 2, false) + "\n";
+                std::fwrite(js.data(), 1, js.size(), stdout);
+                std::fflush(stdout);
+                return (aud["status"].as_str() == "frame_integrity_verified") ? 0 : 1;
+            }
             if (a == "--self-test") return ng::run_native_self_test();
             if (a == "--ownpr") return ng::run_standalone_ownpr_cli(args);
         }

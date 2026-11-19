@@ -99,13 +99,13 @@ public:
 
     V& at(const std::string& k) {
         auto* p = find_ptr(k);
-        if (!p) throw std::out_of_range("OrderedMap::at missing key: " + k);
+        if (!p) throw std::out_of_range(format_missing_key_error(k));
         return *p;
     }
 
     const V& at(const std::string& k) const {
         auto* p = find_ptr(k);
-        if (!p) throw std::out_of_range("OrderedMap::at missing key: " + k);
+        if (!p) throw std::out_of_range(format_missing_key_error(k));
         return *p;
     }
 
@@ -192,6 +192,24 @@ public:
     bool operator!=(const OrderedMap& o) const { return !(*this == o); }
 
 private:
+    std::string format_missing_key_error(const std::string& k) const {
+        std::string msg = "OrderedMap::at missing key '" + k + "' (live_keys=" + std::to_string(live_count_);
+        if (live_count_ > 0) {
+            msg += ", sample_keys=[";
+            size_t shown = 0;
+            for (const auto& e : entries_) {
+                if (!e.alive) continue;
+                if (shown > 0) msg += ", ";
+                msg += "'" + e.key + "'";
+                if (++shown >= 8) break;
+            }
+            if (live_count_ > shown) msg += ", ...";
+            msg += "]";
+        }
+        msg += ")";
+        return msg;
+    }
+
     std::vector<Entry> entries_;
     std::unordered_map<std::string, size_t> index_;
     size_t live_count_ = 0;

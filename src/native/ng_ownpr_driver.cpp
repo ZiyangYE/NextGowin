@@ -17,45 +17,41 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
     std::string p = resolve_path(fs_path);
     std::string raw = read_file_text(p);
     std::vector<std::string_view> payload;
+    std::vector<size_t> payload_line_nums;
     payload.reserve(22000);
+    payload_line_nums.reserve(22000);
 
     size_t pos = 0;
+    size_t raw_line_no = 0;
     while (pos < raw.size()) {
+        ++raw_line_no;
         size_t nl = raw.find('\n', pos);
         std::string_view ln = (nl == std::string::npos)
             ? std::string_view(raw).substr(pos)
             : std::string_view(raw).substr(pos, nl - pos);
         if (!ln.empty() && ln.back() == '\r') ln.remove_suffix(1);
         if (!ln.empty() && !(ln.size() >= 2 && ln[0] == '/' && ln[1] == '/')) {
-            for (char c : ln) {
-                if (c != '0' && c != '1') throw std::runtime_error("Unknown native ASCII payload in .fs");
+            for (size_t ci = 0; ci < ln.size(); ++ci) {
+                char c = ln[ci];
+                if (c != '0' && c != '1') {
+                    throw std::runtime_error(
+                        "Invalid non-binary character '" + std::string(1, c) + "' in bitstream '" + p
+                        + "' at file line " + std::to_string(raw_line_no) + ", column " + std::to_string(ci + 1)
+                    );
+                }
             }
             payload.push_back(ln);
+            payload_line_nums.push_back(raw_line_no);
         }
         if (nl == std::string::npos) break;
         pos = nl + 1;
     }
 
-    constexpr size_t FRAME_BITS = 198 * 8;
+    constexpr size_t UNCOMP_CRC_FRAME_BITS = 198 * 8;
+    constexpr size_t UNCOMP_NOCRC_FRAME_BITS = 196 * 8;
+    constexpr size_t MIN_COMP_CRC_FRAME_BITS = 16 * 8;
+    constexpr size_t MIN_COMP_NOCRC_FRAME_BITS = 14 * 8;
     constexpr int32_t FRAME_COUNT = 21872;
-    int first_frame = -1;
-    int count_frames = 0;
-    for (size_t i = 0; i < payload.size(); ++i) {
-        if (payload[i].size() == FRAME_BITS) {
-            if (first_frame < 0) first_frame = static_cast<int>(i);
-            else if (static_cast<int>(i) != first_frame + count_frames) {
-                throw std::runtime_error("Non-contiguous frame sequence in .fs");
-            }
-            ++count_frames;
-        }
-    }
-    if (count_frames != FRAME_COUNT || first_frame < 0) {
-        throw std::runtime_error("Unrecognized native frame sequence count in .fs");
-    }
-
-    std::string hdr_concat;
-    for (int i = 0; i < first_frame; ++i) hdr_concat.append(payload[static_cast<size_t>(i)]);
-    std::string header_sha = sha256_str(hdr_concat);
 
     auto crc16_step_byte = [](uint16_t st, uint8_t b) -> uint16_t {
         uint16_t cur = static_cast<uint16_t>((st ^ b) & 0xFFU);
@@ -65,106 +61,254 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
         return static_cast<uint16_t>((st >> 8) ^ cur);
     };
 
-    // Validate GW5AST-138 header packet stream (sync 0xA5C3 -> IDCODE 0x06 -> control/CSR packets -> 0x3B805570)
-    // and derive the exact hardware initial CRC-16 register seed `st0` entering Frame 0.
+    auto decode_bits_to_bytes = [](std::string_view bits, std::vector<uint8_t>& out_bytes) {
+        size_t nb = bits.size() / 8;
+        out_bytes.assign(nb, 0U);
+        for (size_t bi = 0; bi < nb; ++bi) {
+            uint8_t v = 0;
+            for (int bit = 0; bit < 8; ++bit) {
+                if (bits[bi * 8 + static_cast<size_t>(bit)] == '1') v |= static_cast<uint8_t>(0x80U >> bit);
+            }
+            out_bytes[bi] = v;
+        }
+    };
+
+    // Locate GW5AST-138 sync word 0xA5C3 and parse header packet stream up to header-end command
+    // (0x3B805570 when CRC_check=true, or 0xBB005570 when CRC_check=false).
     int sync_idx = -1;
-    for (int i = 0; i < first_frame; ++i) {
-        if (payload[static_cast<size_t>(i)] == "1010010111000011") {
-            sync_idx = i;
+    for (size_t i = 0; i < std::min<size_t>(payload.size(), 64); ++i) {
+        if (payload[i] == "1010010111000011") {
+            sync_idx = static_cast<int>(i);
             break;
         }
     }
-    bool hdr_struct_valid = (sync_idx >= 0 && sync_idx + 2 <= first_frame &&
-        payload[static_cast<size_t>(sync_idx + 1)] == "0000011000000000000000000000000000000000000000010000100000011011" &&
-        payload[static_cast<size_t>(first_frame - 1)] == "00111011100000000101010101110000");
+    if (sync_idx < 0 || static_cast<size_t>(sync_idx + 2) >= payload.size()) {
+        throw std::runtime_error(
+            "Malformed native bitstream header in '" + p + "': missing GW5AST-138 sync word 0xA5C3 (total binary lines="
+            + std::to_string(payload.size()) + ")"
+        );
+    }
+
+    int end_hdr_idx = -1;
+    bool crc_enabled = true;
+    for (size_t k = static_cast<size_t>(sync_idx + 1); k < std::min<size_t>(payload.size(), static_cast<size_t>(sync_idx + 8192)); ++k) {
+        if (payload[k] == "00111011100000000101010101110000") {
+            end_hdr_idx = static_cast<int>(k);
+            crc_enabled = true;
+            break;
+        }
+        if (payload[k] == "10111011000000000101010101110000") {
+            end_hdr_idx = static_cast<int>(k);
+            crc_enabled = false;
+            break;
+        }
+    }
+    if (end_hdr_idx < 0) {
+        throw std::runtime_error(
+            "Malformed native bitstream header in '" + p
+            + "': missing end-of-header packet (0x3B805570 for CRC_check=true or 0xBB005570 for CRC_check=false) after sync word at file line "
+            + std::to_string(payload_line_nums[static_cast<size_t>(sync_idx)])
+        );
+    }
+
+    int first_frame = end_hdr_idx + 1;
+    std::string hdr_err_detail;
+    bool hdr_struct_valid = true;
     uint16_t derived_st0 = 0;
+    std::vector<uint8_t> hb;
+
+    // Verify IDCODE packet immediately after sync word (0x06 or 0x86 + 0x0000000001081B for GW5AST-138)
+    {
+        std::string_view id_pl = payload[static_cast<size_t>(sync_idx + 1)];
+        if (id_pl.size() != 64) {
+            hdr_struct_valid = false;
+            hdr_err_detail = "expected 64-bit IDCODE packet after sync word, got " + std::to_string(id_pl.size()) + " bits";
+        } else {
+            decode_bits_to_bytes(id_pl, hb);
+            uint8_t exp_id_op = crc_enabled ? 0x06U : 0x86U;
+            if (hb[0] != exp_id_op || hb[1] != 0x00U || hb[2] != 0x00U || hb[3] != 0x00U
+                || hb[4] != 0x00U || hb[5] != 0x01U || hb[6] != 0x08U || hb[7] != 0x1BU) {
+                hdr_struct_valid = false;
+                hdr_err_detail = "unexpected GW5AST-138 IDCODE packet at file line "
+                               + std::to_string(payload_line_nums[static_cast<size_t>(sync_idx + 1)]);
+            }
+        }
+    }
+
     if (hdr_struct_valid) {
         for (int k = sync_idx + 1; k < first_frame; ++k) {
             std::string_view pl = payload[static_cast<size_t>(k)];
             if (pl.size() < 32 || (pl.size() % 8) != 0) {
                 hdr_struct_valid = false;
+                hdr_err_detail = "non-byte-aligned or undersized header packet (" + std::to_string(pl.size())
+                               + " bits) at file line " + std::to_string(payload_line_nums[static_cast<size_t>(k)]);
                 break;
             }
-            size_t n_bytes = pl.size() / 8;
-            std::vector<uint8_t> hb(n_bytes, 0);
-            for (size_t bi = 0; bi < n_bytes; ++bi) {
-                uint8_t v = 0;
-                for (int bit = 0; bit < 8; ++bit) {
-                    if (pl[bi * 8 + static_cast<size_t>(bit)] == '1') v |= static_cast<uint8_t>(0x80U >> bit);
-                }
-                hb[bi] = v;
-            }
+            decode_bits_to_bytes(pl, hb);
+            size_t n_bytes = hb.size();
             uint8_t op = hb[0];
             if (op == 0xD2U && n_bytes == 8) {
                 continue; // Status-register mask packet does not advance hardware CRC-16
-            } else if (op == 0x36U && n_bytes == 12) {
+            }
+            uint8_t op_base = crc_enabled ? op : static_cast<uint8_t>(op & 0x7FU);
+            if (op_base == 0x36U && n_bytes == 12) {
                 for (size_t bi = 4; bi < 12; ++bi) {
-                    if (hb[bi] != 0xFFU) { hdr_struct_valid = false; break; }
+                    if (hb[bi] != 0xFFU) {
+                        hdr_struct_valid = false;
+                        hdr_err_detail = "malformed 0x36 padding tail at file line "
+                                       + std::to_string(payload_line_nums[static_cast<size_t>(k)]);
+                        break;
+                    }
                 }
                 if (!hdr_struct_valid) break;
-                for (size_t bi = 0; bi < 4; ++bi) derived_st0 = crc16_step_byte(derived_st0, hb[bi]);
-            } else if ((op == 0x0BU || op == 0x12U || op == 0x3BU) && n_bytes == 4) {
-                for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
-            } else if ((op == 0x06U || op == 0x10U || op == 0x39U || op == 0x51U || op == 0x62U) && n_bytes == 8) {
-                for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
-            } else if (op == 0x3EU && (n_bytes == 8 || (n_bytes == 16 && hb[8] == 0x39U))) {
-                for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
+                if (crc_enabled) {
+                    for (size_t bi = 0; bi < 4; ++bi) derived_st0 = crc16_step_byte(derived_st0, hb[bi]);
+                }
+            } else if ((op_base == 0x0BU || op_base == 0x12U || op_base == 0x3BU) && n_bytes == 4) {
+                if (crc_enabled) for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
+            } else if ((op_base == 0x06U || op_base == 0x10U || op_base == 0x39U || op_base == 0x51U || op_base == 0x62U) && n_bytes == 8) {
+                if (crc_enabled) for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
+            } else if (op_base == 0x3EU && (n_bytes == 8 || (n_bytes == 16 && (hb[8] & 0x7FU) == 0x39U))) {
+                if (crc_enabled) for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
             } else {
+                char obuf[16];
+                std::snprintf(obuf, sizeof(obuf), "0x%02X", static_cast<unsigned>(op));
                 hdr_struct_valid = false;
+                hdr_err_detail = std::string("unrecognized header opcode ") + obuf + " (" + std::to_string(n_bytes)
+                               + " bytes) at file line " + std::to_string(payload_line_nums[static_cast<size_t>(k)]);
                 break;
             }
         }
     }
 
     if (!hdr_struct_valid) {
-        throw std::runtime_error("Uncalibrated or malformed native bitstream header");
+        throw std::runtime_error("Uncalibrated or malformed native bitstream header in '" + p + "': " + hdr_err_detail);
     }
 
-    std::string blob;
-    blob.reserve(static_cast<size_t>(FRAME_COUNT) * FRAME_BITS);
+    // Verify exact 21,872-frame sequence bounded by 160-bit end-of-frames marker:
+    //   - CRC_check=true : 18 0xFF bytes (144 '1' bits) + little-endian CRC-16 0x7334 ("0011010001110011")
+    //   - CRC_check=false: 20 0xFF bytes (160 '1' bits)
+    auto is_end_of_frames_160 = [crc_enabled](std::string_view sv) noexcept {
+        if (sv.size() != 160) return false;
+        size_t ones_len = crc_enabled ? 144 : 160;
+        for (size_t i = 0; i < ones_len; ++i) {
+            if (sv[i] != '1') return false;
+        }
+        if (crc_enabled && sv.substr(144, 16) != "0011010001110011") return false;
+        return true;
+    };
+
+    if (static_cast<size_t>(first_frame + FRAME_COUNT) >= payload.size() ||
+        !is_end_of_frames_160(payload[static_cast<size_t>(first_frame + FRAME_COUNT)])) {
+        int detected_frames = -1;
+        for (size_t k = static_cast<size_t>(first_frame); k < payload.size(); ++k) {
+            if (is_end_of_frames_160(payload[k])) {
+                detected_frames = static_cast<int>(k) - first_frame;
+                break;
+            }
+        }
+        throw std::runtime_error(
+            "Unrecognized native frame sequence count in '" + p + "': expected " + std::to_string(FRAME_COUNT)
+            + " contiguous GW5AST-138 configuration frames followed by 160-bit end-of-frames marker after file line "
+            + std::to_string(payload_line_nums[static_cast<size_t>(end_hdr_idx)])
+            + ", but observed " + (detected_frames >= 0 ? std::to_string(detected_frames) : std::string("no valid 160-bit end marker"))
+            + " frames (total_payload_lines=" + std::to_string(payload.size())
+            + ", crc_check=" + (crc_enabled ? "true" : "false") + ")"
+        );
+    }
+
+    size_t max_frame_bits = crc_enabled ? UNCOMP_CRC_FRAME_BITS : UNCOMP_NOCRC_FRAME_BITS;
+    size_t min_frame_bits = crc_enabled ? MIN_COMP_CRC_FRAME_BITS : MIN_COMP_NOCRC_FRAME_BITS;
+    bool any_compressed_frame = false;
     for (int i = 0; i < FRAME_COUNT; ++i) {
-        blob.append(payload[static_cast<size_t>(first_frame + i)]);
+        std::string_view fl = payload[static_cast<size_t>(first_frame + i)];
+        if ((fl.size() % 8) != 0 || fl.size() < min_frame_bits || fl.size() > max_frame_bits) {
+            throw std::runtime_error(
+                "Invalid frame bit length in '" + p + "' at frame " + std::to_string(i)
+                + " (file line " + std::to_string(payload_line_nums[static_cast<size_t>(first_frame + i)])
+                + "): got " + std::to_string(fl.size()) + " bits, expected byte-aligned length in ["
+                + std::to_string(min_frame_bits) + ".." + std::to_string(max_frame_bits) + "]"
+            );
+        }
+        if (fl.size() < max_frame_bits) any_compressed_frame = true;
     }
 
-    std::vector<int32_t> bad_crc(FRAME_COUNT, 0), bad_tail(FRAME_COUNT, 0);
-    int32_t ncrc = 0, ntail = 0;
-    int32_t rc = SynAccelLib::instance().audit_fs_frames(
-        blob.data(), FRAME_COUNT, bad_crc.data(), FRAME_COUNT, &ncrc, bad_tail.data(), &ntail
-    );
-    if (rc != 0) throw std::runtime_error("accel_audit_fs_frames failed");
+    std::string hdr_concat;
+    for (int i = 0; i < first_frame; ++i) hdr_concat.append(payload[static_cast<size_t>(i)]);
+    std::string header_sha = sha256_str(hdr_concat);
 
-    // Verify Frame 0 against the exact header-derived CRC-16 seed `derived_st0` whenever it differs
-    // from the default 0x8373U seed assumed by accel_audit_fs_frames (Frames 1..21871 always start from 0x8F01U).
-    if (hdr_struct_valid && derived_st0 != 0x8373U) {
-        uint8_t pk0[198]{};
-        for (int bi = 0; bi < 198; ++bi) {
-            uint8_t v = 0;
-            for (int k = 0; k < 8; ++k) {
-                if (blob[static_cast<size_t>(bi * 8 + k)] == '1') v |= static_cast<uint8_t>(0x80U >> k);
-            }
-            pk0[bi] = v;
+    std::vector<int32_t> bad_crc_vec, bad_tail_vec;
+    if (crc_enabled && !any_compressed_frame) {
+        // Fast SSE2/SSE3 path for standard uncompressed + CRC_check=true bitstreams
+        std::string blob;
+        blob.reserve(static_cast<size_t>(FRAME_COUNT) * UNCOMP_CRC_FRAME_BITS);
+        for (int i = 0; i < FRAME_COUNT; ++i) {
+            blob.append(payload[static_cast<size_t>(first_frame + i)]);
         }
-        uint16_t st0 = derived_st0;
-        for (int col = 0; col < 190; ++col) {
-            st0 = crc16_step_byte(st0, pk0[col]);
-        }
-        bool f0_ok = (pk0[190] == static_cast<uint8_t>(st0 & 0xFFU)) &&
-                     (pk0[191] == static_cast<uint8_t>(st0 >> 8));
-        if (f0_ok) {
-            int32_t w = 0;
-            for (int32_t i = 0; i < ncrc; ++i) {
-                if (bad_crc[static_cast<size_t>(i)] != 0) bad_crc[static_cast<size_t>(w++)] = bad_crc[static_cast<size_t>(i)];
+        std::vector<int32_t> bad_crc(FRAME_COUNT, 0), bad_tail(FRAME_COUNT, 0);
+        int32_t ncrc = 0, ntail = 0;
+        int32_t rc = SynAccelLib::instance().audit_fs_frames(
+            blob.data(), FRAME_COUNT, bad_crc.data(), FRAME_COUNT, &ncrc, bad_tail.data(), &ntail
+        );
+        if (rc != 0) throw std::runtime_error("accel_audit_fs_frames failed on '" + p + "' (rc=" + std::to_string(rc) + ")");
+
+        if (derived_st0 != 0x8373U) {
+            uint8_t pk0[198]{};
+            for (int bi = 0; bi < 198; ++bi) {
+                uint8_t v = 0;
+                for (int k = 0; k < 8; ++k) {
+                    if (blob[static_cast<size_t>(bi * 8 + k)] == '1') v |= static_cast<uint8_t>(0x80U >> k);
+                }
+                pk0[bi] = v;
             }
-            ncrc = w;
-        } else if (ncrc == 0 || bad_crc[0] != 0) {
-            bad_crc.insert(bad_crc.begin(), 0);
-            ++ncrc;
+            uint16_t st0 = derived_st0;
+            for (int col = 0; col < 190; ++col) {
+                st0 = crc16_step_byte(st0, pk0[col]);
+            }
+            bool f0_ok = (pk0[190] == static_cast<uint8_t>(st0 & 0xFFU)) &&
+                         (pk0[191] == static_cast<uint8_t>(st0 >> 8));
+            if (f0_ok) {
+                int32_t w = 0;
+                for (int32_t i = 0; i < ncrc; ++i) {
+                    if (bad_crc[static_cast<size_t>(i)] != 0) bad_crc[static_cast<size_t>(w++)] = bad_crc[static_cast<size_t>(i)];
+                }
+                ncrc = w;
+            } else if (ncrc == 0 || bad_crc[0] != 0) {
+                bad_crc.insert(bad_crc.begin(), 0);
+                ++ncrc;
+            }
+        }
+        bad_crc_vec.assign(bad_crc.begin(), bad_crc.begin() + ncrc);
+        bad_tail_vec.assign(bad_tail.begin(), bad_tail.begin() + ntail);
+    } else {
+        // General byte-exact verifier for compressed frames and/or CRC_check=false streams
+        std::vector<uint8_t> fb_bytes;
+        fb_bytes.reserve(198);
+        for (int i = 0; i < FRAME_COUNT; ++i) {
+            std::string_view fl = payload[static_cast<size_t>(first_frame + i)];
+            decode_bits_to_bytes(fl, fb_bytes);
+            size_t nb = fb_bytes.size();
+            bool tail_ok = true;
+            for (size_t t = nb - 6; t < nb; ++t) {
+                if (fb_bytes[t] != 0xFFU) { tail_ok = false; break; }
+            }
+            if (!tail_ok) bad_tail_vec.push_back(i);
+            if (crc_enabled) {
+                size_t data_len = nb - 8;
+                uint16_t st = (i == 0) ? derived_st0 : 0x8F01U;
+                for (size_t col = 0; col < data_len; ++col) {
+                    st = crc16_step_byte(st, fb_bytes[col]);
+                }
+                bool crc_ok = (fb_bytes[data_len] == static_cast<uint8_t>(st & 0xFFU)) &&
+                              (fb_bytes[data_len + 1] == static_cast<uint8_t>(st >> 8));
+                if (!crc_ok) bad_crc_vec.push_back(i);
+            }
         }
     }
 
     JsonValue crc_arr = JsonValue::array(), tail_arr = JsonValue::array();
-    for (int32_t i = 0; i < ncrc; ++i) crc_arr.push_back(bad_crc[static_cast<size_t>(i)]);
-    for (int32_t i = 0; i < ntail; ++i) tail_arr.push_back(bad_tail[static_cast<size_t>(i)]);
+    for (int32_t idx : bad_crc_vec) crc_arr.push_back(idx);
+    for (int32_t idx : bad_tail_vec) tail_arr.push_back(idx);
 
     std::string gowin_dll_p = path_join(runtime_paths().gowin_sdk, "bin\\gowin.dll");
     std::string dll_sha = file_exists(gowin_dll_p) ? sha256_file(gowin_dll_p) : std::string(EXPECTED_GOWIN_DLL_SHA);
@@ -173,14 +317,16 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
     out["path"] = p;
     out["file_sha256"] = sha256_file(p);
     out["header_sha256"] = header_sha;
-    out["header_frame0_crc16_seed"] = static_cast<int64_t>(derived_st0);
+    out["compressed"] = any_compressed_frame;
+    out["crc_check_enabled"] = crc_enabled;
+    out["header_frame0_crc16_seed"] = crc_enabled ? JsonValue(static_cast<int64_t>(derived_st0)) : JsonValue(nullptr);
     out["frames"] = FRAME_COUNT;
     out["crc_mismatch_frames"] = std::move(crc_arr);
     out["tail_mismatch_frames"] = std::move(tail_arr);
-    out["status"] = (ncrc == 0 && ntail == 0) ? "frame_integrity_verified" : "failed";
+    out["status"] = (bad_crc_vec.empty() && bad_tail_vec.empty()) ? "frame_integrity_verified" : "failed";
     out["dll_sha256"] = dll_sha;
     out["full_bitstream_verified"] = false;
-    out["scope"] = "Calibrated header and frame integrity only; footer/checksum commands, configuration semantics and hardware remain unverified.";
+    out["scope"] = "Calibrated header and 21,872-frame integrity (uncompressed/compressed, CRC/non-CRC); footer/checksum commands and board hardware remain unverified.";
     return out;
 }
 
@@ -1446,7 +1592,7 @@ struct BridgeApi {
     int32_t  (*ptr_to_id)(uint64_t) = nullptr;
     void     (*id_coord)(int32_t, int16_t*) = nullptr;
     int32_t  (*batch_query_pins_all)(uint64_t, uint64_t, uint64_t, const uint64_t*, int32_t, int32_t*, int32_t*, int32_t, uint64_t*) = nullptr;
-    int32_t  (*populate_p2r_carries)(uint64_t, const uint64_t*, const uint64_t*, const uint64_t*, int32_t, const uint64_t*, const uint64_t*, int32_t) = nullptr;
+    int32_t  (*populate_p2r_carries)(uint64_t, const uint64_t*, const uint64_t*, const uint64_t*, int32_t, const uint64_t*, const uint64_t*, int32_t, const uint64_t*, const int32_t*, int32_t) = nullptr;
     int32_t  (*place_design)(
         const uint8_t*,
         const int16_t*, int32_t,
@@ -1976,15 +2122,24 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         // =====================================================================
         // 1. Fixed Package Pads & Special Blocks (IOB, Iologic, PLL, DLL, CLKDIV, DQS, OSC, GTR12, JTAG, GSR)
         // =====================================================================
-        JsonValue pkg_json = parse_json_file(path_join(sdk_ide, "data\\device\\" + worker_dev_name + "\\" + worker_pkg_name + ".json"));
+        std::string pkg_json_path = path_join(sdk_ide, "data\\device\\" + worker_dev_name + "\\" + worker_pkg_name + ".json");
+        if (!file_exists(pkg_json_path)) {
+            throw std::runtime_error(
+                "Missing Gowin package pin database '" + pkg_json_path + "' for device '" + worker_dev_name
+                + "', package '" + worker_pkg_name + "' (from cmd.do -p '" + cmd_dev_p + "')"
+            );
+        }
+        JsonValue pkg_json = parse_json_file(pkg_json_path);
         struct PadLoc { int r = 0, c = 0, sl = 0; };
         std::map<std::string, PadLoc> pad_to_rc;
+        std::unordered_map<std::string, std::string> all_pkg_pins;
         std::unordered_map<std::string, std::string> cfg_to_pad;
         for (const auto& row : pkg_json["PIN_DATA"].as_arr()) {
             std::string idx = row.contains("INDEX") && row["INDEX"].is_str() ? row["INDEX"].as_str() : "";
             std::string nm  = row.contains("NAME")  && row["NAME"].is_str()  ? row["NAME"].as_str()  : "";
             std::string cfg = row.contains("CFG")   && row["CFG"].is_str()   ? row["CFG"].as_str()   : "";
             if (idx.empty()) continue;
+            all_pkg_pins[idx] = nm;
             size_t io_pos = nm.find("IO");
             while (io_pos != std::string::npos) {
                 if (io_pos + 4 <= nm.size()) {
@@ -2028,11 +2183,11 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         }
 
         std::unordered_set<std::string> used_pads;
-        for (const auto& [_, pp] : cst.io_locs) {
+        for (const auto& [ _, pp ] : cst.io_locs) {
             used_pads.insert(pp.first);
             if (!pp.second.empty()) used_pads.insert(pp.second);
         }
-        for (const auto& [_, pd] : jtag_pad_net_to_cfg) used_pads.insert(pd);
+        for (const auto& [ _, pd ] : jtag_pad_net_to_cfg) used_pads.insert(pd);
 
         auto fn_getblk = reinterpret_cast<uint64_t (*)(uint64_t, int16_t)>(gw_req("?get_blk@iob@NETLIST@@QEAAPEAVioblk@2@F@Z"));
         std::vector<std::pair<std::string, PadLoc>> sorted_pads(pad_to_rc.begin(), pad_to_rc.end());
@@ -2054,6 +2209,35 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         std::unordered_map<uint64_t, IobAssign> iob_assign;
         std::unordered_map<uint64_t, uint64_t> net_to_iob;
         std::unordered_map<std::string, uint64_t> port_name_to_iob;
+        std::unordered_map<std::string, std::string> claimed_pad_owner;
+
+        auto validate_pad_for_port = [&](const std::string& pad_nm, const std::string& port_nm, const std::string& inst_nm) {
+            auto pit = pad_to_rc.find(pad_nm);
+            if (pit == pad_to_rc.end()) {
+                auto ait = all_pkg_pins.find(pad_nm);
+                if (ait != all_pkg_pins.end()) {
+                    throw std::runtime_error(
+                        "Invalid IO_LOC package pin '" + pad_nm + "' for port '" + port_nm + "' (instance '" + inst_nm
+                        + "'): pin '" + pad_nm + "' in package '" + worker_pkg_name + "' (" + worker_dev_name
+                        + ") is dedicated function '" + ait->second + "', not a user GPIO pad (constraint file: " + cst_path + ")"
+                    );
+                }
+                throw std::runtime_error(
+                    "Invalid IO_LOC package pin '" + pad_nm + "' for port '" + port_nm + "' (instance '" + inst_nm
+                    + "'): pin '" + pad_nm + "' does not exist in package '" + worker_pkg_name + "' for device '"
+                    + worker_dev_name + "' (cmd.do -p '" + cmd_dev_p + "', constraint file: " + cst_path + ")"
+                );
+            }
+            auto oit = claimed_pad_owner.find(pad_nm);
+            if (oit != claimed_pad_owner.end()) {
+                throw std::runtime_error(
+                    "Conflicting IO_LOC package pin '" + pad_nm + "' in package '" + worker_pkg_name
+                    + "': assigned to both '" + oit->second + "' and '" + (port_nm.empty() ? inst_nm : port_nm)
+                    + "' (constraint file: " + cst_path + ")"
+                );
+            }
+            claimed_pad_owner.emplace(pad_nm, port_nm.empty() ? inst_nm : port_nm);
+        };
 
         auto is_iol_io_lbl = [](std::string_view l) {
             return l == "DI" || l == "DO" || l == "D" || l == "Q0" || l == "Q1" || l == "Q" || l == "TX";
@@ -2094,7 +2278,12 @@ int run_internal_pnr_worker(std::string_view out_dir) {
                 }
             }
             if (pad_p.empty()) {
-                if (free_pads.empty()) throw std::runtime_error("No free package pads left for unconstrained IOB " + inst_name[io_o]);
+                if (free_pads.empty()) {
+                    throw std::runtime_error(
+                        "No free user GPIO pads remaining in package '" + worker_pkg_name + "' (" + worker_dev_name
+                        + ") for unconstrained IOB instance '" + inst_name[io_o] + "'"
+                    );
+                }
                 if (need_ioba) {
                     auto fit = std::find_if(free_pads.begin(), free_pads.end(), [&](const std::string& p) {
                         return pad_to_rc.at(p).sl == 0;
@@ -2120,6 +2309,8 @@ int run_internal_pnr_worker(std::string_view out_dir) {
                     free_pads.pop_front();
                 }
             }
+            validate_pad_for_port(pad_p, matched_port, inst_name[io_o]);
+            if (!pad_n.empty()) validate_pad_for_port(pad_n, matched_port, inst_name[io_o]);
             auto pl = pad_to_rc.at(pad_p);
             iob_assign[io_o] = {pl.r, pl.c, pl.sl, pad_p, pad_n};
             if (!matched_port.empty()) port_name_to_iob[matched_port] = io_o;
@@ -4711,7 +4902,13 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             }
         }
 
-        // Bind ALU_CHAINs
+        // Bind ALU_CHAINs (including P2R+0x0C0 head ALU CIN mux modes for generateFusemap!)
+        auto fn_setaluidx = reinterpret_cast<void (*)(uint64_t, int)>(gw_req("?setAluIdx@Alu@NETLIST@@QEAAXH@Z"));
+        std::vector<uint64_t> alu_head_ptrs;
+        std::vector<int32_t> alu_head_cin_modes;
+        alu_head_ptrs.reserve(alu_chain_records.size());
+        alu_head_cin_modes.reserve(alu_chain_records.size());
+
         for (size_t i = 0; i < alu_chain_records.size(); ++i) {
             const auto& rec = alu_chain_records[i];
             int16_t ra = out_r[alu_uids[i]], c0 = out_c[alu_uids[i]];
@@ -4719,7 +4916,9 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             for (uint64_t ic : rec.internal_carries) internal_only_nets.insert(ic);
             if (rec.unused_tail_co) internal_only_nets.insert(rec.unused_tail_co);
 
+            int32_t head_cin_mode = 2; // 1 = CIN tied to VCC (0x12), 2 = CIN tied to GND (0x13), 3 = fabric CIN via West LUT5 (0x16)
             if (rec.cin_fab_nt) {
+                head_cin_mode = 3;
                 int16_t cw = static_cast<int16_t>(c0 - 1);
                 uint64_t gw = fn_getgrid(chip, ra, cw);
                 uint64_t agg_w = rd_ptr(gw + 0x70);
@@ -4737,8 +4936,15 @@ int run_internal_pnr_worker(std::string_view out_dir) {
                 sink_nid_crit[{rec.cin_fab_nt, d5_id}] = std::max(sink_nid_crit[{rec.cin_fab_nt, d5_id}], c_cin);
                 cin_p2r_items.push_back({rec.cin_fab_nt, bridge.id_to_ptr(b5_id), bridge.id_to_ptr(d5_id)});
                 for (const auto& pr : inst_in_pins[rec.chain[0]]) if (pr.lbl == "CIN") skip_sink_pins.insert(pr.pin);
+            } else {
+                uint64_t cin0_nt = 0;
+                for (const auto& pr : inst_in_pins[rec.chain[0]]) {
+                    if (pr.lbl == "CIN") { cin0_nt = pr.net; break; }
+                }
+                if (cin0_nt && check_const(cin0_nt) == 2) head_cin_mode = 1;
             }
 
+            uint64_t head_pa_alu = 0;
             for (size_t k = 0; k < L; ++k) {
                 uint64_t ao = rec.chain[k];
                 int16_t ca = static_cast<int16_t>(c0 + (k / 6));
@@ -4746,9 +4952,11 @@ int run_internal_pnr_worker(std::string_view out_dir) {
                 uint64_t ga = fn_getgrid(chip, ra, ca);
                 uint64_t agg_a = rd_ptr(ga + 0x70);
                 uint64_t pa_alu = rd_ptr(agg_a + 0x40 + 8 * sa);
+                if (k == 0) head_pa_alu = pa_alu;
                 fn_setphy(ao, pa_alu);
                 fn_setlogic(pa_alu, ao);
                 fn_setphyalu(ao, pa_alu);
+                fn_setaluidx(ao, static_cast<int>(i + 1));
                 wr_ptr(pa_alu + 0x20, ao);
                 fn_addgrid(ga, ao);
                 uint64_t cls_grp = rd_ptr(agg_a + 0x360 + 8 * (sa / 2));
@@ -4776,6 +4984,10 @@ int run_internal_pnr_worker(std::string_view out_dir) {
                 }
                 for (const auto& pr : inst_out_pins[ao]) if (pr.lbl == "COUT") skip_sink_pins.insert(pr.pin);
                 if (k > 0) for (const auto& pr : inst_in_pins[ao]) if (pr.lbl == "CIN") skip_sink_pins.insert(pr.pin);
+            }
+            if (head_pa_alu) {
+                alu_head_ptrs.push_back(head_pa_alu);
+                alu_head_cin_modes.push_back(head_cin_mode);
             }
 
             if (rec.cout_fab_nt) {
@@ -4825,15 +5037,24 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             uint64_t agg = rd_ptr(g + 0x70);
             uint64_t rp_reg = rd_ptr(agg + 0xa0 + 8 * sr);
             uint64_t lp = rd_ptr(agg + 8 * sr);
+            uint64_t d_pin = 0, d_nt = 0;
+            for (const auto& pr : inst_in_pins[ro]) if (pr.lbl == "D") { d_pin = pr.pin; d_nt = pr.net; break; }
+            int d_ck = d_nt ? check_const(d_nt) : 0;
+            uint16_t pass_w16 = (d_ck == 2) ? 0xFFFFU : ((d_ck == 1) ? 0x0000U : 0xFF00U);
             fn_setphy(ro, rp_reg);
             fn_setlogic(rp_reg, ro);
             fn_setphyreg(ro, rp_reg);
             fn_addgrid(g, ro);
             wr_u8_mem(agg + 0x318 + sr, 1U);
             wr_u8_mem(agg + 0x326 + sr, 1U);
-            wr_u16_mem(lp + 0x20, 0xFF00U);
+            wr_u16_mem(lp + 0x20, pass_w16);
             wr_u8_mem(lp + 0x22, 1U);
             fn_sp2n_reg(ro);
+            if (d_ck == 1 || d_ck == 2) {
+                if (d_pin) skip_sink_pins.insert(d_pin);
+                int32_t f_id = bridge.coord_to_id(rr, cr, static_cast<int16_t>(32 + sr));
+                if (f_id >= 0) fixed_root_pairs.emplace_back(f_id, d_nt);
+            }
             if (reg_clk_inv[ro]) {
                 uint64_t cls_grp = rd_ptr(agg + 0x360 + 8 * (sr / 2));
                 if (cls_grp) wr_i16_mem(cls_grp, 0);
@@ -4856,15 +5077,24 @@ int run_internal_pnr_worker(std::string_view out_dir) {
                 uint64_t agg = rd_ptr(g + 0x70);
                 uint64_t rp_dl = rd_ptr(agg + 0x110 + 8 * sr);
                 uint64_t lp = rd_ptr(agg + 8 * sr);
+                uint64_t d_pin = 0, d_nt = 0;
+                for (const auto& pr : inst_in_pins[dlo]) if (pr.lbl == "D") { d_pin = pr.pin; d_nt = pr.net; break; }
+                int d_ck = d_nt ? check_const(d_nt) : 0;
+                uint16_t pass_w16 = (d_ck == 2) ? 0xFFFFU : ((d_ck == 1) ? 0x0000U : 0xFF00U);
                 fn_setphy(dlo, rp_dl);
                 fn_setlogic(rp_dl, dlo);
                 fn_setphydl(dlo, rp_dl);
                 fn_addgrid(g, dlo);
                 wr_u8_mem(agg + 0x318 + sr, 1U);
                 wr_u8_mem(agg + 0x326 + sr, 1U);
-                wr_u16_mem(lp + 0x20, 0xFF00U);
+                wr_u16_mem(lp + 0x20, pass_w16);
                 wr_u8_mem(lp + 0x22, 1U);
                 fn_sp2n_dl(dlo);
+                if (d_ck == 1 || d_ck == 2) {
+                    if (d_pin) skip_sink_pins.insert(d_pin);
+                    int32_t f_id = bridge.coord_to_id(rr, cr, static_cast<int16_t>(32 + sr));
+                    if (f_id >= 0) fixed_root_pairs.emplace_back(f_id, d_nt);
+                }
             }
         }
 
@@ -4907,18 +5137,27 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             }
         }
 
-        // Populate P2R carry RB-trees
+        // Populate P2R carry RB-trees (P2R+0x00, P2R+0x10) and ALU chain head CIN modes (P2R+0x0C0)
         int32_t n_cin = static_cast<int32_t>(cin_p2r_items.size());
         int32_t n_cout = static_cast<int32_t>(cout_p2r_items.size());
+        int32_t n_alu_heads = static_cast<int32_t>(alu_head_ptrs.size());
         std::vector<uint64_t> cin_n(std::max(1, n_cin), 0), cin_b(std::max(1, n_cin), 0), cin_d(std::max(1, n_cin), 0);
         for (int32_t i = 0; i < n_cin; ++i) { cin_n[i] = cin_p2r_items[i].nt; cin_b[i] = cin_p2r_items[i].b; cin_d[i] = cin_p2r_items[i].d; }
         std::vector<uint64_t> cout_n(std::max(1, n_cout), 0), cout_p(std::max(1, n_cout), 0);
         for (int32_t i = 0; i < n_cout; ++i) { cout_n[i] = cout_p2r_items[i].nt; cout_p[i] = cout_p2r_items[i].p; }
-        if (bridge.populate_p2r_carries(p2r_ptr, cin_n.data(), cin_b.data(), cin_d.data(), n_cin, cout_n.data(), cout_p.data(), n_cout) != 0) {
-            throw std::runtime_error("bridge_populate_p2r_carries failed");
+        std::vector<uint64_t> head_a_arr(std::max(1, n_alu_heads), 0);
+        std::vector<int32_t> head_m_arr(std::max(1, n_alu_heads), 0);
+        for (int32_t i = 0; i < n_alu_heads; ++i) { head_a_arr[i] = alu_head_ptrs[i]; head_m_arr[i] = alu_head_cin_modes[i]; }
+        int32_t p2r_rc = bridge.populate_p2r_carries(
+            p2r_ptr,
+            cin_n.data(), cin_b.data(), cin_d.data(), n_cin,
+            cout_n.data(), cout_p.data(), n_cout,
+            head_a_arr.data(), head_m_arr.data(), n_alu_heads);
+        if (p2r_rc != 0) {
+            throw std::runtime_error("bridge_populate_p2r_carries failed (rc=" + std::to_string(p2r_rc) + ")");
         }
-        std::fprintf(stdout, "[ownpr] Bound all instances + P2R carries (cin=%d, cout=%d) in %.2fs\n",
-                     n_cin, n_cout, perf_counter() - t_bind0);
+        std::fprintf(stdout, "[ownpr] Bound all instances + P2R carries (alu_heads=%d, cin=%d, cout=%d) in %.2fs\n",
+                     n_alu_heads, n_cin, n_cout, perf_counter() - t_bind0);
         std::fflush(stdout);
 
         // =====================================================================
@@ -5558,7 +5797,10 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             throw std::runtime_error("Native routed STA evaluation returned false");
         }
 
+        // Run generateFusemap BEFORE resource/pinout/netlist report writers so gowin.dll populates
+        // CLS slice usage and unused-pin I/O pad configurations identically to the official IDE flow.
         int tr_rc  = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateTimingRptoutFile@@YAHPEAVglobalMem@@@Z"))(mem);
+        int fs_rc  = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateFusemap@@YAHPEAVglobalMem@@@Z"))(mem);
         int rpt_rc = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateTxtRptoutFile@@YAHPEAVglobalMem@@@Z"))(mem);
         if (get_env("NEXTGOWIN_EMIT_IDE_HTML") == "1") {
             if (FARPROC fn_hrpt = gw_opt("?generateHtmlRptoutFile@@YAHPEAVglobalMem@@_N@Z")) {
@@ -5569,13 +5811,16 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             }
         }
         int vo_rc  = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateOutputFile@@YAHPEAVglobalMem@@@Z"))(mem);
-        int fs_rc  = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateFusemap@@YAHPEAVglobalMem@@@Z"))(mem);
         reinterpret_cast<void (*)(uint64_t)>(gw_req("?generateTxtPinoutFile@@YAXPEAVglobalMem@@@Z"))(mem);
         int cst_rc = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateCstoutFile@@YAHPEAVglobalMem@@@Z"))(mem);
         bool parents_preserved = (bridge.verify_last_parents_preserved() == 1);
 
         if (tr_rc != 0 || rpt_rc != 0 || vo_rc != 0 || fs_rc != 0) {
-            throw std::runtime_error("Output generation failed");
+            throw std::runtime_error(
+                "Post-route output generation failed (tr_rc=" + std::to_string(tr_rc)
+                + ", fs_rc=" + std::to_string(fs_rc) + ", rpt_rc=" + std::to_string(rpt_rc)
+                + ", vo_rc=" + std::to_string(vo_rc) + ", out_dir=" + out + ")"
+            );
         }
         if (!parents_preserved) {
             throw std::runtime_error("Physical RRG parent pointers mutated during STA/fusemap export");
@@ -6551,8 +6796,21 @@ std::pair<JsonValue, JsonValue> run_ownpr_full(
         path_join(sdk_bin, "gowin.dll"), EXPECTED_GOWIN_DLL_SHA, "bin/gowin.dll"
     );
 
-    std::string eff_dev_p = target_dev_p.empty() ? std::string(PINNED_DEVICE) : std::string(target_dev_p);
-    std::string eff_part  = target_part.empty()  ? std::string(PINNED_PART)   : std::string(target_part);
+    std::string req_part = target_part.empty() ? std::string(PINNED_PART) : std::string(target_part);
+    std::string dev_name_hint;
+    if (!target_dev_p.empty()) {
+        auto dp_parts = split_char(target_dev_p, '-');
+        if (dp_parts.size() >= 2) dev_name_hint = dp_parts[0] + "-" + dp_parts[1];
+    }
+    TargetDeviceSpec validated_spec = resolve_target_device("", dev_name_hint, req_part);
+    std::string eff_part  = validated_spec.part_number;
+    std::string eff_dev_p = target_dev_p.empty() ? validated_spec.dev_p : std::string(target_dev_p);
+    if (to_upper_ascii(eff_dev_p) != to_upper_ascii(validated_spec.dev_p)) {
+        throw std::runtime_error(
+            "Conflicting P&R target specification: device_p '" + eff_dev_p + "' disagrees with catalog device_p '"
+            + validated_spec.dev_p + "' for partNumber '" + eff_part + "'"
+        );
+    }
 
     make_dirs(out, false);
     std::string netlist = path_join(out, "mapped.vg");
@@ -6656,8 +6914,13 @@ std::pair<JsonValue, JsonValue> run_ownpr_full(
             if (starts_with(ln, "ERROR")) errs.push_back(ln);
         }
         result["errors"] = errs;
+        std::string wm_parse_err;
         if (file_exists(path_join(out, "worker_metrics.json"))) {
-            result["ownpr_metrics"] = parse_json_file(path_join(out, "worker_metrics.json"));
+            try {
+                result["ownpr_metrics"] = parse_json_file(path_join(out, "worker_metrics.json"));
+            } catch (const std::exception& wm_ex) {
+                wm_parse_err = wm_ex.what();
+            }
         }
         JsonValue arts = JsonValue::object();
         for (const auto& de : list_dir(out)) {
@@ -6683,6 +6946,7 @@ std::pair<JsonValue, JsonValue> run_ownpr_full(
 
         bool ok_cur = (result["returncode"].as_i64(-1) == 0)
                    && errs.empty()
+                   && wm_parse_err.empty()
                    && all_present
                    && (result["netlist_sha256_before"].as_str() == result["netlist_sha256_after"].as_str())
                    && !result["vendor_placement_executed"].as_bool()
@@ -6690,9 +6954,35 @@ std::pair<JsonValue, JsonValue> run_ownpr_full(
         result["status"] = ok_cur ? "complete" : "failed";
         save();
         if (!ok_cur) {
-            std::string msg = "Custom ownpr P&R did not complete cleanly; inspect " + path_join(out, "pnr.log");
-            if (!errs.as_arr().empty() && errs.as_arr().front().is_string()) {
-                msg += " (" + trim(errs.as_arr().front().as_str()) + ")";
+            std::vector<std::string> missing_files;
+            for (const char* ef : EXP_FILES) {
+                if (!file_exists(path_join(out, ef))) missing_files.push_back(ef);
+            }
+            std::string msg = "Custom ownpr P&R did not complete cleanly (device=" + eff_dev_p + ", part=" + eff_part
+                            + ", worker_rc=" + std::to_string(result["returncode"].as_i64(-1))
+                            + ", log=" + path_join(out, "pnr.log") + ")";
+            if (!missing_files.empty()) {
+                msg += "\n  Missing expected output artifacts: " + join_strings(missing_files, ", ");
+            }
+            if (!wm_parse_err.empty()) {
+                msg += "\n  worker_metrics.json parse warning: " + wm_parse_err;
+            }
+            if (!errs.as_arr().empty()) {
+                for (const auto& ev : errs.as_arr()) {
+                    if (ev.is_string()) msg += "\n  " + trim(ev.as_str());
+                }
+            } else if (!log_txt.empty()) {
+                auto all_lns = split_lines(log_txt);
+                std::vector<std::string> tail_lns;
+                for (const auto& l : all_lns) {
+                    std::string tl = trim(l);
+                    if (!tl.empty()) tail_lns.push_back(tl);
+                }
+                if (!tail_lns.empty()) {
+                    msg += "\n  Last worker log lines:";
+                    size_t st_i = (tail_lns.size() > 8) ? (tail_lns.size() - 8) : 0;
+                    for (size_t i = st_i; i < tail_lns.size(); ++i) msg += "\n    " + tail_lns[i];
+                }
             }
             throw std::runtime_error(msg);
         }

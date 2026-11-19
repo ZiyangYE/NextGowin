@@ -25,7 +25,7 @@
 | `03_resources` | NextGowin 配合 Yosys 推断 DSP、块存储器、分布式存储器和 ALU 进位链。 |
 | `04_mapping` | NextGowin 配合 Yosys 与 ABC 重写逻辑，映射 LUT 与宽多路选择器，调整 LUT 输入顺序，并执行组合等价检查。 |
 | `05_netlist` | 插入顶层 I/O，保留时钟网络别名，复制高扇出逻辑或触发器，生成结构网表 `mapped.vg`。 |
-| `06_pnr` | NextGowin 完成布局、布线与关键路径优化。本机 Gowin 库提供器件及约束数据、布线后静态时序分析、报告和位流编码。NextGowin 检查布线树及 21,872 帧的 CRC-16。 |
+| `06_pnr` | NextGowin 完成布局、布线与关键路径优化。本机 Gowin 库提供器件及约束数据、布线后静态时序分析、报告和位流编码。NextGowin 检查布线树，并按实际压缩和 CRC 模式校验位流。 |
 
 ## 查找结果
 
@@ -34,3 +34,7 @@
 默认同步会覆盖 `impl/gwsynthesis` 与 `impl/pnr` 下的同名生成文件，命名遵循 `OUTPUT_BASE_NAME`，已有的 `impl/pnr/device.cfg` 设置会保留。希望单独保存本次结果时使用 `--no-sync-ide`。批处理使用 `--no-pause` 关闭结束等待。
 
 [完整英文备用版](USAGE.en.md)
+
+## 独立检查位流
+
+在解压目录执行 `bin\nextgowin.exe --verify-fs 工程.fs` 可检查帧序列和结束标记。工程显式指定的压缩和 CRC 选项优先于已有 device.cfg 中的同名设置。
