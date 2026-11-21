@@ -4139,7 +4139,12 @@ JsonValue materialize_netlist_stage(
     }
     commands.push_back("blackbox =A:whitebox");
     commands.push_back("hierarchy -check -top " + std::string(top));
-    commands.push_back("setundef -params -zero");
+    // Replace undefined signal nets with GND, and only zero-fill undefined parameter bits on
+    // LUT primitives. Never pass `-params` globally: vendor IP primitives such as GW5A PLL/PLLA
+    // use `X` parameter sentinels (e.g. ICP_SEL=6'bXXXXXX, LPF_RES=3'bXXX) to instruct Gowin's
+    // FuseGen to auto-calculate analog charge-pump/loop-filter settings.
+    commands.push_back("setundef -zero");
+    commands.push_back("setundef -params -zero t:LUT1 t:LUT2 t:LUT3 t:LUT4");
     commands.push_back("hilomap -singleton -hicell VCC V -locell GND G");
     commands.push_back("clean -purge");
     commands.push_back("check -assert -noinit");

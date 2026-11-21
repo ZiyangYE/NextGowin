@@ -1753,6 +1753,93 @@ struct BigUint {
 } // namespace
 
 std::string format_verilog_Parameter_bits(std::string_view raw_val, int target_width, char base_ch) {
+    // Handle 4-state sized Verilog literals containing X/Z (e.g. PLL ICP_SEL=6'bxxxxxx, LPF_RES=3'bxxx)
+    // without collapsing X/Z to 0, so Gowin FuseGen auto-calculation sentinels are preserved intact.
+    {
+        std::string s = trim(raw_val);
+        size_t q = s.find('\'');
+        bool has_xz = false;
+        if (q != std::string::npos) {
+            for (size_t i = q + 1; i < s.size(); ++i) {
+                if (s[i] == 'x' || s[i] == 'X' || s[i] == 'z' || s[i] == 'Z') { has_xz = true; break; }
+            }
+        }
+        if (has_xz) {
+            if (target_width <= 0) {
+                throw std::runtime_error("4-state Verilog literal unsupported for decimal parameter: " + s);
+            }
+            std::string wstr = trim(std::string_view(s).substr(0, q));
+            int lit_w = std::stoi(wstr);
+            size_t m = q + 1;
+            if (m < s.size() && (s[m] == 's' || s[m] == 'S')) ++m;
+            if (m >= s.size()) throw std::runtime_error("Malformed 4-state Verilog parameter literal: " + s);
+            char bc = static_cast<char>(std::tolower(static_cast<unsigned char>(s[m++])));
+            int bpd = (bc == 'b') ? 1 : (bc == 'o') ? 3 : (bc == 'h') ? 4 : 0;
+            if (bpd == 0 || m >= s.size()) throw std::runtime_error("Unsupported 4-state base in parameter: " + s);
+            std::string bits;
+            for (; m < s.size(); ++m) {
+                char ch = s[m];
+                if (ch == '_') continue;
+                if (ch == 'x' || ch == 'X') { bits.append(static_cast<size_t>(bpd), 'X'); continue; }
+                if (ch == 'z' || ch == 'Z') { bits.append(static_cast<size_t>(bpd), 'Z'); continue; }
+                int d = -1;
+                if (ch >= '0' && ch <= '9') d = ch - '0';
+                else if (ch >= 'a' && ch <= 'f') d = 10 + (ch - 'a');
+                else if (ch >= 'A' && ch <= 'F') d = 10 + (ch - 'A');
+                if (d < 0 || d >= (1 << bpd)) {
+                    throw std::runtime_error("Invalid digit in 4-state Verilog parameter literal: " + s);
+                }
+                for (int bi = bpd - 1; bi >= 0; --bi) bits.push_back(static_cast<char>('0' + ((d >> bi) & 1)));
+            }
+            if (lit_w < 1) throw std::runtime_error("Invalid width in 4-state literal: " + s);
+            // Adjust expanded bit-string to lit_w first (Verilog left-extends X/Z or 0)
+            if (static_cast<int>(bits.size()) > lit_w) {
+                size_t drop = bits.size() - static_cast<size_t>(lit_w);
+                for (size_t i = 0; i < drop; ++i) {
+                    if (bits[i] != '0' && bits[i] != bits[drop]) {
+                        throw std::runtime_error("4-state literal exceeds declared width: " + s);
+                    }
+                }
+                bits.erase(0, drop);
+            } else if (static_cast<int>(bits.size()) < lit_w) {
+                char pad = (!bits.empty() && (bits[0] == 'X' || bits[0] == 'Z')) ? bits[0] : '0';
+                bits.insert(0, static_cast<size_t>(lit_w - static_cast<int>(bits.size())), pad);
+            }
+            if (lit_w > target_width) {
+                throw std::runtime_error("Primitive 4-state parameter exceeds vendor width: " + s);
+            }
+            if (static_cast<int>(bits.size()) < target_width) {
+                char pad = (!bits.empty() && (bits[0] == 'X' || bits[0] == 'Z')) ? bits[0] : '0';
+                bits.insert(0, static_cast<size_t>(target_width - static_cast<int>(bits.size())), pad);
+            }
+            char tb = static_cast<char>(std::tolower(static_cast<unsigned char>(base_ch)));
+            if (tb == 'h') {
+                int ndig = (target_width + 3) / 4;
+                std::string padded = bits;
+                if (static_cast<int>(padded.size()) < ndig * 4) {
+                    char pad = (!padded.empty() && (padded[0] == 'X' || padded[0] == 'Z')) ? padded[0] : '0';
+                    padded.insert(0, static_cast<size_t>(ndig * 4 - static_cast<int>(padded.size())), pad);
+                }
+                std::string hex;
+                bool hex_ok = true;
+                static constexpr char HEX[] = "0123456789abcdef";
+                for (int i = 0; i < ndig; ++i) {
+                    std::string nib = padded.substr(static_cast<size_t>(i * 4), 4);
+                    if (nib == "XXXX") hex.push_back('X');
+                    else if (nib == "ZZZZ") hex.push_back('Z');
+                    else if (nib.find('X') == std::string::npos && nib.find('Z') == std::string::npos) {
+                        int v = ((nib[0] - '0') << 3) | ((nib[1] - '0') << 2) | ((nib[2] - '0') << 1) | (nib[3] - '0');
+                        hex.push_back(HEX[v]);
+                    } else {
+                        hex_ok = false;
+                        break;
+                    }
+                }
+                if (hex_ok) return std::to_string(target_width) + "'h" + hex;
+            }
+            return std::to_string(target_width) + "'b" + bits;
+        }
+    }
     BigUint num = BigUint::parse_verilog_int(raw_val);
     if (target_width <= 0) {
         return num.to_decimal();

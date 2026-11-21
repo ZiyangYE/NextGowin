@@ -1,6 +1,6 @@
 # Supported Environment & Known Limitations (`docs/LIMITATIONS.md`)
 
-> **Designs that use a PLL may be affected by an unresolved issue. Other parts of this release may also contain numerous undiscovered defects.**
+> **PLL support has a known unresolved issue. Other parts of this release may also contain numerous undiscovered defects.**
 
 1. **Operating System & CPU Baseline**:
    - Requires **64-bit Windows 10 or Windows 11** on any x86-64 processor supporting **SSE2 and SSE3** (all mainstream x86 CPUs released after 2007).
