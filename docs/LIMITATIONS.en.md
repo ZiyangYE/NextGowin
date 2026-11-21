@@ -1,5 +1,7 @@
 # Supported Environment & Known Limitations (`docs/LIMITATIONS.md`)
 
+> **Designs that use a PLL may be affected by an unresolved issue. Other parts of this release may also contain numerous undiscovered defects.**
+
 1. **Operating System & CPU Baseline**:
    - Requires **64-bit Windows 10 or Windows 11** on any x86-64 processor supporting **SSE2 and SSE3** (all mainstream x86 CPUs released after 2007).
    - Higher SIMD tiers (`AVX2`, `GFNI`, `AVX-512`) and runtime tier dispatch are intentionally omitted; only the deterministic Tier 1 baseline is shipped.

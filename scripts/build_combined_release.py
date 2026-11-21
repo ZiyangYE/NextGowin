@@ -471,7 +471,7 @@ DOCS_LIMITATIONS_MD = """\
 
 3. **Target FPGA Device Scope**:
    - Supports **Gowin GW5AST-138C** and **Gowin GW5AST-138B** devices across commercial, industrial, and engineering-sample speed grades (`C1/I0`, `C2/I1`, and `ES` on `GW5AST-138B`) and all official GW5AST-138 packages (`PBGA484A`, `PBGA676A`, and `FCPBGA676A`, corresponding to `PG484A`, `PG676A`, and `FPG676A` in part numbers; `FCPBGA484A` does not exist), including distributed SSRAM (`RAM16*` / `ROM16` on `GW5AST-138C`, enabled by default), BSRAM, DSP, ALU, CFU latches (`DL*`), `PLL`, `DDRDLL`, `DQS`, `IODELAY`/`IDES*`/`OSER*`/`IDDR*`/`ODDR*`, `CLKDIV`, `DHCE`, `GW_JTAG`, `GTR12_QUAD` SerDes, and hard `AE350_SOC`.
-   - Projects targeting other Gowin families or densities fail fast with an explicit unsupported-device error, and `RAM16*`/`ROM16` primitives on `GW5AST-138B` (`0Kb` SSRAM) are rejected cleanly matching Gowin DRC.
+   - Projects targeting other Gowin families or densities fail fast with an explicit unsupported-device error, `RAM16*`/`ROM16` primitives on `GW5AST-138B` (`0Kb` SSRAM) are rejected cleanly matching Gowin DRC, and dynamic CMUX `DCE`/`DCS` user-primitive instances fail fast with an explicit diagnostic (`HCLK` `DHCE`, `CLKDIV`, `PLL`, `DQS`, and `OSC` are supported).
 
 4. **HDL & Project Feature Scope**:
    - **Supported project inputs**: Verilog-2001 and SystemVerilog-2017 sources (`file.verilog`: `.v`, `.sv`, `.vh`, `.svh`), VHDL sources (`file.vhdl`: `.vhd`, `.vhdl`), physical constraints (`file.cst`), timing constraints (`file.sdc`), Gowin Analyzer Oscilloscope configs (`file.gao`: `.rao`), and SerDes configs (`file.csr`: `.csr`).

@@ -3559,7 +3559,17 @@ EXPORT int32_t bridge_route_design(
         if (g_state.row_ptr[v] == g_state.row_ptr[v + 1]) fl |= 0x01U;
         if (rev_row_ptr[v] == rev_row_ptr[v + 1]) fl |= 0x02U;
         if (is_tie_root[v]) fl |= 0x04U;
-        if (is_fixed_root[v]) fl |= 0x08U;
+        const auto& mv_f = g_state.meta[v];
+        bool is_dcs_v = false;
+        if ((mv_f.r == -1 && mv_f.c == -2) || (mv_f.r == -2 && mv_f.c == -1)) {
+            is_dcs_v = (mv_f.idx >= 48 && mv_f.idx <= 79) || mv_f.idx == 6 || mv_f.idx == 7 ||
+                       mv_f.idx == 14 || mv_f.idx == 15 || mv_f.idx == 22 || mv_f.idx == 23 ||
+                       mv_f.idx == 30 || mv_f.idx == 31;
+        } else if (mv_f.r == -1 && mv_f.c == -1) {
+            is_dcs_v = (mv_f.idx >= 56 && mv_f.idx <= 71) || mv_f.idx == 14 || mv_f.idx == 15 ||
+                       mv_f.idx == 22 || mv_f.idx == 23;
+        }
+        if (is_fixed_root[v] || is_dcs_v) fl |= 0x08U;
         if (clock_locked[v]) fl |= 0x10U;
         if (is_global_clk_wire[v]) fl |= 0x20U;
         if (pin_owner[v] != 0ULL) fl |= 0x40U;
@@ -3813,6 +3823,24 @@ EXPORT int32_t bridge_route_design(
                 return top;
             };
 
+            // GW5AST-138 Cmux_5AT contains 20 hardware DCS (Dynamic Clock Selector) sites
+            // (8 in top (-1,-2), 8 in bot (-2,-1), 4 in bridge (-1,-1)). Gowin FuseGen
+            // unconditionally programs an unplaced DCS site to OFF (blocking all clock
+            // propagation on silicon). Never traverse a DCS node unless owned by this net
+            // (explicitly placed DCS primitive).
+            auto is_cmux_dcs_node = [](int16_t r, int16_t c, int16_t idx) -> bool {
+                if ((r == -1 && c == -2) || (r == -2 && c == -1)) {
+                    return (idx >= 48 && idx <= 79) || idx == 6 || idx == 7 ||
+                           idx == 14 || idx == 15 || idx == 22 || idx == 23 ||
+                           idx == 30 || idx == 31;
+                }
+                if (r == -1 && c == -1) {
+                    return (idx >= 56 && idx <= 71) || idx == 14 || idx == 15 ||
+                           idx == 22 || idx == 23;
+                }
+                return false;
+            };
+
             int32_t chosen_cmux_root = -1;
             int32_t fallback_asym_cmux = -1;
             int32_t fallback_half_cmux = -1;
@@ -3854,6 +3882,7 @@ EXPORT int32_t bridge_route_design(
                         uint64_t po = pin_owner[v];
                         if (po != 0ULL && po != my_net) continue;
                         const auto& mv = g_state.meta[v];
+                        if (is_cmux_dcs_node(mv.r, mv.c, mv.idx) && po != my_net) continue;
                         // From 124..126 nodes, only allow dedicated Global Clock Mux entry (mv.r < 0), never expand into local fabric
                         if (mu.r >= 1 && mu.r <= 109 && mu.idx >= 124 && mu.idx <= 126 && mv.r >= 0) continue;
                         // Do not tap GB/LB spines back out into general fabric during stem search
@@ -3973,6 +4002,7 @@ EXPORT int32_t bridge_route_design(
                         uint64_t po = pin_owner[v];
                         if (po != 0ULL && po != my_net) continue;
                         const auto& mv = g_state.meta[v];
+                        if (is_cmux_dcs_node(mv.r, mv.c, mv.idx) && po != my_net) continue;
                         if (pass == 0) {
                             if (mv.r == -1 && mv.c == -1) continue; // Do not hop across another (-1, -1) root
                             bool pure_spine = (mv.r < 0) || (
@@ -4006,11 +4036,18 @@ EXPORT int32_t bridge_route_design(
                         float sc;
                         if (hot[v].occ == 0) {
                             sc = (0.04f + g_state.setup_ns[v]) * (1.0f + (hot[v].hist_cost - 1.0f) * (1.0f - 0.5f * crit));
+                            if (pass == 0 && ((mv.r == -1 && mv.c == -2) || (mv.r == -2 && mv.c == -1)) && mv.idx >= 285 && mv.idx <= 308) {
+                                int slot = (mv.idx - 285) % 6;
+                                sc += 0.18f * static_cast<float>(slot); // Share 1 DHCEN spine per quadrant before opening extra slots
+                            }
                             if (pass == 0 && mv.r >= 1 && mv.r <= 109 && (mv.idx == 291 || mv.idx == 292) && !(mu.r >= 1 && mu.r <= 109 && (mu.idx == 291 || mu.idx == 292))) {
-                                sc += 0.60f; // Encourage 1 single GT trunk per quadrant
+                                sc += 0.25f; // Encourage reusing GT column trunks within the 4-column tap span
                             }
                         } else {
                             sc = (0.06f + g_state.setup_ns[v]) * (1.0f + hot[v].occ * pres_fac) * hot[v].hist_cost;
+                            if (pass == 0 && ((mv.r == -1 && mv.c == -2) || (mv.r == -2 && mv.c == -1)) && mv.idx >= 285 && mv.idx <= 308) {
+                                sc += 1.50f * static_cast<float>(hot[v].occ); // Separate clocks pick distinct free quadrant slots on iter 0
+                            }
                         }
                         float ng = cur.g + sc;
                         if (hot[v].vis_stamp != st || ng < hot[v].best_g - 1e-6f) {

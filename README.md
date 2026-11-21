@@ -1,12 +1,12 @@
-# NextGowin v0.1.1
+# NextGowin v0.1.2
+
+> **使用 PLL 的设计可能出现问题，修复待完成。本版本的其他功能也可能存在较多尚未发现的问题。**
 
 NextGowin 是面向高云 GW5AST-138C 和 GW5AST-138B 的 Windows x64 FPGA 综合与布局布线工具。输入是 Gowin IDE 的 `.gprj` 工程，输出包括可交给 Gowin Programmer 的 `.fs` 位流、布线后网表、引脚分配和时序报告。
 
-[下载 Windows x64 运行包](https://github.com/ZiyangYE/NextGowin/releases/download/v0.1.1/nextgowin-win64-release.zip) · [版本说明与 SHA-256](https://github.com/ZiyangYE/NextGowin/releases/tag/v0.1.1) · [English](README.en.md)
+[下载 Windows x64 运行包](https://github.com/ZiyangYE/NextGowin/releases/download/v0.1.2/nextgowin-win64-release.zip) · [版本说明与 SHA-256](https://github.com/ZiyangYE/NextGowin/releases/tag/v0.1.2) · [English](README.en.md)
 
-## v0.1.1 更新
-
-本版修复了 LED 示例中进位链首级和寄存器常量输入的位流编码，改进 RAM 切片与初始化、PLL 初始化属性和器件料号识别。新增 `--verify-fs`，可独立检查压缩及 CRC 不同设置下的位流帧结构。
+本次更新了核心库和布局布线库。启动器的 `--version` 仍显示 v0.1.1，请用随包的 `VERSION` 和本次发布的 SHA-256 核对版本。
 
 ## 第一次运行
 
@@ -18,7 +18,7 @@ NextGowin 是面向高云 GW5AST-138C 和 GW5AST-138B 的 Windows x64 FPGA 综�
 .\bin\nextgowin.exe --self-test --no-pause
 ```
 
-4. 把自己的 `.gprj` 拖到 `bin/nextgowin.exe` 上，或在 PowerShell 中指定工程路径。想先试一个小工程，可以从[对应版本的源码](https://github.com/ZiyangYE/NextGowin/tree/v0.1.1/examples/blinky_gw5ast138)取得完整的 `blinky_gw5ast138` 目录，其中包含工程、RTL、引脚约束和时序约束。
+4. 把自己的 `.gprj` 拖到 `bin/nextgowin.exe` 上，或在 PowerShell 中指定工程路径。想先试一个小工程，可以从[对应版本的源码](https://github.com/ZiyangYE/NextGowin/tree/v0.1.2/examples/blinky_gw5ast138)取得完整的 `blinky_gw5ast138` 目录，其中包含工程、RTL、引脚约束和时序约束。
 
 ```powershell
 .\bin\nextgowin.exe "D:\FPGA\blinky_gw5ast138\blinky.gprj" --no-sync-ide --no-pause
@@ -37,10 +37,10 @@ NextGowin 是面向高云 GW5AST-138C 和 GW5AST-138B 的 Windows x64 FPGA 综�
 
 ## 工程开发与构建
 
-[源码目录](https://github.com/ZiyangYE/NextGowin/tree/v0.1.1/src)包含 C++ 启动器和六阶段流程实现。构建脚本在 `scripts/`，映射配置在 `configs/`，时序与布线数据在 `results/`，随包构建的 ABC 源码在 `third_party/abc/`。开发者可以从发布标签检出与此版本对应的文件。
+[源码目录](https://github.com/ZiyangYE/NextGowin/tree/v0.1.2/src)包含 C++ 启动器和六阶段流程实现。构建脚本在 `scripts/`，映射配置在 `configs/`，时序与布线数据在 `results/`，随包构建的 ABC 源码在 `third_party/abc/`。开发者可以从发布标签检出与此版本对应的文件。
 
 ```powershell
-git clone --branch v0.1.1 https://github.com/ZiyangYE/NextGowin.git
+git clone --branch v0.1.2 https://github.com/ZiyangYE/NextGowin.git
 cd NextGowin
 python scripts\build_native_binaries.py --clean --out-dir build\tier1_bins
 ```

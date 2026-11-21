@@ -51,6 +51,11 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
     constexpr size_t UNCOMP_NOCRC_FRAME_BITS = 196 * 8;
     constexpr size_t MIN_COMP_CRC_FRAME_BITS = 16 * 8;
     constexpr size_t MIN_COMP_NOCRC_FRAME_BITS = 14 * 8;
+    // Compressed GW5AST-138 frames use byte-escape/RLE encoding (0x51 header key packet).
+    // High-entropy frames can expand above the 190-byte raw payload (e.g. 192 data + 2 CRC + 6 tail = 1600 bits,
+    // up to worst-case 2x escape expansion of 190 raw bytes = 380 data bytes + CRC/tail).
+    constexpr size_t MAX_COMP_CRC_FRAME_BITS = 388 * 8;
+    constexpr size_t MAX_COMP_NOCRC_FRAME_BITS = 386 * 8;
     constexpr int32_t FRAME_COUNT = 21872;
 
     auto crc16_step_byte = [](uint16_t st, uint8_t b) -> uint16_t {
@@ -114,6 +119,7 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
     int first_frame = end_hdr_idx + 1;
     std::string hdr_err_detail;
     bool hdr_struct_valid = true;
+    bool hdr_compressed = false;
     uint16_t derived_st0 = 0;
     std::vector<uint8_t> hb;
 
@@ -167,6 +173,8 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
             } else if ((op_base == 0x0BU || op_base == 0x12U || op_base == 0x3BU) && n_bytes == 4) {
                 if (crc_enabled) for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
             } else if ((op_base == 0x06U || op_base == 0x10U || op_base == 0x39U || op_base == 0x51U || op_base == 0x62U) && n_bytes == 8) {
+                if (op_base == 0x10U && (hb[6] & 0x20U) != 0U) hdr_compressed = true;
+                if (op_base == 0x51U && (hb[5] != 0xFFU || hb[6] != 0xFFU || hb[7] != 0xFFU)) hdr_compressed = true;
                 if (crc_enabled) for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
             } else if (op_base == 0x3EU && (n_bytes == 8 || (n_bytes == 16 && (hb[8] & 0x7FU) == 0x39U))) {
                 if (crc_enabled) for (uint8_t b : hb) derived_st0 = crc16_step_byte(derived_st0, b);
@@ -217,9 +225,14 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
         );
     }
 
-    size_t max_frame_bits = crc_enabled ? UNCOMP_CRC_FRAME_BITS : UNCOMP_NOCRC_FRAME_BITS;
-    size_t min_frame_bits = crc_enabled ? MIN_COMP_CRC_FRAME_BITS : MIN_COMP_NOCRC_FRAME_BITS;
-    bool any_compressed_frame = false;
+    size_t uncomp_frame_bits = crc_enabled ? UNCOMP_CRC_FRAME_BITS : UNCOMP_NOCRC_FRAME_BITS;
+    size_t min_frame_bits = hdr_compressed
+        ? (crc_enabled ? MIN_COMP_CRC_FRAME_BITS : MIN_COMP_NOCRC_FRAME_BITS)
+        : uncomp_frame_bits;
+    size_t max_frame_bits = hdr_compressed
+        ? (crc_enabled ? MAX_COMP_CRC_FRAME_BITS : MAX_COMP_NOCRC_FRAME_BITS)
+        : uncomp_frame_bits;
+    bool any_compressed_frame = hdr_compressed;
     for (int i = 0; i < FRAME_COUNT; ++i) {
         std::string_view fl = payload[static_cast<size_t>(first_frame + i)];
         if ((fl.size() % 8) != 0 || fl.size() < min_frame_bits || fl.size() > max_frame_bits) {
@@ -228,9 +241,11 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
                 + " (file line " + std::to_string(payload_line_nums[static_cast<size_t>(first_frame + i)])
                 + "): got " + std::to_string(fl.size()) + " bits, expected byte-aligned length in ["
                 + std::to_string(min_frame_bits) + ".." + std::to_string(max_frame_bits) + "]"
+                + " (compress=" + (hdr_compressed ? "true" : "false")
+                + ", crc_check=" + (crc_enabled ? "true" : "false") + ")"
             );
         }
-        if (fl.size() < max_frame_bits) any_compressed_frame = true;
+        if (fl.size() != uncomp_frame_bits) any_compressed_frame = true;
     }
 
     std::string hdr_concat;
@@ -283,7 +298,7 @@ JsonValue audit_fs_bitstream_integrity(std::string_view fs_path) {
     } else {
         // General byte-exact verifier for compressed frames and/or CRC_check=false streams
         std::vector<uint8_t> fb_bytes;
-        fb_bytes.reserve(198);
+        fb_bytes.reserve(388);
         for (int i = 0; i < FRAME_COUNT; ++i) {
             std::string_view fl = payload[static_cast<size_t>(first_frame + i)];
             decode_bits_to_bytes(fl, fb_bytes);
@@ -1769,7 +1784,7 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         std::wstring w_sdk_bin = utf8_to_wide(sdk_bin);
         AddDllDirectory(w_sdk_bin.c_str());
 
-        (void)verify_or_record_sdk_file_sha(gowin_dll_path, EXPECTED_GOWIN_DLL_SHA, "bin/gowin.dll");
+        std::string gowin_dll_sha = verify_or_record_sdk_file_sha(gowin_dll_path, EXPECTED_GOWIN_DLL_SHA, "bin/gowin.dll");
         std::string cmd_do_raw = read_file_text(path_join(out, "cmd.do"));
         std::string cmd_dev_p = PINNED_DEVICE;
         double cmd_global_freq = 0.0;
@@ -2034,6 +2049,15 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             if (!o || !seen_inst.insert(o).second) continue;
             int t = fn_get_type(o);
             if (!supported_t.count(t)) {
+                if (t == 110 || t == 111) {
+                    const char* prim_tag = (t == 110) ? "DCE (Dqce)" : "DCS (Dcs)";
+                    throw std::runtime_error(
+                        "Unsupported user CMUX clock-control primitive type " + std::to_string(t)
+                        + " [" + prim_tag + "] on instance '" + iname(o)
+                        + "': GW5AST-138 custom P&R supports HCLK DHCE, CLKDIV, PLL, DQS, and OSC, "
+                        + "whereas dynamic CMUX DCE/DCS user primitives are not yet supported"
+                    );
+                }
                 throw std::runtime_error("Unsupported native instance type " + std::to_string(t) + " on " + iname(o));
             }
             if (t == 114) continue; // Virtual merged clock/control inverter already absorbed into sink Pin invert flag by VLGPARSE
@@ -2632,6 +2656,8 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         auto fn_set_pio       = reinterpret_cast<int (*)(uint64_t, int, int)>(gw_req("?setPioAttribute@Iobuf@NETLIST@@QEAAHW4PIO_ATTR@2@W4PIO_VALUE@2@@Z"));
         auto fn_set_bank_v    = reinterpret_cast<void (*)(uint64_t, int16_t, int)>(gw_req("?setBankVccio@chip@NETLIST@@QEAAXFW4PIO_VALUE@2@@Z"));
         auto fn_set_bank_arr  = reinterpret_cast<void (*)(uint64_t, int16_t, int)>(gw_req("?setBankVccioToArr@chip@NETLIST@@QEAAXFW4PIO_VALUE@2@@Z"));
+        auto fn_get_pull_str  = reinterpret_cast<int (*)(uint64_t, int16_t)>(gw_opt("?getPullStrength@chip@NETLIST@@QEAA?AW4PIO_VALUE@2@F@Z"));
+        auto fn_set_pull_str  = reinterpret_cast<void (*)(uint64_t, int16_t, int)>(gw_opt("?setPullStrength@chip@NETLIST@@QEAAXFW4PIO_VALUE@2@@Z"));
 
         struct IobBlkRec { int r = 0, c = 0, sl = 0; uint64_t blk = 0; };
         std::unordered_map<uint64_t, IobBlkRec> iob_blk_map;
@@ -2665,6 +2691,18 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         for (auto [bk, vccio] : bank_vccios) {
             fn_set_bank_v(chip, bk, vccio);
             fn_set_bank_arr(chip, bk, vccio);
+            if (fn_set_pull_str && (!fn_get_pull_str || fn_get_pull_str(chip, bk) == 0)) {
+                // Default GW5AST-138 bank pull strength is MEDIUM (PIO_VALUE=186), required by
+                // FuseGen to emit T37 IO-bank VCCIO/pull-strength fuses on active banks.
+                fn_set_pull_str(chip, bk, 186);
+            }
+        }
+        // Populate default 3.3V (PIO_VALUE=93) bank VCCIO set entries for unused banks (0..20)
+        // matching Official gowin.dll PlaceRoute so FuseGen emits all T37 bank VCCIO fuses.
+        for (int16_t bk = 0; bk <= 20; ++bk) {
+            if (!bank_vccios.count(bk)) {
+                fn_set_bank_arr(chip, bk, 93);
+            }
         }
 
         auto fn_setphy_iol   = reinterpret_cast<void (*)(uint64_t, uint64_t)>(gw_req("?setPhyIologic@Iologic@NETLIST@@QEAAXPEAViologic@2@@Z"));
@@ -2801,22 +2839,39 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             if (all_coloc) intra_ioblk_nets.insert(nt);
         }
 
-        auto fn_setphy_pll = reinterpret_cast<void (*)(uint64_t, uint64_t)>(gw_req("?setPhyPll@Pll@NETLIST@@QEAAXPEAVpll@2@@Z"));
-        auto fn_sp2n_pll   = reinterpret_cast<void (*)(uint64_t)>(gw_req("?setPin2Node@Pll@NETLIST@@UEAAXXZ"));
-        auto fn_get_pll_in = reinterpret_cast<uint64_t (*)(uint64_t, int16_t)>(gw_req("?getInNodeOfPll@Pll@NETLIST@@QEAAPEAVnode@2@F@Z"));
+        auto fn_setphy_pll  = reinterpret_cast<void (*)(uint64_t, uint64_t)>(gw_req("?setPhyPll@Pll@NETLIST@@QEAAXPEAVpll@2@@Z"));
+        auto fn_sp2n_pll    = reinterpret_cast<void (*)(uint64_t)>(gw_req("?setPin2Node@Pll@NETLIST@@UEAAXXZ"));
+        auto fn_get_pll_in  = reinterpret_cast<uint64_t (*)(uint64_t, int16_t)>(gw_req("?getInNodeOfPll@Pll@NETLIST@@QEAAPEAVnode@2@F@Z"));
+        auto fn_set_pll_ini = reinterpret_cast<void (*)(uint64_t, void*, int32_t)>(gw_req("?setPllInitValue@Pll@NETLIST@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4ALL_INIT_TYPE@2@@Z"));
         for (uint64_t po : pll_objs) {
             int p_idx = pll_assign[po];
             uint64_t phy_p = pll_phys[p_idx];
             auto [rp_r, cp_c] = pll_rcs[p_idx];
             fn_setphy(po, phy_p);
             fn_setlogic(phy_p, po);
+            wr_ptr(phy_p + 0x930ULL, po);
             fn_setphy_pll(po, phy_p);
             fn_addgrid(fn_getgrid(chip, static_cast<int16_t>(rp_r), static_cast<int16_t>(cp_c)), po);
             fn_sp2n_pll(po);
             uint64_t rst_nd = fn_get_pll_in(po, 0);
+            if (!rst_nd) {
+                throw std::runtime_error("PLL '" + inst_name[po] + "' has null RESET RRG node; cannot bind CLKIN node 124");
+            }
             uint64_t clkin_nd = sess_node(rd_i16_mem(rst_nd), rd_i16_mem(rst_nd + 2), 124);
+            bool bound_clkin_124 = false;
             for (const auto& pr : inst_in_pins[po]) {
-                if (pr.lbl == "CLKIN") fn_setnd_pin(pr.pin, clkin_nd);
+                if (pr.lbl == "CLKIN") {
+                    fn_setnd_pin(pr.pin, clkin_nd);
+                    bound_clkin_124 = true;
+                }
+            }
+            if (bound_clkin_124) {
+                // GW5AST-138 PLL CLKIN routed through fabric/GCLK/HCLK node 124 uses CLKIN7 (init[3]="7",
+                // enum ALL_INIT_TYPE=0xC1 -> grid+0x222=0x12). Always align the hardware CLKIN mux to CLKIN7
+                // when CLKIN is physically bound to node 124.
+                alignas(8) uint8_t sbuf[32]{};
+                gw_make_sso_str(sbuf, "7");
+                fn_set_pll_ini(po, sbuf, 0xC1);
             }
         }
 
@@ -5582,6 +5637,37 @@ int run_internal_pnr_worker(std::string_view out_dir) {
             return v;
         };
 
+        // GW5AST-138 hardware PLLs (all PLL_L, PLL_R, and PLL_B sites) require an internal
+        // VCC-tied enable pin at (rst_nd.r, rst_nd.c, 7) [D1] that is omitted from Pll::getAllInPins().
+        // Official gowin.dll PlaceRoute ties this node to VCC (277) on every placed PLL; leaving it
+        // undriven leaves the PLL disabled on silicon even when all config fuses and CLKIN/ENCLK PIPs match.
+        std::vector<int32_t> pll_standalone_vcc_sinks;
+        if (!pll_objs.empty()) {
+            uint64_t vcc_nt_ptr = 0;
+            for (uint64_t nt : all_candidate_nets) {
+                if (check_const(nt) == 2) { vcc_nt_ptr = nt; break; }
+            }
+            for (uint64_t po : pll_objs) {
+                uint64_t rst_nd = fn_get_pll_in(po, 0);
+                if (!rst_nd) {
+                    throw std::runtime_error("PLL '" + inst_name[po] + "' has null RESET RRG node; cannot bind hardware VCC enable pin");
+                }
+                int16_t pr_r = rd_i16_mem(rst_nd);
+                int16_t pr_c = rd_i16_mem(rst_nd + 2);
+                int32_t vcc_en_id = bridge.coord_to_id(pr_r, pr_c, 7);
+                if (vcc_en_id < 0) {
+                    throw std::runtime_error("Missing RRG node (" + std::to_string(pr_r) + "," + std::to_string(pr_c)
+                                             + ",7) for PLL hardware VCC enable pin on '" + inst_name[po] + "'");
+                }
+                if (vcc_nt_ptr) {
+                    internal_only_nets.erase(vcc_nt_ptr);
+                    raw_sinks[vcc_nt_ptr].push_back(vcc_en_id);
+                } else {
+                    pll_standalone_vcc_sinks.push_back(vcc_en_id);
+                }
+            }
+        }
+
         for (uint64_t nt : all_candidate_nets) {
             if (internal_only_nets.count(nt)) continue;
             int ck = check_const(nt);
@@ -5639,6 +5725,18 @@ int run_internal_pnr_worker(std::string_view out_dir) {
                         }
                     }
                 }
+                r_snk_offsets.push_back(static_cast<int32_t>(r_snk_ids.size()));
+            }
+        }
+        if (!pll_standalone_vcc_sinks.empty()) {
+            auto psinks = sort_dedup_ids(std::move(pll_standalone_vcc_sinks));
+            for (int32_t sk : psinks) {
+                r_net_ptrs.push_back(0);
+                r_net_flags.push_back(4);
+                r_net_crit.push_back(0.05f);
+                r_src_offsets.push_back(static_cast<int32_t>(r_src_ids.size()));
+                r_snk_ids.push_back(sk);
+                r_snk_crit.push_back(0.05f);
                 r_snk_offsets.push_back(static_cast<int32_t>(r_snk_ids.size()));
             }
         }
@@ -5781,13 +5879,270 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         }
 
         // =====================================================================
-        // 8. Post-Route Native STA, Reports, .vo, and .fs Bitstream Serialization
+        // 8. Post-Route Clock/CMUX/DHCEN Commit, Native STA, Reports, .vo & .fs
         // =====================================================================
         double t_sta0 = perf_counter();
+        if (gowin_dll_sha != EXPECTED_GOWIN_DLL_SHA) {
+            throw std::runtime_error(
+                "Uncalibrated gowin.dll binary for post-route CMUX/DHCEN fuse commit at '" + gowin_dll_path
+                + "': expected V1.9.12.04 x64 SHA-256 " + std::string(EXPECTED_GOWIN_DLL_SHA)
+                + ", got " + gowin_dll_sha
+                + ". Install Gowin V1.9.12.04 Education/Commercial x64 so physical global-clock gate fuses match silicon."
+            );
+        }
+
+        // 8a. Index all 108 Cmux_5AT DQCE clock-gate sites & 20 DCS selector sites up front,
+        //     walk complete routed sink parent chains, mark global clock nets, and attach
+        //     net->route_tree ([net+0x20], owned by Net on gowin.dll's heap once attached).
+        uint64_t cmux_5at = reinterpret_cast<uint64_t (*)(uint64_t)>(gw_req("?getCmux5AT@chip@NETLIST@@QEBAPEAVCmux_5AT@2@XZ"))(chip);
+        if (!cmux_5at) {
+            throw std::runtime_error("GW5AST-138 Cmux_5AT descriptor is null on chip; cannot program global-clock DHCEN gates");
+        }
+        uint64_t cmux_top = rd_ptr(cmux_5at + 0x00ULL);
+        uint64_t cmux_bot = rd_ptr(cmux_5at + 0x08ULL);
+        uint64_t cmux_brg = rd_ptr(cmux_5at + 0x10ULL);
+        if (!cmux_top || !cmux_bot || !cmux_brg) {
+            throw std::runtime_error("Incomplete GW5AST-138 Cmux_5AT sub-descriptors (top/bot/bridge must all be non-null)");
+        }
+
+        struct DqceBank { const char* name; uint64_t arr_addr; int count; };
+        const std::vector<DqceBank> dqce_banks = {
+            {"bridge",  cmux_brg + 0x270ULL, 28},
+            {"top_pri", cmux_top + 0x8E8ULL, 24},
+            {"top_sec", cmux_top + 0x9A8ULL, 16},
+            {"bot_pri", cmux_bot + 0x8E8ULL, 24},
+            {"bot_sec", cmux_bot + 0x9A8ULL, 16},
+        };
+        std::unordered_map<uint64_t, uint64_t> dqce_by_out_node;
+        dqce_by_out_node.reserve(108);
+        for (const auto& bank : dqce_banks) {
+            for (int gi = 0; gi < bank.count; ++gi) {
+                uint64_t d = rd_ptr(bank.arr_addr + static_cast<uint64_t>(gi) * 8ULL);
+                if (!d) {
+                    throw std::runtime_error(std::string("Null Cmux_5AT DQCE entry in bank ") + bank.name + "[" + std::to_string(gi) + "]");
+                }
+                uint64_t in_nd  = rd_ptr(d + 0x18ULL);
+                uint64_t out_nd = rd_ptr(d + 0x28ULL);
+                if (!in_nd || !out_nd) {
+                    throw std::runtime_error(std::string("Missing in/out RRG node on Cmux_5AT DQCE site ") + bank.name + "[" + std::to_string(gi) + "]");
+                }
+                dqce_by_out_node[out_nd] = d;
+            }
+        }
+
+        auto fn_set_gflag = reinterpret_cast<void (*)(uint64_t, int16_t)>(gw_req("?set_net_globalflag@Net@NETLIST@@QEAAXF@Z"));
+        auto fn_op_new    = reinterpret_cast<uint64_t (*)(uint64_t)>(base + 0x14950ECULL);
+        auto fn_op_del    = reinterpret_cast<void (*)(uint64_t)>(base + 0x1495138ULL);
+        (void)fn_op_del;
+        auto fn_rt_ctor   = reinterpret_cast<uint64_t (*)(uint64_t, uint64_t)>(base + 0x0FA2440ULL);
+
+        size_t global_cmux_net_cnt = 0;
+        std::unordered_set<uint64_t> traversed_dqce_out_nodes;
+        for (int32_t e_i = 0; e_i < num_rnets; ++e_i) {
+            uint64_t nt = r_net_ptrs[static_cast<size_t>(e_i)];
+            if (!nt) continue;
+            bool uses_cmux = false;
+            std::vector<uint64_t> net_sink_ptrs;
+            std::unordered_set<uint64_t> seen_tree_ptrs;
+            for (int32_t k = r_snk_offsets[static_cast<size_t>(e_i)]; k < r_snk_offsets[static_cast<size_t>(e_i + 1)]; ++k) {
+                int32_t snk_id = r_snk_ids[static_cast<size_t>(k)];
+                if (snk_id < 0) continue;
+                uint64_t snk_p = bridge.id_to_ptr(snk_id);
+                if (!snk_p) continue;
+                net_sink_ptrs.push_back(snk_p);
+                uint64_t cur = snk_p;
+                int hop = 0;
+                for (; cur != 0 && hop < 4096; ++hop) {
+                    if (!seen_tree_ptrs.insert(cur).second) {
+                        cur = 0;
+                        break;
+                    }
+                    auto dq_it = dqce_by_out_node.find(cur);
+                    if (dq_it != dqce_by_out_node.end()) {
+                        uses_cmux = true;
+                        uint64_t d = dq_it->second;
+                        uint64_t exp_in = rd_ptr(d + 0x18ULL);
+                        uint64_t act_par = rd_ptr(cur + 0x18ULL);
+                        // In Cmux_5AT (verified in gowin.dll 0x1138DF0..0x1138E16), the DQCE gate sits
+                        // strictly on the (in_nd -> out_nd) edge; direct PLL/HCLK/LW bypass muxes merge
+                        // onto out_nd downstream of DQCE (where [out_nd + 0x18] != in_nd and mode[0] == 0).
+                        if (act_par == exp_in) {
+                            traversed_dqce_out_nodes.insert(cur);
+                        }
+                    }
+                    int16_t nr = rd_i16_mem(cur);
+                    int16_t nc = rd_i16_mem(cur + 2);
+                    int16_t nidx = rd_i16_mem(cur + 4);
+                    if (nr < 0 && nc < 0) {
+                        uses_cmux = true;
+                    } else if (nr >= 1 && nr <= 109 && (nidx == 291 || nidx == 292)) {
+                        uses_cmux = true;
+                    }
+                    cur = rd_ptr(cur + 0x18ULL);
+                }
+                if (cur != 0) {
+                    throw std::runtime_error("Routed parent chain exceeded 4096 hops without reaching root on net '" + nname(nt) + "'");
+                }
+            }
+            if (uses_cmux) {
+                ++global_cmux_net_cnt;
+                fn_set_gflag(nt, 1);
+                if (!net_sink_ptrs.empty()) {
+                    uint64_t rt = rd_ptr(nt + 0x20ULL);
+                    bool need_sink_vec = (rt == 0) || (rd_ptr(rt + 0x20ULL) == rd_ptr(rt + 0x28ULL));
+                    if (need_sink_vec) {
+                        // Allocate sink pointer buffer BEFORE constructing a new route_tree so an OOM
+                        // on arr_p cannot leave an unattached route_tree object behind; once attached
+                        // to [nt + 0x20], Net owns rt for the remainder of the worker process lifetime.
+                        uint64_t arr_bytes = static_cast<uint64_t>(net_sink_ptrs.size()) * 8ULL;
+                        uint64_t arr_p = fn_op_new(arr_bytes);
+                        if (!arr_p) throw std::runtime_error("gowin.dll operator new failed allocating route_tree sink vector");
+                        for (size_t si = 0; si < net_sink_ptrs.size(); ++si) {
+                            wr_ptr(arr_p + static_cast<uint64_t>(si) * 8ULL, net_sink_ptrs[si]);
+                        }
+                        if (rt == 0) {
+                            rt = fn_op_new(0x130ULL);
+                            if (!rt) throw std::runtime_error("gowin.dll operator new failed allocating net route_tree (0x130 bytes)");
+                            fn_rt_ctor(rt, mem);
+                            wr_ptr(nt + 0x20ULL, rt);
+                        }
+                        wr_ptr(rt + 0x20ULL, arr_p);
+                        wr_ptr(rt + 0x28ULL, arr_p + arr_bytes);
+                        wr_ptr(rt + 0x30ULL, arr_p + arr_bytes);
+                    }
+                }
+            }
+        }
+
+        // 8b. Initialize rpt_inf BEFORE constructing the temporary PrRoute post-route commit wrapper
+        //     so 0x10AEFD0 allocates [rpt_inf + 0xB0] for Sections 5 & 6 clock resource/signal tables.
         alignas(16) uint8_t rpt_buf[0x100]{};
         uint64_t rpt_ptr = reinterpret_cast<uint64_t>(rpt_buf);
         reinterpret_cast<uint64_t (*)(uint64_t)>(base + 0x24D070ULL)(rpt_ptr);
         reinterpret_cast<void (*)(uint64_t, uint64_t)>(gw_req("?setRptInf@globalMem@@QEAAXPEAVrpt_inf@RPT@@@Z"))(mem, rpt_ptr);
+
+        alignas(16) uint8_t pr_wrap_buf[0x20]{};
+        uint64_t pr_wrap_ptr = reinterpret_cast<uint64_t>(pr_wrap_buf);
+        auto fn_pr_wrap_ctor = reinterpret_cast<uint64_t (*)(uint64_t, uint64_t, uint64_t)>(base + 0x10AEFD0ULL);
+        auto fn_pr_wrap_dtor = reinterpret_cast<void (*)(uint64_t)>(base + 0x10B2120ULL);
+        fn_pr_wrap_ctor(pr_wrap_ptr, p2r_ptr, mem);
+        struct PrWrapGuard {
+            uint64_t ptr = 0;
+            void (*dtor)(uint64_t) = nullptr;
+            void reset() noexcept { if (ptr && dtor) { dtor(ptr); ptr = 0; } }
+            ~PrWrapGuard() { reset(); }
+        } pr_wrap_guard{pr_wrap_ptr, fn_pr_wrap_dtor};
+
+        uint64_t pr_route = rd_ptr(pr_wrap_ptr);
+        if (!pr_route) {
+            throw std::runtime_error("Failed to initialize post-route commit context (PrRoute wrapper returned null)");
+        }
+
+        // 8c. Run pure post-route state-commit passes (ZERO vendor placement, ZERO vendor routing):
+        //     - 0x1132110: VCC/GND tie-off switchSetTable pairs (including col=90 spine tie-offs)
+        //     - 0x11559C0: wire-tap / bridge RRG node flags
+        //     - 0x114D0B0: CFU slice clock/control flags
+        //     - 0x114AD30: switchSetTable clock/signal/IP PIP maps + net+0x6A
+        //     - 0x114D3F0: GW5AST-138 PRIMARY/LW spine classification
+        reinterpret_cast<void (*)(uint64_t)>(base + 0x1132110ULL)(pr_route);
+        reinterpret_cast<void (*)(uint64_t)>(base + 0x11559C0ULL)(pr_route);
+        reinterpret_cast<void (*)(uint64_t)>(base + 0x114D0B0ULL)(pr_route);
+        reinterpret_cast<void (*)(uint64_t)>(base + 0x114AD30ULL)(pr_route);
+        if (reinterpret_cast<bool (*)(uint64_t)>(base + 0x25BF90ULL)(mem)) {
+            reinterpret_cast<void (*)(uint64_t)>(base + 0x00184A0ULL)(pr_route);
+            if (reinterpret_cast<bool (*)(uint64_t)>(base + 0x253E80ULL)(mem)) {
+                reinterpret_cast<void (*)(uint64_t)>(base + 0x11D9670ULL)(pr_route);
+            }
+        }
+        reinterpret_cast<void (*)(uint64_t)>(base + 0x114D3F0ULL)(pr_route);
+
+        // 8d. Program Cmux_5AT static DHCEN (dqce) clock-gate fuses (st=0x5D..0x84) for all traversed
+        //     CMUX bridge/top/bottom gates where no explicit user primitive is placed, enforce exact
+        //     per-site coverage against traversed_dqce_out_nodes, and verify zero traversal of unplaced DCS sites.
+        auto fn_set_dhcen_mode = reinterpret_cast<void (*)(uint64_t, int32_t, int32_t)>(base + 0x457480ULL);
+        size_t dhcen_static_enabled = 0;
+        size_t dhcen_user_placed = 0;
+        size_t traversed_accounted = 0;
+        for (const auto& bank : dqce_banks) {
+            for (int gi = 0; gi < bank.count; ++gi) {
+                uint64_t d = rd_ptr(bank.arr_addr + static_cast<uint64_t>(gi) * 8ULL);
+                uint64_t in_nd  = rd_ptr(d + 0x18ULL);
+                uint64_t out_nd = rd_ptr(d + 0x28ULL);
+                bool traversed = traversed_dqce_out_nodes.count(out_nd) > 0;
+                if (rd_ptr(d + 0x08ULL) != 0) {
+                    // Explicit user primitive placed on DQCE — preserve dynamic primitive mode
+                    ++dhcen_user_placed;
+                    if (traversed) ++traversed_accounted;
+                    continue;
+                }
+                bool active = (rd_ptr(out_nd + 0x18ULL) == in_nd);
+                if (traversed != active) {
+                    throw std::runtime_error(
+                        std::string("Post-route DQCE state mismatch on ") + bank.name + "[" + std::to_string(gi)
+                        + "]: traversed=" + (traversed ? "true" : "false")
+                        + " vs parent_linked=" + (active ? "true" : "false")
+                    );
+                }
+                fn_set_dhcen_mode(d, 0, active ? 1 : 0);
+                if (active) {
+                    ++dhcen_static_enabled;
+                    ++traversed_accounted;
+                }
+            }
+        }
+        if (traversed_accounted != traversed_dqce_out_nodes.size()) {
+            throw std::runtime_error(
+                "Post-route CMUX clock-gate per-site coverage failed: accounted "
+                + std::to_string(traversed_accounted) + " of "
+                + std::to_string(traversed_dqce_out_nodes.size()) + " traversed DQCE gate(s)"
+            );
+        }
+
+        // Verify no routed path traverses an unplaced DCS site (top/bot +0x8A8[8], brg +0x250[4])
+        struct DcsBank { const char* name; uint64_t arr_addr; int count; };
+        const std::vector<DcsBank> dcs_banks = {
+            {"top_dcs", cmux_top + 0x8A8ULL, 8},
+            {"bot_dcs", cmux_bot + 0x8A8ULL, 8},
+            {"brg_dcs", cmux_brg + 0x250ULL, 4},
+        };
+        for (const auto& bank : dcs_banks) {
+            for (int di = 0; di < bank.count; ++di) {
+                uint64_t dcs = rd_ptr(bank.arr_addr + static_cast<uint64_t>(di) * 8ULL);
+                if (!dcs) {
+                    throw std::runtime_error(std::string("Null Cmux_5AT DCS entry in bank ") + bank.name + "[" + std::to_string(di) + "]");
+                }
+                if (rd_ptr(dcs + 0x08ULL) != 0) continue; // Placed DCS primitive is valid
+                uint64_t out_nd = rd_ptr(dcs + 0x80ULL);
+                if (!out_nd) continue;
+                uint64_t out_par = rd_ptr(out_nd + 0x18ULL);
+                if (!out_par) continue;
+                for (int k = 0; k < 4; ++k) {
+                    uint64_t in_nd = rd_ptr(dcs + 0x60ULL + static_cast<uint64_t>(k) * 8ULL);
+                    if (in_nd && out_par == in_nd) {
+                        throw std::runtime_error(
+                            "Illegal clock route through unplaced hardware DCS site " + std::string(bank.name)
+                            + "[" + std::to_string(di) + "] input CLK" + std::to_string(k)
+                            + " (" + std::to_string(rd_i16_mem(in_nd)) + "," + std::to_string(rd_i16_mem(in_nd + 2))
+                            + "," + std::to_string(rd_i16_mem(in_nd + 4)) + ") -> ("
+                            + std::to_string(rd_i16_mem(out_nd)) + "," + std::to_string(rd_i16_mem(out_nd + 2))
+                            + "," + std::to_string(rd_i16_mem(out_nd + 4))
+                            + "); FuseGen programs unplaced DCS sites to OFF on silicon"
+                        );
+                    }
+                }
+            }
+        }
+
+        // 8e. Populate RPT clock resource usage (Section 5) and global clock signal table (Section 6)
+        wr_u8_mem(rpt_ptr + 0xA8ULL, 1U);
+        wr_u8_mem(rpt_ptr + 0xA9ULL, 1U);
+        wr_u8_mem(rpt_ptr + 0xAAULL, 1U);
+        reinterpret_cast<void (*)(uint64_t)>(base + 0x11943F0ULL)(pr_route);
+        reinterpret_cast<void (*)(uint64_t)>(base + 0x1196010ULL)(pr_route);
+
+        std::fprintf(stdout, "[ownpr] Post-route clock/CMUX commit: %zu global clock net(s), %zu static DHCEN gate(s) enabled, %zu user DHCEN(s)\n",
+                     global_cmux_net_cnt, dhcen_static_enabled, dhcen_user_placed);
+        std::fflush(stdout);
 
         reinterpret_cast<void (*)(uint64_t, int)>(gw_req("?setFlowFlag@TmMonitor@STA@@QEAAXW4FLOW_FLAG_STA@2@@Z"))(monitor, 7);
         reinterpret_cast<void (*)(uint64_t, bool)>(gw_req("?setPlaceFlag@TmMonitor@STA@@QEAAX_N@Z"))(monitor, false);
@@ -5813,6 +6168,7 @@ int run_internal_pnr_worker(std::string_view out_dir) {
         int vo_rc  = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateOutputFile@@YAHPEAVglobalMem@@@Z"))(mem);
         reinterpret_cast<void (*)(uint64_t)>(gw_req("?generateTxtPinoutFile@@YAXPEAVglobalMem@@@Z"))(mem);
         int cst_rc = reinterpret_cast<int (*)(uint64_t)>(gw_req("?generateCstoutFile@@YAHPEAVglobalMem@@@Z"))(mem);
+        pr_wrap_guard.reset();
         bool parents_preserved = (bridge.verify_last_parents_preserved() == 1);
 
         if (tr_rc != 0 || rpt_rc != 0 || vo_rc != 0 || fs_rc != 0) {
